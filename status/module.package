@@ -1,0 +1,14 @@
+{
+	"name":			"Status",
+	"version":		"1.0.0",
+	"category":		"EXTENDED_MANAGEMENT",
+	"icon":			"network_check",
+	"order":		1,
+	"description":	"",
+	"author":		{
+		"name":		"Adrian Preuß",
+		"email":	"info@fruithost.de",
+		"url":		"https://fruithost.de"
+	},
+	"repository":	"https://github.com/fruithost/Modules"
+}

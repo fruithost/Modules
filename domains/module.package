@@ -1,0 +1,14 @@
+{
+	"name":			"Domains",
+	"version":		"1.0.0",
+	"category":		"DOMAIN_MANAGEMENT",
+	"icon":			"public",
+	"order":		1,
+	"description":	"This module enables you to add or configure domain web hosting on your account.",
+	"author":		{
+		"name":		"Adrian Preuß",
+		"email":	"info@fruithost.de",
+		"url":		"https://fruithost.de"
+	},
+	"repository":	"https://github.com/fruithost/Modules"
+}

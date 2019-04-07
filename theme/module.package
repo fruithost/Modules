@@ -1,0 +1,14 @@
+{
+	"name":			"Theme",
+	"version":		"1.0.0",
+	"category":		"ACCOUNT_MANAGEMENT",
+	"icon":			"color_lens",
+	"order":		4,
+	"description":	"",
+	"author":		{
+		"name":		"Adrian Preuß",
+		"email":	"info@fruithost.de",
+		"url":		"https://fruithost.de"
+	},
+	"repository":	"https://github.com/fruithost/Modules"
+}

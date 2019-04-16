@@ -17,7 +17,9 @@
 			$this->domains = Database::fetch('SELECT * FROM `fh_domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
 				'user'	=> Auth::getID()
 			]);
-			
+		}
+		
+		public function load() {
 			if(empty($this->domains)) {
 				$this->addButton((new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')->setModal('create_domain'));
 			} else {

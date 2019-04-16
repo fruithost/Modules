@@ -1,7 +1,7 @@
 <?php
 	use fruithost\Database;
 	
-	class Daemon {
+	class DomainsDaemon {
 		public function __construct() {
 			$domains = $this->getDomains('AND
 										`fh_domains`.`time_created` IS NULL
@@ -85,5 +85,5 @@
 		}
 	}
 	
-	new Daemon();
+	new DomainsDaemon();
 ?>

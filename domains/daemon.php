@@ -63,7 +63,7 @@
 		}
 		
 		protected function createDocumentRoot($domain, $path) {
-			$template = sprintf('%s%s%s/domains', dirname(PATH), DS, 'modules');
+			$template = sprintf('%s%s%s/domains', PATH, DS, 'modules');
 			
 			file_put_contents(sprintf('%sindex.html', $path), str_replace([
 				'$DOMAIN'

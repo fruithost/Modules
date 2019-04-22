@@ -10,11 +10,13 @@
 				
 				print TAB . 'Checking ' . $service->name . ': ' . TAB . ($status ? "\033[0;32mOnline\033[0m" : "\033[31;31mOFFLINE\033[0m") . ' (' . $service->service . ')' . PHP_EOL;
 				
-				Database::update('fh_status', 'id', [
-					'id'		=> $service->id,
-					'time'		=> date('Y-m-d H:i:s', time()),
-					'status'	=> ($status ? 'ONLINE' : 'OFFLINE')
-				]);
+				try {
+					Database::update('fh_status', 'id', [
+						'id'		=> $service->id,
+						'time'		=> date('Y-m-d H:i:s', time()),
+						'status'	=> ($status ? 'ONLINE' : 'OFFLINE')
+					]);
+				} catch(\Exception $e) {}
 			}
 			
 			// @ToDo notify when services down?

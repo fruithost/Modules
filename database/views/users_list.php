@@ -28,8 +28,8 @@
 							if($user->time_created === null) {
 								print '<span class="text-warning">Pending...</span>';
 							} else if($user->time_created !== null) {
-								if(fruithost\Database::count('SHOW DATABASES LIKE :name', [
-									'name'	=> sprintf('%s_%s', Auth::getUsername($user->user_id), $user->name)
+								if(fruithost\Database::count('SHOW DATABASES WHERE `Database`=:name', [
+									'name'	=> sprintf('%s_%s', Auth::getUsername($user->user_id), $user->database)
 								]) === 0) {
 									print '<span class="text-danger">Error</span>';
 								} else {

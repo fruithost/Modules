@@ -29,14 +29,12 @@
 			} else if(!file_exists(sprintf('%s/views/%s.php', dirname(__FILE__), $submodule))) {
 				$submodule = array_keys($this->tabs)[0];
 			}
-			
-			var_dump($this->domain);
 			?>
 				<ul class="nav nav-tabs mb-4">
 					<?php
 						foreach($this->tabs AS $name => $label) {
 							?>
-								<li class="nav-item"><a class="nav-link<?php print ($submodule === $name ? ' active' : ''); ?>" href="<?php print $this->url(sprintf('/module/php/%s', $name)); ?>"><?php print $label; ?></a></li>
+								<li class="nav-item"><a class="nav-link<?php print ($submodule === $name ? ' active' : ''); ?>" href="<?php print $this->url(sprintf('/module/php/%s%s', $name, (!empty($this->domain) ? '?domain=' . $this->domain : ''))); ?>"><?php print $label; ?></a></li>
 							<?php
 						}
 					?>

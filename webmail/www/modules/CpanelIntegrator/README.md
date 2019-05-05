@@ -1,1 +1,0 @@
-# aurora-module-cpanel-integrator

@@ -1,0 +1,146 @@
+{
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"AllowAddAccounts": [
+		true,
+		"bool"
+	],
+	"AllowAutosaveInDrafts": [
+		true,
+		"bool"
+	],
+	"AllowDefaultAccountForUser": [
+		false,
+		"bool"
+	],
+	"AllowIdentities": [
+		true,
+		"bool"
+	],
+	"AllowFilters": [
+		true,
+		"bool"
+	],
+	"AllowForward": [
+		true,
+		"bool"
+	],
+	"AllowAutoresponder": [
+		true,
+		"bool"
+	],
+	"AllowInsertImage": [
+		true,
+		"bool"
+	],
+	"AlwaysShowImagesInMessage": [
+		false,
+		"bool"
+	],
+	"AutoSaveIntervalSeconds": [
+		60,
+		"int"
+	],
+	"AllowTemplateFolders": [
+		false,
+		"bool"
+	],
+	"AllowAlwaysRefreshFolders": [
+		false,
+		"bool"
+	],
+	"DisplayInlineCss": [
+		false,
+		"bool"
+	],
+	"CleanupOutputBeforeDownload": [
+		false,
+		"bool"
+	],
+	"IgnoreImapSubscription": [
+		false,
+		"bool"
+	],
+	"ImageUploadSizeLimit": [
+		0,
+		"int"
+	],
+	"SaveRepliesToCurrFolder": [
+		false,
+		"bool"
+	],
+    "SieveGeneralPassword": [
+        "",
+        "string"
+    ],
+    "SieveFileName": [
+        "sieve",
+        "string"
+    ],
+    "SieveFiltersFolderCharset": [
+        "utf-8",
+        "string"
+    ],
+    "SieveHost": [
+        "127.0.0.1",
+        "string"
+    ],
+	"SievePort": [
+		4190,
+		"int"
+	],
+	"UseBodyStructuresForHasAttachmentsSearch": [
+		false,
+		"bool"
+	],
+	"UseDateFromHeaders": [
+		false,
+		"bool"
+	],
+	"UseSortImapForDateMode": [
+		false,
+		"bool"
+	],
+    "XMailerValue": [
+        "Afterlogic webmail client",
+        "string"
+    ],
+    "ForwardedFlagName": [
+        "$Forwarded",
+        "string"
+    ],
+	"PreferStarttls": [
+        true,
+        "bool"
+    ],
+	"ExternalHostNameOfLocalImap": [
+		"",
+		"string"
+	],
+	"ExternalHostNameOfLocalSmtp": [
+		"",
+		"string"
+	],
+	"AutocreateMailAccountOnNewUserFirstLogin": [
+		false,
+		"bool"
+	],
+    "SieveUseStarttls": [
+        false,
+        "bool"
+    ],
+    "DisableStarttlsForLocalhost": [
+        true,
+        "bool"
+    ],
+	"XOriginatingIP": [
+		false,
+		"bool"
+	],
+	"DoImapLoginOnAccountCreate": [
+		true,
+		"bool"
+	]
+}

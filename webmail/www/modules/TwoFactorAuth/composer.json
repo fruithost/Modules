@@ -1,0 +1,12 @@
+{
+	"name": "afterlogic/aurora-module-two-factor-auth",
+	"type": "aurora-module",
+	"require": {
+		"php": ">=5.4.0",
+		"afterlogic/aurora-framework": "~0.9.0",
+		"afterlogic/googleauthenticator": "~1.0.2"
+	},
+	"extra": {
+		"installer-name": "TwoFactorAuth"
+	}
+}

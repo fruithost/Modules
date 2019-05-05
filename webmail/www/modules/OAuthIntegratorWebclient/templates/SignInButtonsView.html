@@ -1,0 +1,12 @@
+<div class="content social" data-bind="if: typeof oauthServices !== 'undefined' && oauthServices().length > 0">
+	<div class="info" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SIGN_BUTTONS'}"></div>
+	<!-- ko foreach: oauthServices -->
+	<div class="button" data-bind="css: $data, click: function () {$parent.externalAuthClick($data);}">
+		<span class="border"></span>
+		<span class="text">
+			<span data-bind="i18n: {'key': $root.ViewConstructorName === 'CRegisterView' ? '%MODULENAME%/LABEL_SIGN_UP' : '%MODULENAME%/LABEL_SIGN_IN'}"></span>
+			<span data-bind="text: ' ' + $data[0].toUpperCase() + $data.substring(1)"></span>
+		</span>
+	</div>
+	<!-- /ko -->
+</div>

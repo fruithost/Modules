@@ -1,0 +1,83 @@
+<div class="panel_top">
+	<div class="buttons" data-bind="visible: !createMode()">
+		<span class="button add_account_button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_ADD_NEW_SERVER'}, click: routeCreateServer"></span>
+	</div>
+	<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_SERVERS_SETTINGS'}"></h2>
+</div>
+
+<div class="panel_center">
+	<div class="fields" data-bind="visible: servers().length === 0 && !createMode() && serversRetrieved()">
+		<div class="fieldset">
+			<div class="hint" style="margin: 0;" data-bind="i18n: {'key': '%MODULENAME%/INFO_NO_SERVERS'}"></div>
+		</div>
+	</div>
+	<div data-bind="visible: createMode() || servers().length > 0">
+		<div class="items_list account_list" data-bind="visible: !createMode()">
+			<div data-bind="foreach: servers">
+				<div class="item account" data-bind="css: {'selected': iId === $parent.editedServerId()},  click: function () { $parent.routeEditServer(iId); }">
+					<span class="title" data-bind="text: sName + sTenantHint"></span>
+					<span class="link fetcher" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_DELETE'}, 
+							click: function (oModel, oEv) { oEv.stopPropagation(); $parent.deleteServer(iId); },
+							visible: bAllowToDelete"></span>
+				</div>
+			</div>
+		</div>
+		<div class="tabs" data-bind="visible: createMode() || editedServerId() !== 0">
+			<div class="tabs_container">
+				<div class="tab">
+					<div class="fields">
+						<div class="fieldset">
+							<!-- ko template: {name: oServerPairPropertiesView.ViewTemplate, data: oServerPairPropertiesView} --><!-- /ko -->
+						</div>
+						<div class="fieldset" data-bind="with: oServerPairPropertiesView">
+							<div class="row" data-bind="visible: bAdminEdit">
+								<div>
+									<label class="custom_checkbox" data-bind="css: {'checked': setExternalAccessServers}">
+										<span class="icon"></span>
+										<input type="checkbox" id="setExternalAccessServers" data-bind="checked: setExternalAccessServers" />
+									</label>
+									<label for="setExternalAccessServers" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ADMIN_EXTERNAL_ACCESS_SERVERS'}"></label>
+								</div>	
+							</div>
+							<div class="row hint" data-bind="visible: bAdminEdit">
+								<span class="value" data-bind="i18n: {'key': '%MODULENAME%/LABEL_HINT_ADMIN_EXTERNAL_ACCESS_SERVERS', type: 'html'}"></span>
+							</div>
+							<div class="row" data-bind="visible: bAdminEdit">
+								<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_IMAP_SERVER'}, css: {'disabled': !setExternalAccessServers()}"></span>
+								<input class="value input server" spellcheck="false" type="text" maxlength="255"
+										data-bind="enable: setExternalAccessServers, value: externalAccessImapServer, valueUpdate: 'afterkeydown', 
+											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+
+								<span class="label" style="width: auto; margin-left: 10px;" 
+										data-bind="i18n: {'key': '%MODULENAME%/LABEL_PORT'}, css: {'disabled': !setExternalAccessServers()}"></span>
+								<input class="value input port" spellcheck="false" type="text" maxlength="5" 
+										data-bind="enable: setExternalAccessServers, value: externalAccessImapPort, valueUpdate: 'afterkeydown', 
+											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+							</div>
+							<div class="row" data-bind="visible: bAdminEdit">
+								<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SMTP_SERVER'}, css: {'disabled': !setExternalAccessServers()}"></span>
+								<input class="value input server" spellcheck="false" type="text" maxlength="255"
+										data-bind="enable: setExternalAccessServers, value: externalAccessSmtpServer, valueUpdate: 'afterkeydown', 
+											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+
+								<span class="label" style="width: auto; margin-left: 10px;" 
+										data-bind="i18n: {'key': '%MODULENAME%/LABEL_PORT'}, css: {'disabled': !setExternalAccessServers()}"></span>
+								<input class="value input port" spellcheck="false" type="text" maxlength="5" 
+										data-bind="enable: setExternalAccessServers, value: externalAccessSmtpPort, valueUpdate: 'afterkeydown', 
+											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+							</div>
+						</div>
+
+						<div class="buttons">
+							<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}, click: save, visible: !createMode() && !isSaving()"></span>
+							<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}, visible: !createMode() && isSaving()"></span>
+							<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CREATE'}, click: save, visible: createMode() && !isSaving()"></span>
+							<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CREATE_IN_PROGRESS'}, visible: createMode() && isSaving()"></span>
+							<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: routeServerList, visible: createMode()"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

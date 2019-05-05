@@ -1,0 +1,27 @@
+<div class="panel_content" data-bind="visible: showCreateForm">
+	<div class="middle_bar">
+		<div class="panel_top">
+			<h2 class="settings_heading" data-bind="text: oEntityCreateView.sHeading"></h2>
+		</div>
+		<div class="panel_center">
+			<div class="fields">
+
+				<div class="fieldset" data-bind="with: oEntityCreateView">
+					<!-- ko template: {name: ViewTemplate} --><!-- /ko -->
+				</div>
+
+				<div class="buttons">
+					<span class="button" data-bind="click: createEntity, visible: !isCreating()">
+						<span data-bind="text: oEntityCreateView.sActionCreate"></span>
+					</span>
+					<span class="button" data-bind="visible: isCreating()">
+						<span data-bind="text: oEntityCreateView.sActionCreateInProgress"></span>
+					</span>
+					<span class="button secondary_button" data-bind="click: function () { $root.cancelCreatingEntity() }, visible: !isCreating()">
+						<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}"></span>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

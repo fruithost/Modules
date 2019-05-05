@@ -1,0 +1,132 @@
+{
+    "AllowChangeSettings": [
+        false,
+        "bool"
+    ],
+    "AllowClientDebug": [
+        false,
+        "bool"
+    ],
+    "AllowDesktopNotifications": [
+        false,
+        "bool"
+    ],
+    "AllowIosProfile": [
+        true,
+        "bool"
+    ],
+    "AllowMobile": [
+        true,
+        "bool"
+    ],
+    "AllowPrefetch": [
+        true,
+        "bool"
+    ],
+    "AttachmentSizeLimit": [
+        0,
+        "int"
+    ],
+    "AutoRefreshIntervalMinutes": [
+        1,
+        "int"
+    ],
+    "CustomLogoutUrl": [
+        "",
+        "string"
+    ],
+    "Disabled": [
+        false,
+        "bool"
+    ],
+    "DefaultAnonymScreenHash": [
+        "login",
+        "string"
+    ],
+    "DefaultUserScreenHash": [
+        "mail",
+        "string"
+    ],
+    "GoogleAnalyticsAccount": [
+        "",
+        "string"
+    ],
+    "HeaderModulesOrder": [
+        [
+            "mail"
+        ],
+        "array"
+    ],
+    "IsDemo": [
+        false,
+        "bool"
+    ],
+    "LanguageNames": [
+        {
+            "Arabic": "\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+            "Bulgarian": "\u0411\u044a\u043b\u0433\u0430\u0440\u0441\u043a\u0438",
+            "Chinese-Simplified": "\u4e2d\u6587(\u7b80\u4f53)",
+            "Chinese-Traditional": "\u4e2d\u6587(\u9999\u6e2f)",
+            "Czech": "\u010ce\u0161tina",
+            "Danish": "Dansk",
+            "Dutch": "Nederlands",
+            "English": "English",
+            "Estonian": "eesti",
+            "Finnish": "Suomi",
+            "French": "Fran\u00e7ais",
+            "German": "Deutsch",
+            "Greek": "\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac",
+            "Hebrew": "\u05e2\u05d1\u05e8\u05d9\u05ea",
+            "Hungarian": "Magyar",
+            "Italian": "Italiano",
+            "Japanese": "\u65e5\u672c\u8a9e",
+            "Korean": "\ud55c\uad6d\uc5b4",
+            "Latvian": "Latvie\u0161u",
+            "Lithuanian": "Lietuvi\u0173",
+            "Norwegian": "Norsk",
+            "Persian": "\u0641\u0627\u0631\u0633\u06cc",
+            "Polish": "Polski",
+            "Portuguese-Portuguese": "Portugu\u00eas",
+            "Portuguese-Brazil": "Portugu\u00eas Brasileiro",
+            "Romanian": "Rom\u00e2n\u0103",
+            "Russian": "\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
+            "Serbian": "Srpski",
+            "Slovenian": "Sloven\u0161\u010dina",
+            "Spanish": "Espa\u00f1ol",
+            "Swedish": "Svenska",
+            "Thai": "\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22",
+            "Turkish": "T\u00fcrk\u00e7e",
+            "Ukrainian": "\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430",
+            "Vietnamese": "ti\u1ebfng Vi\u1ec7t"
+        },
+        "array"
+    ],
+    "ShowQuotaBar": [
+        true,
+        "bool"
+    ],
+    "QuotaWarningPerc": [
+        0,
+        "int"
+    ],
+    "SyncIosAfterLogin": [
+        true,
+        "bool"
+    ],
+    "Theme": [
+        "Funny",
+        "string"
+    ],
+    "ThemeList": [
+        [
+            "Default",
+            "DeepForest",
+            "Funny"
+        ],
+        "array"
+    ],
+    "IncludeInMobile": [
+        true,
+        "bool"
+    ]
+}

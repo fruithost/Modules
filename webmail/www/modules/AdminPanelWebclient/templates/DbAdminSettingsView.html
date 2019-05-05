@@ -1,0 +1,59 @@
+<div class="panel_top">
+	<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_DB_SETTINGS'}"></h2>
+</div>
+<div class="panel_center">
+	<div class="fields">
+		<div class="fieldset">
+			<div class="row">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DB_LOGIN'}"></span>
+				<span class="value">
+					<input class="input" type="text" data-bind="value: dbLogin, valueUpdate: 'afterkeydown', onEnter: save" />
+				</span>
+			</div>
+			<div class="row">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DB_PASSWORD'}"></span>
+				<span class="value">
+					<input class="input" autocomplete="new-password" type="password" data-bind="value: dbPassword, valueUpdate: 'afterkeydown', onEnter: save" />
+				</span>
+			</div>
+			<div class="row">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DN_NAME'}"></span>
+				<span class="value">
+					<input class="input" type="text" data-bind="value: dbName, valueUpdate: 'afterkeydown', onEnter: save" />
+				</span>
+			</div>
+			<div class="row">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DB_HOST'}"></span>
+				<span class="value">
+					<input class="input" type="text" data-bind="value: dbHost, valueUpdate: 'afterkeydown', onEnter: save" />
+				</span>
+			</div>
+			<div class="row">
+				<span class="label"></span>
+				<span class="value buttons">
+					<span class="button" data-bind="i18n: {'key': '%MODULENAME%/BUTTON_DB_TEST_CONNECTION'}, click: testConnection"></span>
+				</span>
+			</div>
+			<div class="row hint" style="margin-top: 40px;">
+				<span class="label"></span>
+				<span class="value" data-bind="i18n: {'key': '%MODULENAME%/HINT_DB_CREATE_TABLES'}"></span>
+			</div>
+			<div class="row">
+				<span class="label"></span>
+				<span class="value buttons">
+					<span class="button" data-bind="i18n: {'key': '%MODULENAME%/BUTTON_DB_CREATE_TABLES'}, click: createTables"></span>
+					<span class="button" data-bind="i18n: {'key': '%MODULENAME%/BUTTON_DB_UPDATE_TABLES'}, visible: false"></span>
+				</span>
+			</div>
+		</div>		
+
+		<div class="buttons">
+			<span class="button" data-bind="click: save, visible: !isSaving()">
+				<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}"></span>
+			</span>
+			<span class="button" data-bind="visible: isSaving()">
+				<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}"></span>
+			</span>
+		</div>
+	</div>
+</div>

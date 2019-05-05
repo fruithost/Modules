@@ -1,0 +1,128 @@
+<div class="row" data-bind="visible: bAdminEdit && selectedServerId() === 0 && $parent.tenants().length > 1" style="margin-bottom: 6px;">
+	<span class="label required" data-bind="i18n: {'key': '%MODULENAME%/LABEL_TENANT'}"></span>
+	<select class="input" data-bind="value: $parent.selectedTenantId, options: $parent.tenantOptions, optionsText: 'Name', optionsValue: 'Id'"></select>
+</div>
+<div class="row" data-bind="visible: bAdminEdit" style="margin-bottom: 6px;">
+	<span class="label required" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DISPLAY_NAME'}"></span>
+	<input class="value input" spellcheck="false" type="text" maxlength="255"
+		   data-bind="value: name, hasfocus: name.focused, onEnter: function () { $parent.save(); }, valueUpdate: 'afterkeydown'"/>
+</div>
+<div class="row hint" data-bind="visible: bAdminEdit">
+	<span class="value" data-bind="i18n: {'key': '%MODULENAME%/LABEL_HINT_DISPLAY_NAME'}" style="margin-left: 150px; display: block;"></span>
+</div>
+<div class="row server" data-bind="visible: bAdminEdit && (bAllowEditDomains || selectedServerId() !== 0)" style="margin-bottom: 6px;">
+	<span class="label required" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DOMAINS'}"></span>
+	<span data-bind="click: onDomainsClick">
+		<textarea class="input" data-bind="css: {'disabled': !bAllowEditDomains}, value: domains, enable: bAllowEditDomains"></textarea>
+	</span>
+</div>
+<div class="row hint" data-bind="visible: bAdminEdit && (bAllowEditDomains || selectedServerId() !== 0)">
+	<span class="value" data-bind="i18n: {'key': '%MODULENAME%/LABEL_HINT_DOMAINS'}, visible: bAllowEditDomains" style="margin-left: 150px; display: block;"></span>
+	<span class="value" data-bind="i18n: {'key': '%MODULENAME%/LABEL_HINT_DOMAINS_CANNOT_EDIT_HTML', 'type': 'html'}, visible: !bAllowEditDomains" style="margin-left: 150px; display: block;"></span>
+</div>
+
+<div class="row server" data-bind="visible: !bAdminEdit">
+	<span class="label required" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SERVER'}"></span>
+	<select class="input" data-bind="value: selectedServerId, options: serverOptions, optionsText: 'Name', optionsValue: 'Id'"></select>
+</div>
+<div class="row incoming">
+	<!-- ko template: {name: '%ModuleName%_Settings_ServerPropertiesView', data: oIncoming} --><!-- /ko -->
+</div>
+<div class="row outgoing">
+	<!-- ko template: {name: '%ModuleName%_Settings_ServerPropertiesView', data: oOutgoing} --><!-- /ko -->
+</div>
+
+<div class="row smtp_authentication" data-bind="css: {'disabled': !outgoingUseAuth.enable()}, visible: !bAdminEdit && smtpAuthType() !== Enums.SmtpAuthType.UseSpecifiedCredentials">
+	<span class="value offset">
+		<label class="custom_checkbox" data-bind="css: {'checked': outgoingUseAuth}">
+			<span class="icon"></span>
+			<input type="checkbox" id="add_new_account_mail_out_auth" data-bind="checked: outgoingUseAuth, enable: outgoingUseAuth.enable" />
+		</label>
+		<label for="add_new_account_mail_out_auth" data-bind="i18n: {'key': '%MODULENAME%/LABEL_USE_SMTP_AUTHENTICATION'}"></label>
+	</span>
+</div>
+
+<div class="row smtp_authentication" data-bind="visible: bAdminEdit">
+	<div>
+		<span class="label"></span>
+		<label data-bind="i18n: {'key': '%MODULENAME%/LABEL_SMTP_AUTHENTICATION'}"></label>
+	</div>
+</div>
+<div class="row smtp_authentication" data-bind="visible: bAdminEdit">
+	<div>
+		<span class="label"></span>
+		<label class="custom_radio" data-bind="css: {'checked': smtpAuthType() === Enums.SmtpAuthType.NoAuthentication}">
+			<span class="icon"></span>
+			<input type="radio" id="no_authentication" data-bind="checked: smtpAuthType, value: Enums.SmtpAuthType.NoAuthentication" />
+		</label>
+		<label data-bind="i18n: {'key': '%MODULENAME%/LABEL_NO_AUTHENTICATION'}" for="no_authentication"></label>
+	</div>
+</div>
+<div class="row smtp_authentication" data-bind="visible: bAdminEdit">
+	<div>
+		<span class="label"></span>
+		<label class="custom_radio" data-bind="css: {'checked': smtpAuthType() === Enums.SmtpAuthType.UseSpecifiedCredentials}">
+			<span class="icon"></span>
+			<input type="radio" id="use_specified_credentials" data-bind="checked: smtpAuthType, value: Enums.SmtpAuthType.UseSpecifiedCredentials" />
+		</label>
+		<label data-bind="i18n: {'key': '%MODULENAME%/LABEL_USE_SPECIFIED_CREDENTIALS'}" for="use_specified_credentials"></label>
+		<input type="text" class="input" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_LOGIN', 'type': 'placeholder'}, 
+				value: smtpLogin, enable: smtpAuthType() === '1'" />
+		<input autocomplete="new-password" type="password" class="input" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_PASSWORD', 'type': 'placeholder'}, 
+				value: smtpPassword, enable: smtpAuthType() === '1'" />
+	</div>
+</div>
+<div class="row smtp_authentication" data-bind="visible: bAdminEdit">
+	<div>
+		<span class="label"></span>
+		<label class="custom_radio" data-bind="css: {'checked': smtpAuthType() === Enums.SmtpAuthType.UseUserCredentials}">
+			<span class="icon"></span>
+			<input type="radio" id="use_user_credentials" data-bind="checked: smtpAuthType, value: Enums.SmtpAuthType.UseUserCredentials" />
+		</label>
+		<label data-bind="i18n: {'key': '%MODULENAME%/LABEL_USE_USER_CREDENTIALS'}" for="use_user_credentials"></label>
+	</div>
+</div>
+
+<div class="row" data-bind="visible: bAdminEdit"></div>
+
+<div class="row" data-bind="visible: bAdminEdit">
+	<div>
+		<span class="label"></span>
+		<label class="custom_checkbox" data-bind="css: {'checked': enableSieve}">
+			<span class="icon"></span>
+			<input type="checkbox" id="enable_sieve" data-bind="checked: enableSieve" />
+		</label>
+		<label for="enable_sieve" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ENABLE_SIEVE'}"></label>
+	</div>	
+</div>
+
+<div class="row" data-bind="visible: bAdminEdit">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SIEVE_PORT'}"></span>
+	<input type="number" class="input" data-bind="value: sievePort" />
+</div>
+
+<div class="row" data-bind="visible: bAdminEdit">
+	<div>
+		<span class="label"></span>
+		<label class="custom_checkbox" data-bind="css: {'checked': enableThreading}">
+			<span class="icon"></span>
+			<input type="checkbox" id="enableThreading" data-bind="checked: enableThreading" />
+		</label>
+		<label for="enableThreading" data-bind="i18n: {'key': '%MODULENAME%/LABEL_USE_THREADING'}"></label>
+	</div>	
+</div>
+
+<div class="row" data-bind="visible: bAdminEdit">
+	<div>
+		<span class="label"></span>
+		<label class="custom_checkbox" data-bind="css: {'checked': useFullEmailAddressAsLogin}">
+			<span class="icon"></span>
+			<input type="checkbox" id="useFullEmailAddressAsLogin" data-bind="checked: useFullEmailAddressAsLogin" />
+		</label>
+		<label for="useFullEmailAddressAsLogin" data-bind="i18n: {'key': '%MODULENAME%/LABEL_USE_FULL_EMAIL_ADDRESS_AS_LOGIN'}"></label>
+	</div>	
+</div>
+<div class="row hint" data-bind="visible: bAdminEdit">
+	<span class="label"></span>
+	<span class="value" data-bind="i18n: {'key': '%MODULENAME%/LABEL_HINT_USE_FULL_EMAIL_ADDRESS_AS_LOGIN'}"></span>
+</div>

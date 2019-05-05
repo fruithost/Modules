@@ -1,0 +1,11 @@
+{
+	"name": "afterlogic/aurora-module-webclient-change-password",
+	"type": "aurora-module",
+	"require": {
+		"php": ">=5.4.0",
+		"afterlogic/aurora-framework": "~0.9.0"
+	},
+	"extra": {
+		"installer-name": "ChangePasswordWebclient"
+	}
+}

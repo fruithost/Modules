@@ -1,0 +1,51 @@
+<div class="panel_top">
+	<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_SECURITY_SETTINGS'}"></h2>
+</div>
+<div class="panel_center">
+	<div class="fields">
+		<div class="fieldset">
+			
+			<!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+			<input style="display:none" type="text" name="fakeusernameremembered"/>
+			<input style="display:none" type="password" name="fakepasswordremembered"/>
+			
+			<div class="row">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SECURITY_LOGIN'}"></span>
+				<span class="value">
+					<input class="input" type="text" data-bind="value: login, valueUpdate: 'afterkeydown', onEnter: save" />
+				</span>
+			</div>
+			<div class="row">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SECURITY_PASS'}"></span>
+				<span class="value">
+					<input class="input" autocomplete="new-password" type="password" data-bind="value: pass, hasFocus: passFocused, valueUpdate: 'afterkeydown', onEnter: save" />
+				</span>
+			</div>
+			<div class="row">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SECURITY_NEW_PASS'}"></span>
+				<span class="value">
+					<input class="input" autocomplete="new-password" type="password" data-bind="value: newPass, hasFocus: newPassFocused, valueUpdate: 'afterkeydown', onEnter: save" />
+				</span>
+			</div>
+			<div class="row">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SECURITY_CONFIRM_PASS'}"></span>
+				<span class="value">
+					<input class="input" autocomplete="new-password" type="password" data-bind="value: confirmPass, valueUpdate: 'afterkeydown', onEnter: save" />
+				</span>
+			</div>
+			<div class="row">
+				<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_LANGUAGE'}"></span>
+				<select class="value input" data-bind="value: selectedLanguage, options: aLanguages, optionsText: 'name', optionsValue: 'value'"></select>
+			</div>
+		</div>
+
+		<div class="buttons">
+			<span class="button" data-bind="click: save, visible: !isSaving()">
+				<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}"></span>
+			</span>
+			<span class="button" data-bind="visible: isSaving()">
+				<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}"></span>
+			</span>
+		</div>
+	</div>
+</div>

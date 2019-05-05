@@ -1,0 +1,309 @@
+//.ContactsLayout .panel_helper {
+//	width: 85%;
+//}
+
+.panel.groups_panel {
+	//width: 15%;
+	min-width: 200px;
+
+	.ui-droppable-disabled {
+		opacity: 1 !important;
+	}
+}
+
+.panel.contacts_panel {
+	min-width: 200px;
+	
+	.panel_content {
+		margin-right: 0px;
+	}
+	
+	.panel_top .search_block {
+		padding-right: 4px;
+
+		html.rtl & {
+			padding-left: 30px;
+			padding-right: 0px;
+		}
+	}
+	
+	.item {
+		.me {
+			background: #f1f1f1;
+			border-radius: 10px 10px 10px 10px;
+			color: #6d6d6d;
+			float: right;
+			padding: 2px 8px;
+		}
+		
+		&.selected .me {
+			color: @theme-contacts-panel-item-selected-me-color;
+		}
+		
+		.data {
+			.box-sizing;
+
+			.group {
+				display: inline-block;
+				height: 20px;
+				margin-top: -1px;
+				vertical-align: bottom;
+				width: 20px;
+				
+				.init-icon-font();
+
+				&:before {
+					.opacity(0.7);
+					font-size: 20px;
+				}
+
+				&.personal:before {
+					content: "\e618";
+				}
+
+				&.shared:before {
+					content: "\e629";
+				}
+
+				&.team:before {
+					content: "\e619";
+				}
+			}
+			
+			.name {
+				display: block;
+				font-size: 12pt;
+				margin-bottom: 10px;
+			}
+			
+			.email {
+				color: @theme-contacts-panel-item-data-email-color;
+			}
+		}
+		
+		&.selected .data .email {
+			color: #ffffff;
+		}
+
+		&.noname .data .name,
+		&.noemail .data .email {
+			color: #888888;
+			font-weight: normal;
+			
+			.opacity(0.3);
+		}
+		
+		&.selected.noname .data .name,
+		&.selected.noemail .data .email {
+			color: #ffffff;
+		}
+	}
+	
+	.search_form {
+		float: right;
+		margin-top: -25px;
+	}
+}
+
+.panel.contact_viewer {
+	min-width: 300px;
+	
+	.panel_content {
+		background: url("../../images/contacts-bg.png") repeat 0 0;
+		//margin: 0 !important;
+		//padding: 2px 4px 0 2px !important;
+	}
+	
+	//.middle_bar {
+	//	.box-sizing;
+		//.resize-compensation-top(100px);
+		
+		//&.edit_contact,
+		//&.edit_group {
+			//.resize-compensation-bottom(69px);
+		//}
+	//}
+	
+	.panel_center {
+	//	background: none;
+		overflow: hidden;
+	}
+	
+	.panel_top {
+		border-bottom: 0px;
+		margin: 0px 20px;
+		min-height: 50px;
+		overflow: auto;
+		padding: 23px 0px;
+	}
+	
+	.panel_bottom {
+		background: none;
+		border: 0px;
+		border-radius: 0px;
+		height: auto;
+		padding: 0px;
+	}
+	
+	.contact_content {
+		height: 100%;
+		
+		.fields_switcher {
+			margin: 10px 20px;
+			text-align: right;
+		}
+	}
+	
+	.contacts_heading {
+		font-size: 18pt;
+		font-weight: normal;
+		margin: 0 0 6px;
+		white-space: normal;
+	}
+	
+	.mailto_link {
+		color: @theme-contact-viewer-mailto-link-color;
+		font-size: 10.5pt;
+		font-weight: bold;
+		text-decoration: none;
+	}
+	
+	.decor {
+		border: 1px solid #d9d9d9;
+		border-bottom: 0px;
+		border-radius: 4px 4px 0px 0px;
+		margin: 0px 20px;
+		padding-top: 3px;
+	}
+}
+
+.contact_data_groups {
+	color: #626262;
+	border: 1px solid #d9d9d9;
+	border-radius: 0px 0px 4px 4px;
+	border-top: 0px;
+	margin: 0px 20px;
+	min-height: 100px;
+	
+	.fields {
+		padding: 12px 20px 1px;
+	}
+	
+	.subheading,
+	.row {
+		margin-top: 0px;
+		margin-bottom: 22px;
+		padding: 0px;
+		overflow: hidden;
+	}
+	
+	.subheading {
+		font-size: 10.5pt;
+	}
+	
+	&.edit {
+		.label {
+			width: 25%;
+		}
+		
+		.value {
+			width: 75%;
+		}
+	}
+	
+	.address {
+		margin-bottom: 12px;
+		
+		.row {
+			clear: none;
+			margin-bottom: 5px;
+			
+			&:after {
+				display: none;
+			}
+		}
+		
+		.label {
+			height: 0px;
+			overflow: hidden;
+			text-indent: 20px;
+			width: 20px;
+			
+			&.address {
+				float: left;
+				height: 20px;
+				margin-right: -20px;
+				overflow: hidden;
+				text-indent: 0px;
+				vertical-align: middle;
+				width: 20px;
+				word-wrap: normal;
+				
+				.init-icon-font();
+				
+				&:before {
+					content: "\e662";
+					font-size: 20px;
+					margin-right: 20px;
+					
+					html.rtl {
+						margin-left: 20px;
+						margin-right: 0px;
+					}
+				}
+			}
+		}
+	}
+	
+	.mobile .label,
+	.phone .label,
+	.fax .label {
+		height: 20px;
+		overflow: hidden;
+		text-indent: 0px;
+		vertical-align: middle;
+		width: 20px;
+		
+		.init-icon-font();
+		
+		&:before {
+			content: "\e663";
+			font-size: 20px;
+			margin-right: 20px;
+
+			html.rtl {
+				margin-left: 20px;
+				margin-right: 0px;
+			}
+		}
+		
+		.text {
+			display: none;
+		}
+	}
+	
+	.link.call {
+		margin-left: 10px;
+		
+		html.rtl & {
+			margin-left: 0px;
+			margin-right: 10px;
+		}
+	}
+	
+}
+
+.popup.contact_create_popup {
+	color: #626262;
+
+	.fields .row {
+		margin-bottom: 10px;
+		margin-top: 0px;
+		padding: 0px;
+	}
+
+	.link {
+		text-align: right;
+		display: block;
+	}
+}

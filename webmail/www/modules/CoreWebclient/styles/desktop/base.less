@@ -1,0 +1,39 @@
+//html {
+	//overflow: hidden;
+//}
+
+body {
+	overflow: auto;
+	position: relative;
+}
+
+.auroraMain {
+    //min-width: 480px;
+	//min-height: 480px;
+
+	html.non-adjustable & {
+		//height: auto;
+		overflow: visible;
+		min-height: inherit;
+		min-width: inherit;
+	}
+	
+	html.non-adjustable-valign & {
+		overflow: visible;
+	}
+}
+
+.screens {
+	.box-sizing;
+	
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	
+	height: 100%;
+	
+	.screen {
+		height: 100%;
+		overflow: auto;
+	}
+}

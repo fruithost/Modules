@@ -1,0 +1,1 @@
+# aurora-module-mail-notes-plugin

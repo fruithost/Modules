@@ -1,0 +1,22 @@
+<div class="item dragHandle" data-bind="css: {
+		'unseen': !seen(), 'selected': selected(), 'checked': checked(),
+		'forwarded': forwarded(), 'answered': answered(), 'deleted': deleted() || threadHideAnimation(),
+		'nosubject': emptySubject(),
+		'threaded':  threadPart(),
+		'show': threadShowAnimation()
+	}">
+	<div class="item_content">
+		<span class="controls">
+			<span class="custom_checkbox" data-bind="click: function () { checked(!checked()); }, css: {'checked': checked()}">
+				<span class="icon"></span>
+			</span>
+		</span>
+		<span class="data">
+			<span class="date" data-bind="text: date"></span>
+			<span class="subject fadeout" style="line-height: inherit;">
+				<span data-bind="text: subjectForDisplay()"></span>
+			</span>
+		</span>
+		<div class="separator"></div>
+	</div>
+</div>

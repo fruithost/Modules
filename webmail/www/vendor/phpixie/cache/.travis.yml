@@ -1,0 +1,26 @@
+sudo: false
+language: "php"
+
+addons:
+  apt:
+    packages:
+    - redis-server
+    - memcached
+services:
+    - redis-server
+    - memcached
+php:
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+
+before_install:
+  - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+
+before_script: 
+  - "composer install"
+
+script: 
+- "phpunit"

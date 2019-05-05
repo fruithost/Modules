@@ -1,0 +1,11 @@
+{
+	"name": "afterlogic/aurora-module-mail-save-message-as-pdf-plugin",
+	"type": "aurora-module",
+	"require": {
+		"php":">=5.4.0",
+		"afterlogic/aurora-framework": "~0.9.0"
+	},
+	"extra": {
+		"installer-name": "MailSaveMessageAsPdfPlugin"
+	}
+}

@@ -1,0 +1,58 @@
+<div class="middle_bar">
+	<div class="panel_top">
+		<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_SETTINGS'}"></h2>
+	</div>
+	<div class="panel_center">
+		<div class="fields">
+			<div class="fieldset">
+				<div class="row">
+					<span class="value" style="float: left;">
+						<label class="custom_checkbox" data-bind="css: {'checked': enable}">
+							<span class="icon"></span>
+							<input type="checkbox" id="enableDropbox" data-bind="checked: enable" />
+						</label>
+						<label for="enableDropbox" data-bind="i18n: {'key': '%MODULENAME%/ENABLE_MODULE'}"></label>
+					</span>
+				</div>
+				<div class="row">
+					<span class="label required" data-bind="i18n: {'key': '%MODULENAME%/LABEL_APP_ID'}"></span>
+					<span class="value">
+						<input class="input" type="text" data-bind="value: id, valueUpdate: 'afterkeydown', onEnter: save" />
+					</span>
+				</div>
+				<div class="row">
+					<span class="label required" data-bind="i18n: {'key': '%MODULENAME%/LABEL_APP_SECRET'}"></span>
+					<span class="value">
+						<input class="input" type="text" data-bind="value: secret, valueUpdate: 'afterkeydown', onEnter: save" />
+					</span>
+				</div>
+				<div class="hint row">
+					<span class="value" data-bind="i18n: {'key': '%MODULENAME%/INFO_SETTINGS'}"></span>
+				</div>
+				<div class="row"></div>
+				<div data-bind="foreach: scopes">
+					<div class="row">
+						<span class="value">
+							<label class="custom_checkbox" data-bind="css: {'checked': Value}">
+								<span class="value" style="float: left;">
+									<span class="icon"></span>
+									<input type="checkbox" data-bind="checked: Value, attr: { id: Name}" />
+								</span>
+							</label>
+							<label data-bind="text: $data.Description, attr: {for: Name}"></label>
+						</span>
+					</div>
+				</div>
+			</div>		
+
+			<div class="buttons">
+				<span class="button" data-bind="click: save, visible: !isSaving()">
+					<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}"></span>
+				</span>
+				<span class="button" data-bind="visible: isSaving()">
+					<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}"></span>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>

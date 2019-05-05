@@ -1,0 +1,12 @@
+<div class="panel_center notes_container" data-bind="if: currentMessage() || createMode()">
+	<div class="message_body_info" data-bind="visible: isLoading, i18n: {'key': 'COREWEBCLIENT/INFO_LOADING'}"></div>
+		<textarea data-bind="value: messageText, visible: !isLoading(), hasFocus: messageText.focused, 
+			valueUpdate: 'keyup', i18n: {'key': '%MODULENAME%/PLACEHOLDER_EMPTY_NOTE', 'type': 'placeholder'}"
+			class="note_edit"></textarea>
+</div>
+<div class="panel_bottom notes_container" data-bind="if: currentMessage() || createMode()">
+	<div class="buttons" data-bind="visible: !isLoading()">
+		<span class="button" data-bind="text: saveButtonText, click: saveNote"></span>
+		<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: cancel"></span>
+	</div>
+</div>

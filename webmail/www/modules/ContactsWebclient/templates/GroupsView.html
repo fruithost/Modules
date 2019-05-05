@@ -1,0 +1,74 @@
+<div class="panel_center" data-bind="customScrollbar: {x: false}">
+	<div class="scroll-inner">
+		<div class="items_list">
+			<div class="item canSelect" data-bind="visible: showAllContacts,
+					css: {'selected': 'all' === selectedStorage()},
+					click: $parent.gotoContactList">
+				<a href="javascript: void(0);" class="title" data-bind="click: function () { changeGroupType('all'); }">
+					<span class="name fadeout">
+						<span class="icon"></span>
+						<span class="text animGoal" data-bind="i18n: {'key': '%MODULENAME%/LABEL_STORAGE_ALL'}"></span>
+					</span>
+				</a>
+			</div>
+			
+			<div class="item canSelect" data-bind="visible: showPersonalContacts, 
+					css: {'selected': 'personal' === selectedStorage()},
+					click: $parent.gotoContactList">
+				<a href="javascript: void(0);" class="title" id="selenium_contacts_personal_button" data-bind="
+						css: {'recivedAnim': recivedAnimPersonal()},
+						droppable: {valueFunc: function (oEvent, oUi) { $root.contactsDropToGroupType('personal', oEvent, oUi); }, switchObserv: disableDropToPersonal},
+						click: function () { changeGroupType('personal'); }">
+					<span class="name fadeout">
+						<span class="icon type1"></span>
+						<span class="text animGoal" data-bind="i18n: {'key': '%MODULENAME%/LABEL_STORAGE_PERSONAL'}"></span>
+					</span>
+				</a>
+			</div>
+
+			<div class="item canSelect" data-bind="visible: showSharedToAllContacts, 
+					css: {'selected': 'shared' === selectedStorage()},
+					click: $parent.gotoContactList">
+				<a href="javascript: void(0);" class="title" data-bind="
+						css: {'recivedAnim': recivedAnimShared()},
+						droppable: {valueFunc: function (oEvent, oUi) { $root.contactsDropToGroupType('shared', oEvent, oUi); }, switchObserv: isTeamStorageSelected},
+						click: function () { changeGroupType('shared'); }">
+					<span class="name fadeout">
+						<span class="icon type3"></span>
+						<span class="text animGoal" data-bind="i18n: {'key': '%MODULENAME%/LABEL_STORAGE_SHARED'}"></span>
+					</span>
+				</a>
+			</div>
+
+			<div class="item canSelect" data-bind="visible: showTeamContacts, 
+					css: {'selected': isTeamStorageSelected},
+					click: $parent.gotoContactList">
+				<a href="javascript: void(0);" class="title" data-bind="click: function () { changeGroupType('team'); }, css: {'recivedAnim': recivedAnimTeam()}">
+					<span class="name fadeout">
+						<span class="icon type2"></span>
+						<span class="text animGoal" data-bind="i18n: {'key': '%MODULENAME%/LABEL_STORAGE_TEAM'}"></span>
+					</span>
+				</a>
+			</div>
+			
+
+			<div data-bind="visible: showPersonalContacts() && 0 < groupFullCollection().length">
+				<div class="section_title fadeout" data-bind="i18n: {'key': '%MODULENAME%/HEADING_GROUPS'}"></div>
+				<div class="items_section" data-bind="foreach: groupFullCollection">
+					<div class="item canSelect" data-bind="css: {'selected': selected}">
+						<a href="javascript: void(0);" class="title" data-bind="
+							css: {'recivedAnim': recivedAnim()}, 
+							droppable: {valueFunc: function (oEvent, oUi) { $root.contactsDrop($data, oEvent, oUi); }, switchObserv: selected},
+							click: function () { $root.onViewGroupClick($data); }
+						">
+							<span class="name fadeout">
+								<span class="icon type4"></span>
+								<span class="text animGoal" data-bind="text: Name()"></span>
+							</span>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

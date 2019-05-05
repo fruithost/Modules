@@ -1,0 +1,32 @@
+<div class="buttons big_single_button">
+	<span href="javascript: void(0)" class="button" id="selenium_new_message_button" data-bind="command: $parent.bigButtonCommand">
+		<span class="icon"></span>
+		<span data-bind="text: $parent.bigButtonText"></span>
+	</span>
+	<span href="javascript: void(0)" class="button add_new_folder" data-bind="click: addNewFolder, visible: visibleNewFolderButton">
+		<span class="icon"></span>
+		<span data-bind="i18n: {'key': 'MAILWEBCLIENT/HEADING_NEW_FOLDER'}"></span>
+	</span>
+</div>
+
+<div class="middle_bar" data-bind="css: {'quota_visible': -1 < quotaProc()}">
+	<div class="panel_center" data-bind="customScrollbar: {x: false}">
+		<div class="scroll-inner">
+			<div class="items_list collapsible">
+				<div class="folders">
+				<!-- ko template: {name: '%ModuleName%_FolderView', foreach: folderList().collection} --><!-- /ko -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel_bottom">
+		<div class="manage_folders" data-bind="visible: manageFoldersHash() !== '#'">
+			<a href="javascript: void(0)" data-bind="i18n: {'key': '%MODULENAME%/ACTION_MANAGE_FOLDERS'}, attr: {href: manageFoldersHash}"></a>
+		</div>
+		<span class="volumer" data-bind="visible: -1 < quotaProc()">
+			<span class="volumer_conteiner" data-bind="customTooltip: quotaDesc">
+				<span class="used" data-bind="style: {'width': '' + (-1 < quotaProc() ? quotaProc() : 0) + '%' }"></span>
+			</span>
+		</span>
+	</div>
+</div>

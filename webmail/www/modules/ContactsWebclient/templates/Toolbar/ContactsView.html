@@ -1,0 +1,46 @@
+<div class="toolbar">
+	<span class="content">
+		<span class="item checkstate command" data-bind="click: refreshContactsAndGroups, checkstate: {'activeClass': 'process', 'state': preLoadingList(), 'duration': 800}">
+			<span class="icon"></span>
+		</span>
+		<span class="item new_group" data-bind="visible: showPersonalContacts() && isNotTeamStorageSelected() && selectedStorage() !== 'shared',
+			command: newGroupCommand, customTooltip: '%MODULENAME%/ACTION_NEW_GROUP'" id="selenium_contacts_new_group_button">
+			<span class="icon"></span>
+			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_NEW_GROUP'}"></span>
+		</span>
+
+		<!-- ko template: {name: '%ModuleName%_Toolbar_ContactsCommonPartView'} --><!-- /ko -->
+
+		<span class="item share-all" data-bind="visible: visibleShareCommand, command: shareCommand, customTooltip: '%MODULENAME%/ACTION_SHARE'">
+			<span class="icon"></span>
+			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_SHARE'}"></span>
+		</span>
+		<span class="item unshare-all" data-bind="visible: visibleUnshareCommand, command: shareCommand, customTooltip: '%MODULENAME%/ACTION_UNSHARE'">
+			<span class="icon"></span>
+			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_UNSHARE'}"></span>
+		</span>
+
+		
+		<span class="item control" data-bind="visible: visibleImportExport() && isNotTeamStorageSelected(), dropdown: {control: false}">
+			<span class="icon arrow"></span>
+			<span class="dropdown">
+				<span class="dropdown_helper">
+					<span class="dropdown_arrow"><span></span></span>
+					<span class="dropdown_content">
+						<!-- ko foreach: aExportData -->
+						<span class="item export" data-bind="text: text, command: command"></span>
+						<!-- /ko -->
+						<span class="item import" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_IMPORT'}, command: importCommand, visible: isNotTeamStorageSelected"></span>
+					</span>
+				</span>
+			</span>
+		</span>
+		
+		<!-- ko foreach: aExportData -->
+		<span class="item" data-bind="attr: {'class': 'item export-' + css}, visible: !$parent.isNotTeamStorageSelected(), command: command, customTooltip: text">
+			<span class="icon"></span>
+			<span class="text" data-bind="text: text"></span>
+		</span>
+		<!-- /ko -->
+	</span>
+</div>

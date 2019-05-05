@@ -1,0 +1,45 @@
+<div class="popup add_account" style="display: none;">
+	<div class="mask" data-bind="click: cancelPopup"></div>
+	<div class="popup_panel step_last" id="selenium_settings_create_account_form">
+
+		<span class="close" data-bind="click: cancelPopup"></span>
+
+		<span class="popup_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_ADD_NEW_ACCOUNT'}"></span>
+
+		<div class="fields">
+			<div class="fieldset">
+				<div class="row name">
+					<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_YOUR_NAME'}"></span>
+					<input class="value input" spellcheck="false"  type="text" maxlength="65" 
+						   data-bind="value: friendlyName, valueUpdate: 'afterkeydown', onEnter: save"
+						   id="selenium_settings_create_account_name" />
+				</div>
+				<div class="row email">
+					<span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_EMAIL'}"></span>
+					<input class="value input" spellcheck="false"  type="text" maxlength="65" 
+						   data-bind="value: email, hasfocus: email.focused, valueUpdate: 'afterkeydown', onEnter: function () { email.focused(false); save(); }"
+						   id="selenium_settings_create_account_email" />
+				</div>
+				<div class="row login">
+					<span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_LOGIN'}"></span>
+					<input class="value input" spellcheck="false"  type="text" maxlength="255" data-bind="value: incomingLogin, hasfocus: incomingLogin.focused, valueUpdate: 'afterkeydown', onEnter: save"/>
+				</div>
+				<div class="row password">
+					<span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_PASSWORD'}"></span>
+					<input class="value input" spellcheck="false"  autocomplete="new-password" type="password" maxlength="255" 
+						   data-bind="value: incomingPassword, hasfocus: incomingPassword.focused, valueUpdate: 'afterkeydown', onEnter: save"
+						   id="selenium_settings_create_account_password" />
+				</div>
+				
+				<!-- ko template: {name: oServerPairPropertiesView.ViewTemplate, data: oServerPairPropertiesView} --><!-- /ko -->
+			</div>
+
+			<div class="buttons">
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}, click: save, visible: !loading()"></span>
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}, visible: loading()"></span>
+				<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: cancelPopup"></span>
+			</div>
+		</div>
+	</div>
+	<span class="helper"></span>
+</div>

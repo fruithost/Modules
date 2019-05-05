@@ -1,0 +1,75 @@
+8.2.19
+
+* Issue with focus on mail search bar corrected
+* Minor bugfixes
+
+8.2.18
+
+* Various bugfixes
+
+8.2.17
+
+* Change password functionality rewritten
+* Miscellaneous bugfixes and improvements
+
+8.2.16
+
+* DAV libraries and migration scripts updated
+
+8.2.15
+
++ OverrideUserSettings module
++ Sharing Files in Aurora
++ Horizontal layout in WebMail interface
++ OpenPGP implemented in mobile version
+* Various bugfixes
+
+8.2.11
+
++ ReCaptcha support added
++ Self-signup added for WebMail/Aurora running on cPanel
++ Mail import/export plugin is available
+* Tasks are now sorted by date correctly
+* Various bugfixes
+
+8.2.9
+
+* Minor bugfixes
+
+8.2.8
+
+* Fix for issue with handling Notes folder 
+
+8.2.7
+
+* Two factor authentication and DAV conflict fixed
+
+8.2.6
+
+* Bug fixes
+
+8.2.5
+
+* Various bugfixes
+
+8.2.4
+
++ STARTTLS support added for ManageSieve integration
++ Templates added for mail
++ Two factor authentication module is available for installing
+* "Allow handling email links" option is now available by default
+* Inclusion of MailSo library rewritten to correct IDN-related issue
+* Used different obfuscation algorithm to work around detecting sensitive files as malware
+* Fixed issues with setting cookie when installation accessed via index.php file
+* Fixed issue with inability to update mail server settings
+* Major refactoring resulting in performance boost
+* Miscellaneous bugfixes
+
+8.2.3
+
+* Fixed authentication issue when accessing calendar or address book via direct DAV URL
+* View button was missing for MS Office files attached to email messages
+* Folders in Files module were not sorted alphabetically
+* In cPanel, user could not log into email account after administrator logged into it
++ Create/Update tables tool is available in Database Settings screen of admin area
+

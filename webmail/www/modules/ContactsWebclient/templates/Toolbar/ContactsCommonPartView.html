@@ -1,0 +1,35 @@
+<span class="item new_message" data-bind="visible: bAllowComposeMessageToAddresses, command: composeMessageCommand, customTooltip: '%MODULENAME%/ACTION_NEW_MESSAGE'">
+	<span class="icon"></span>
+	<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_NEW_MESSAGE'}"></span>
+</span>
+<span class="item add_to" data-bind="visible: showPersonalContacts, dropdown: {control: false}, command: addContactsCommand, customTooltip: '%MODULENAME%/ACTION_ADD_CONTACT_TO'">
+	<span class="icon"></span>
+	<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_ADD_CONTACT_TO'}"></span>
+	<span class="icon arrow"></span>
+	<span class="dropdown">
+		<span class="dropdown_helper">
+			<span class="dropdown_arrow"><span></span></span>
+			<span class="dropdown_content" data-bind="customScrollbar: {x: false}">
+				<span class="scroll-inner">
+					<!-- ko foreach: $root.groupFullCollection() -->
+					<span class="item" data-bind="text: Name()"></span>
+					<!-- /ko -->
+					<span class="item new-group" data-bind="i18n: {'key': '%MODULENAME%/ACTION_NEW_GROUP_DROPDOWN'}"></span>
+				</span>
+			</span>
+		</span>
+	</span>
+</span>
+<span class="item delete" data-bind="
+		visible: (showPersonalContacts() && selectedStorage() === 'personal' || showSharedToAllContacts() && selectedStorage() === 'shared'), 
+		command: deleteCommand, customTooltip: 'COREWEBCLIENT/ACTION_DELETE'" id="selenium_contacts_delete_button">
+	<span class="icon"></span>
+	<span class="hint" data-bind="text: selectedCount, visible: selectedCount() > 0"></span>
+	<span class="text" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_DELETE'}"></span>
+</span>
+<span class="item remove_from" data-bind="visible: showPersonalContacts() && selectedStorage() === 'group', 
+		command: removeFromGroupCommand, customTooltip: '%MODULENAME%/ACTION_REMOVE_FROM_GROUP'">
+	<span class="icon"></span>
+	<span class="hint" data-bind="text: selectedCount, visible: selectedCount() > 0"></span>
+	<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_REMOVE_FROM_GROUP'}"></span>
+</span>

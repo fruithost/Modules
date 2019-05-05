@@ -1,0 +1,137 @@
+.layout-horiz-split {
+	&.csstransitions .quick_reply {
+		margin: 0 10px;
+		.buttons {
+			margin: 0;
+		}
+		&.active .buttons {
+			margin: 10px 0;
+		}
+	}
+	.quick_reply .row {
+		margin: 0;
+	}
+	.message_viewer {
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+		.panel_content {
+			border-top: 1px solid #f1f1f1;
+		}
+		.notice .item {
+			display: inline-block;
+		}
+		.message_header {
+			.header_content {
+				padding: 8px 12px 4px;
+			}
+			.header_row:last-child {
+				margin-top: 0;
+			}
+			.subject {
+				font-size: 16pt;
+			}
+		}
+	}
+	.list_notification {
+		padding: 6px 14px 12px;
+		.description {
+			padding-top: 8px;
+		}
+	}
+	.horiz_split_panel {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		overflow: hidden;
+	}
+	.messages_panel {
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+		.panel_content {
+			border-bottom: 1px solid #f1f1f1;
+		}
+		.toolbar {
+			.content {
+				padding: 4px;
+			}
+			.item {
+				&.checkstate {
+					float: left;
+				}
+/*				.icon {
+					display: none;
+					&.arrow {
+						display: inline-block;
+					}
+				}*/
+				.text {
+					display: inline-block;
+					font-size: 11pt;
+				}
+			}
+		}
+		.panel_top {
+			.search_block {
+				width: 60%;
+			}
+		}
+		.panel_center {
+			border-radius: 0 0 4px 4px;
+			
+			.message_list {
+				.item_content {
+					padding: 6px 16px 6px 14px;
+					
+					.controls {
+						display: inline-flex;
+						
+						.custom_checkbox {
+							margin-right: 10px;
+						}
+						
+						.flag {
+							margin-top: -3px;
+						}
+					}
+					
+					.data {
+						.date, .attachments, .from, .separator, .thread-pin, .subject {
+							display: inline-block;
+							margin-top: 0 !important;
+							margin-bottom: 0;
+							vertical-align: middle;
+						}
+						.from {
+							width: 30%;
+							margin: 0 !important;
+							min-height: unset;
+							font-size: 11pt;
+						}
+						.subject {
+							width: 50%;
+							font-size: 11pt;
+							line-height: normal;
+						}
+						.thread-pin {
+							font-size: 8pt;
+							padding: 2px 8px 2px;
+							margin-right: 4px;
+						}
+					}
+				}
+			}
+		}
+		.middle_bar {
+			position: relative;
+			.panel_bottom {
+				position: absolute;
+				right: 0;
+				background: none;
+				padding: 5px;
+				top: 0;
+			}
+		}
+	}
+	
+	.theme-layout-horiz-split();
+}

@@ -1,0 +1,146 @@
+{
+    "Disabled": [
+        false,
+        "bool"
+    ],
+    "AllowAddAccounts": [
+        true,
+        "bool"
+    ],
+    "AllowAutosaveInDrafts": [
+        true,
+        "bool"
+    ],
+    "AllowDefaultAccountForUser": [
+        true,
+        "bool"
+    ],
+    "AllowIdentities": [
+        true,
+        "bool"
+    ],
+    "AllowFilters": [
+        true,
+        "bool"
+    ],
+    "AllowForward": [
+        true,
+        "bool"
+    ],
+    "AllowAutoresponder": [
+        true,
+        "bool"
+    ],
+    "AllowInsertImage": [
+        true,
+        "bool"
+    ],
+    "AlwaysShowImagesInMessage": [
+        false,
+        "bool"
+    ],
+    "AutoSaveIntervalSeconds": [
+        60,
+        "int"
+    ],
+    "AllowTemplateFolders": [
+        false,
+        "bool"
+    ],
+    "AllowAlwaysRefreshFolders": [
+        true,
+        "bool"
+    ],
+    "DisplayInlineCss": [
+        false,
+        "bool"
+    ],
+    "CleanupOutputBeforeDownload": [
+        false,
+        "bool"
+    ],
+    "IgnoreImapSubscription": [
+        false,
+        "bool"
+    ],
+    "ImageUploadSizeLimit": [
+        0,
+        "int"
+    ],
+    "SaveRepliesToCurrFolder": [
+        false,
+        "bool"
+    ],
+    "SieveGeneralPassword": [
+        "",
+        "string"
+    ],
+    "SieveFileName": [
+        "sieve",
+        "string"
+    ],
+    "SieveFiltersFolderCharset": [
+        "utf-8",
+        "string"
+    ],
+    "SieveHost": [
+        "127.0.0.1",
+        "string"
+    ],
+    "SievePort": [
+        4190,
+        "int"
+    ],
+    "UseBodyStructuresForHasAttachmentsSearch": [
+        false,
+        "bool"
+    ],
+    "UseDateFromHeaders": [
+        true,
+        "bool"
+    ],
+    "UseSortImapForDateMode": [
+        true,
+        "bool"
+    ],
+    "XMailerValue": [
+        "Webmail",
+        "string"
+    ],
+    "ForwardedFlagName": [
+        "$Forwarded",
+        "string"
+    ],
+    "PreferStarttls": [
+        true,
+        "bool"
+    ],
+    "ExternalHostNameOfLocalImap": [
+        "",
+        "string"
+    ],
+    "ExternalHostNameOfLocalSmtp": [
+        "",
+        "string"
+    ],
+    "AutocreateMailAccountOnNewUserFirstLogin": [
+        true,
+        "bool"
+    ],
+    "SieveUseStarttls": [
+        false,
+        "bool"
+    ],
+    "DisableStarttlsForLocalhost": [
+        true,
+        "bool"
+    ],
+    "XOriginatingIP": [
+        true,
+        "bool"
+    ],
+    "DoImapLoginOnAccountCreate": [
+        true,
+        "bool"
+    ]
+}

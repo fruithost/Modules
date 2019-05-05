@@ -1,0 +1,81 @@
+.AdminPanelLayout {
+	@import "settings.less";
+
+	.input.enlarged {
+		width: 360px;
+	}
+	
+	&.screen {
+		display: flex;
+		flex-direction: column;
+		flex-wrap: nowrap;
+	}
+	
+	.tabsbar .item {
+		.tenants_dropdown {
+			display: inline-block;
+			padding-right: 8px;
+			position: relative;
+			
+			.link {
+				z-index: 3003;
+			}
+		}
+	}
+	
+	.toolbar {
+		.item {
+			&.create_user .icon:before {
+				content: "\e601";
+			}
+			&.filter {
+				float: right;
+				
+				select {
+					border-radius: 4px;
+					font-size: 11pt;
+					padding: 4px;
+				}
+			}
+		}
+	}
+	
+	.items_list {
+		.item {
+			cursor: pointer;
+
+//			&.heading {
+//				cursor: default;
+//				background: #fcfcfc;
+//				color: #ccc;
+//				text-transform: uppercase;
+//			}
+			
+//			.data .subject {
+//				display: block;
+//			}
+			
+			.title {
+				margin-bottom: 0px;
+				.fadeout();
+			}
+		}
+	}
+	
+	.users_list_panel {
+		.panel_top {
+			background: #f1f1f1;
+			
+			.search_block {
+				padding-right: 4px;
+			}
+		}
+	}
+	
+	.account_list .item .title {
+		mask: none;
+		-webkit-mask: none;
+		-o-mask: none;
+		-ms-mask: none;
+	}
+}

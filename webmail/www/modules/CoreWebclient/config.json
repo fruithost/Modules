@@ -1,0 +1,126 @@
+{
+	"AllowChangeSettings": [
+		true,
+		"bool"
+	],
+	"AllowClientDebug": [
+		false,
+		"bool"
+	],
+	"AllowDesktopNotifications": [
+		false,
+		"bool"
+	],
+	"AllowIosProfile": [
+		true,
+		"bool"
+	],
+	"AllowMobile": [
+		false,
+		"bool"
+	],
+	"AllowPrefetch": [
+		true,
+		"bool"
+	],
+	"AttachmentSizeLimit": [
+		0,
+		"int"
+	],
+	"AutoRefreshIntervalMinutes": [
+		1,
+		"int"
+	],
+	"CustomLogoutUrl": [
+		"",
+		"string"
+	],
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"DefaultAnonymScreenHash": [
+		"login",
+		"string"
+	],
+	"DefaultUserScreenHash": [
+		"",
+		"string"
+	],
+	"GoogleAnalyticsAccount": [
+		"",
+		"string"
+	],
+	"HeaderModulesOrder": [
+		[],
+		"array"
+	],
+	"IsDemo": [
+		false,
+		"bool"
+	],
+	"LanguageNames" : [
+		{
+			"Arabic": "العربية",
+			"Bulgarian": "Български",
+			"Chinese-Simplified": "中文(简体)",
+			"Chinese-Traditional": "中文(香港)",
+			"Czech": "Čeština",
+			"Danish": "Dansk",
+			"Dutch": "Nederlands",
+			"English": "English",
+			"Estonian": "eesti",
+			"Finnish": "Suomi",
+			"French": "Français",
+			"German": "Deutsch",
+			"Greek": "Ελληνικά",
+			"Hebrew": "עברית",
+			"Hungarian": "Magyar",
+			"Italian": "Italiano",
+			"Japanese": "日本語",
+			"Korean": "한국어",
+			"Latvian": "Latviešu",
+			"Lithuanian": "Lietuvių",
+			"Norwegian": "Norsk",
+			"Persian": "فارسی",
+			"Polish": "Polski",
+			"Portuguese-Portuguese": "Português",
+			"Portuguese-Brazil": "Português Brasileiro",
+			"Romanian": "Română",
+			"Russian": "Русский",
+			"Serbian": "Srpski",
+			"Slovenian": "Slovenščina",
+			"Spanish": "Español",
+			"Swedish": "Svenska",
+			"Thai": "ภาษาไทย",
+			"Turkish": "Türkçe",
+			"Ukrainian": "Українська",
+			"Vietnamese": "tiếng Việt"
+		},
+		"array"
+	],
+	"ShowQuotaBar": [
+		true,
+		"bool"
+	],
+    "QuotaWarningPerc": [
+        0,
+        "int"
+    ],
+	"SyncIosAfterLogin": [
+		true,
+		"bool"
+	],
+	"Theme": [
+		"Default",
+		"string"
+	],
+	"ThemeList": [
+		["Default"],
+		"array"
+	],
+	"IncludeInMobile": [
+		true,
+		"bool"
+	]
+}

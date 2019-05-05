@@ -43,7 +43,6 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text" id="label">For Domain:</span>
 							</div>
-							<!-- @ToDo onSelect refresh page with Domain in URL Query! -->
 							<select name="domain" class="col form-control form-control-sm" aria-label="Domain" aria-describedby="label">
 								<option value="ALL">Global</option>
 								<?php

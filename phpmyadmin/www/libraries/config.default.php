@@ -303,7 +303,7 @@ $cfg['Servers'][$i]['SignonURL'] = sprintf('http://%s/', $_SERVER['HTTP_HOST']);
  *
  * @global string $cfg['Servers'][$i]['LogoutURL']
  */
-$cfg['Servers'][$i]['LogoutURL'] = sprintf('http://%s/module/phpmyadmin/www', $_SERVER['HTTP_HOST']);;
+$cfg['Servers'][$i]['LogoutURL'] = sprintf('http://%s/app/phpmyadmin/www', $_SERVER['HTTP_HOST']);;
 
 /**
  * If set to a db-name, only this db is displayed in navigation panel

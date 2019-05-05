@@ -25,7 +25,7 @@
 				return null;
 			}
 			
-			return $this->url('/module/phpmyadmin/www/');
+			return $this->url('/app/phpmyadmin/www');
 		}
 		
 		public function content() {

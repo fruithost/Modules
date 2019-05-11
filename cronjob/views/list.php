@@ -37,7 +37,7 @@
 							if($cronjob->time_running === null) {
 								print '<span class="text-warning">Never running</span>';
 							} else {
-								print '<span class="text-success">' . date('d.m.Y - H:i:s', strtotime($cronjob->time_running)) . '</span>';
+								print '<span class="text-success">' . date(Auth::getSettings('TIME_FORMAT', NULL, 'd.m.Y - H:i'), strtotime($cronjob->time_running)) . '</span>';
 							}
 						?>
 					</td>

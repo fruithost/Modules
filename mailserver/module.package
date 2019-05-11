@@ -3,7 +3,7 @@
 	"version":		"1.0.0",
 	"category":		"MAIL_MANAGEMENT",
 	"icon":			"mail_outline",
-	"description":	"",
+	"description":	"Manages the complete mailserver with mailboxes, aliases, forwards, etc.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

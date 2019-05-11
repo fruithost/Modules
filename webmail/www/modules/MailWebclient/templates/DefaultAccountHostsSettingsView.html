@@ -1,0 +1,22 @@
+<div class="fieldset" data-bind="visible: visible">
+	<h2 class="subheading" data-bind="i18n: {'key': '%MODULENAME%/LABEL_EXTERNAL_ACCESS_SERVERS'}"></h2>
+	<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/LABEL_HINT_EXTERNAL_ACCESS_SERVERS'}"></div>
+
+	<div class="fieldgroup">
+		<div class="row">
+			<span class="label" style="width: auto;" data-bind="i18n: {'key': '%MODULENAME%/LABEL_IMAP_SERVER'}"></span>
+			<span class="value" data-bind="text: externalAccessImapServer()"></span>
+			<span class="label" style="width: auto; padding-left:  20px;" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PORT'}"></span>
+			<span class="value" data-bind="text: externalAccessImapPort()"></span>
+		</div>
+		<div class="row">
+			<span class="label" style="width: auto;" data-bind="i18n: {'key': '%MODULENAME%/LABEL_IMAP_SERVER'}"></span>
+			<span class="value" data-bind="text: externalAccessSmtpServer()"></span>
+			<span class="label" style="width: auto; padding-left:  20px;" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PORT'}"></span>
+			<span class="value" data-bind="text: externalAccessSmtpPort()"></span>
+		</div>
+	</div>
+	
+	<div class="hint" data-bind="html: credentialsHintText"></div>
+	<div class="hint" data-bind="i18n: {'key': 'COREWEBCLIENT/INFO_DEMO_MOBILE_CREDENTIALS_HTML', 'type': 'html'}, visible: bDemo"></div>
+</div>

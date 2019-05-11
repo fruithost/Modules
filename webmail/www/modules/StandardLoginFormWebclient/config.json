@@ -1,0 +1,46 @@
+{
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"ServerModuleName": [
+        "StandardLoginFormWebclient",
+        "string"
+    ],
+	"HashModuleName": [
+		"login",
+		"string"
+	],
+    "CustomLoginUrl": [
+		"",
+		"string"
+	],
+    "DemoLogin": [
+		"",
+		"string"
+	],
+    "DemoPassword": [
+		"",
+		"string"
+	],
+    "InfoText": [
+		"",
+		"string"
+	],
+    "BottomInfoHtmlText": [
+		"",
+		"string"
+	],
+    "LoginSignMeType": [
+		0,
+		"int"
+	],
+	"AllowChangeLanguage": [
+		true,
+		"bool"
+	],
+	"UseDropdownLanguagesView": [
+		false,
+		"bool"
+	]
+}

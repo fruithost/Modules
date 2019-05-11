@@ -1,0 +1,37 @@
+<div class="panel_top">
+	<h2 class="contacts_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_IMPORT_CONTACTS'}"></h2>
+</div>
+<div class="decor"></div>
+<div class="panel_center">
+	<div class="contact_content">
+		<div class="contact_data_groups">
+			<div class="fields clearfix">
+				<div class="hint">
+					<span data-bind="text: extensionInfo"></span>
+				</div>
+				<div class="row">
+					<div class="buttons">
+						<span class="button import" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_IMPORT'}, visible: !importing(), initDom: importButtonDom"></span>
+						<span class="button import" style="position: relative;" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_IMPORT_IN_PROGRESS'}, visible: importing"></span>
+					</div>
+				</div>
+				<div class="row" data-bind="visible: '' !== $root.sImportContactsLink">
+					<a class="link" href="#" target="_blank" data-bind="attr: {href: $root.sImportContactsLink}">
+						<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_LEARN_MORE_CSV'}"></span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="panel_bottom" data-bind="visible: bVisibleCloseButton">
+	<div class="toolbar">
+		<span class="content">
+			<span class="item close" href="javascript: void(0)" data-bind="click: function () {$root.gotoContactList();}">
+				<span class="icon"></span>
+				<span class="text" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CLOSE'}"></span>
+			</span>
+		</span>
+	</div>
+</div>

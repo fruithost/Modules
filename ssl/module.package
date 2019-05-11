@@ -4,7 +4,7 @@
 	"category":		"DOMAIN_MANAGEMENT",
 	"icon":			"https",
 	"order":		2,
-	"description":	"",
+	"description":	"Adds SSL support for your customers. In addition to Let's Encrypt, external or self-signed certificates can also be used.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

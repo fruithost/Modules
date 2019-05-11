@@ -1,0 +1,6 @@
+<div class="buttons" data-bind="visible: $root.bAllowComposeMessageToAddresses">
+	<span class="button" href="javascript: void(0)" data-bind="i18n: {'key': '%MODULENAME%/ACTION_SEND_CONTACT'}, 
+			click: sendThisContact, visible: allowSendThisContact"></span>
+	<span class="button last_button" href="javascript: void(0)" data-bind="i18n: {'key': '%MODULENAME%/ACTION_EMAIL_TO_CONTACT'}, 
+			makeLinkComposeMailTo: getFullEmail(), visible: hasEmails" style="display: none;"></span>
+</div>

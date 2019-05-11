@@ -1,0 +1,36 @@
+<div class="middle_bar">
+	<div class="panel_top">
+		<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SETTINGS_TAB'}"></h2>
+	</div>
+	<div class="panel_center">
+		<div class="fields">
+			<div class="fieldset">
+				<div class="hint row">
+					<span class="value" data-bind="i18n: {'key': '%MODULENAME%/INFO_CONNECTED'}, visible: connected"></span>
+					<span class="value" data-bind="i18n: {'key': '%MODULENAME%/INFO_NOT_CONNECTED'}, visible: !connected()"></span>
+				</div>
+				<div data-bind="foreach: scopes">
+					<div class="row">
+						<span class="value">
+							<label class="custom_checkbox" data-bind="css: {'checked': Value}">
+								<span class="value" style="float: left;">
+									<span class="icon"></span>
+									<input type="checkbox" data-bind="checked: Value, attr: { id: Name}" />
+								</span>
+							</label>
+							<label data-bind="text: $data.Description, attr: {for: Name}"></label>
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="buttons" style="text-align: left;">
+				<span class="button" data-bind="click: checkAndConnect">
+					<span data-bind="i18n: {'key': '%MODULENAME%/BUTTON_APPLY'}"></span>
+				</span>
+				<span class="button" data-bind="click: checkAndDisconnect, visible: connected">
+					<span data-bind="i18n: {'key': '%MODULENAME%/BUTTON_DISCONNECT'}"></span>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>

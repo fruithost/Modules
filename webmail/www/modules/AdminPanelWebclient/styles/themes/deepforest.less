@@ -1,0 +1,33 @@
+.AdminPanelLayout {
+	.toolbar {
+		background: #000;
+		border-color: #000;
+		opacity: 0.7;
+		
+		.item .icon {
+			color: #fff !important;
+		}
+		
+		.item.disabled .icon {
+			color: #F7FFDC !important;
+		}
+	}
+	
+	.panel_bottom {
+		background-color: #000 !important;
+		border-top-color: #000 !important;
+		opacity: 0.7;
+		
+		.item {
+			color: white;
+			
+			&:hover {
+				color: #cccccc;
+			}
+			
+			&.current {
+				color: #aaaaaa;
+			}
+		}
+	}
+}

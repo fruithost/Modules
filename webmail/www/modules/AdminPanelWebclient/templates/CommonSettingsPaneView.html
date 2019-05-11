@@ -1,0 +1,25 @@
+<!-- ko if: entityCreateView() -->
+	<div class="panel_top">
+		<h2 class="settings_heading" data-bind="text: entityData().CommonSettingsHeadingText"></h2>
+	</div>
+	<div class="panel_center">
+		<div class="fields">
+
+			<div class="fieldset">
+				<!-- ko template: {name: entityCreateView().ViewTemplate, data: entityCreateView()} --><!-- /ko -->
+			</div>
+
+			<div class="buttons">
+				<span class="button" data-bind="click: function () { $root.deleteCurrentEntity(); }">
+					<span data-bind="text: entityData().ActionDeleteText"></span>
+				</span>
+				<span class="button" data-bind="click: function () { save($root); }, visible: allowSave() && !isSaving()">
+					<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}"></span>
+				</span>
+				<span class="button" data-bind="visible: allowSave() && isSaving()">
+					<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}"></span>
+				</span>
+			</div>
+		</div>
+	</div>
+<!-- /ko -->

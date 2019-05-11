@@ -1,0 +1,14 @@
+{
+	"name":			"Webmail",
+	"version":		"1.0.0",
+	"category":		"MAIL_MANAGEMENT",
+	"icon":			"view_compact",
+	"order":		2,
+	"description":	"This module adds a Webmail client to your Control Panel.",
+	"author":		{
+		"name":		"Adrian Preuß",
+		"email":	"info@fruithost.de",
+		"url":		"https://fruithost.de"
+	},
+	"repository":	"https://github.com/fruithost/Modules"
+}

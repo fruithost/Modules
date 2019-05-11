@@ -4,7 +4,7 @@
 	"category":		"EXTENDED_MANAGEMENT",
 	"icon":			"list",
 	"order":		2,
-	"description":	"",
+	"description":	"Displays user-specific logifles",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

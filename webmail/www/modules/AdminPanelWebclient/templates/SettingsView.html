@@ -1,0 +1,84 @@
+<div class="screen AdminPanelLayout" style="display: none;">
+	<div class="tabsbar">
+		<div class="content">
+			<span class="item logout" data-bind="click: logout">
+				<span class="link" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_LOGOUT'}"></span>
+			</span>
+		
+			<!-- ko foreach: aScreens -->
+			<span data-bind="attr: { 'class': 'item admin ' + sType.toLowerCase() + (sType === $parent.currentEntityType() ? ' current' : '') }">
+				<a class="link" href="#" data-bind="attr: {'href': linkHash}">
+					<span class="text" data-bind="text: sLinkText"></span>
+				</a>
+				<!-- ko if: sType === 'Tenant' && $parent.showTenantsSelector() -->
+				<span class="tenants_dropdown" data-bind="dropdown: {control: false}">
+					<span>:</span>
+					<span class="link" data-bind="text: $parent.selectedTenant().Name"></span>
+					<span class="control"></span>
+					<span class="dropdown">
+						<span class="dropdown_helper">
+							<span class="dropdown_arrow"><span></span></span>
+							<span class="dropdown_content" data-bind="foreach: $parent.tenants">
+								<span class="item" data-bind="text: Name, visible: Id !== $root.selectedTenant().Id, click: function () { $root.selectTenant(Id); }"></span>
+							</span>
+						</span>
+					</span>
+				</span>
+				<!-- /ko -->
+			</span>
+			<!-- /ko -->
+		</div>
+	</div>
+	
+	<div class="panels" data-bind="splitterFlex: {name: 'adminpanel', sizes: [20, 20, 60]}">
+		<div class="panel users_list_panel" data-bind="with: currentEntitiesView(), visible: currentEntityType() !== ''">
+			<!-- ko template: {name: ViewTemplate} --><!-- /ko -->
+		</div>
+
+		<div class="panel data modules" data-bind="visible: showModulesTabs() && visibleTabsCount() > 1">
+			<div class="panel_content">
+				<div class="middle_bar unselectable">
+					<div class="panel_center" data-bind="customScrollbar: {x: false}">
+						<div class="scroll-inner">
+							<div class="items_list">
+								<div class="items_sub_list"  data-bind="foreach: tabs">
+									<div class="item canSelect" data-bind="visible: view && (typeof(view.visible) !== 'undefined') ? view.visible : true, 
+											attr: {'class': 'item ' + name + (view ? ' canSelect' : ' heading'), 'id': 'selenium_settings_' + name}, 
+											css: {'selected': $parent.currentTab() && $parent.currentTab().name === name}, 
+											click: function () { if (view) { $parent.changeTab(name); } }">
+										<div class="item_content">
+											<span class="controls">
+												<span class="icon"></span>
+											</span>
+											<span class="data">
+												<span class="title" data-bind="text: title"></span>
+											</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel data">
+			<!-- ko with: currentEntitiesView() -->
+				<!-- ko template: {name: CreateFormViewTemplate} --><!-- /ko -->
+			<!-- /ko -->
+			
+			<div class="panel_content" data-bind="visible: showModulesTabs">
+				<div class="middle_bar"  data-bind="customScrollbar: {x: false}">
+					<div class="scroll-inner" data-bind="with: currentTab">
+						<div data-bind="attr: {'class': '' + name}">
+							<!-- ko template: {name: view.ViewTemplate, data: view} --><!-- /ko -->
+							<!-- ko foreach: view.aSettingsSections -->
+								<!-- ko template: {name: ViewTemplate} --><!-- /ko -->
+							<!-- /ko -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

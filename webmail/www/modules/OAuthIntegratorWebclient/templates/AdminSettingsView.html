@@ -1,0 +1,16 @@
+<div class="middle_bar">
+	<div class="panel_top">
+		<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_ES_SETTINGS'}"></h2>
+	</div>
+	<div class="panel_center">
+		<div class="fields">
+			<div class="fieldset">
+				<!-- ko foreach: services -->
+					<div class="row">
+						<a class="label link" data-bind="text: DisplayName, attr: {'href': '#admin/' + Name + '-auth'}"></a>
+					</div>
+				<!-- /ko -->
+			</div>		
+		</div>
+	</div>
+</div>

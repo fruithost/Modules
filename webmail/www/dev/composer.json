@@ -1,0 +1,11 @@
+{
+	"name": "afterlogic/aurora-dev-tools",
+	"type": "aurora-dev-tools",
+	"require": {
+		"php": ">=5.4.0",
+		
+		"squizlabs/php_codesniffer": "^2.0",
+		"wimg/php-compatibility": "*"
+	},
+	"prefer-stable" : true
+}

@@ -1,0 +1,23 @@
+<div class="screen MailLayout" style="display: none;">
+	<div class="panels" data-bind="splitterFlex: { name: 'folder_2pane_list', sizes: [20, 80] }">
+		<div class="panel left_panel folders_panel">
+			<div class="panel_content">
+				<!-- ko template: {name: oFolderList.ViewTemplate, data: oFolderList} --><!-- /ko -->
+			</div>
+		</div>
+		<div class="horiz_split_panel" data-bind="splitterFlex: { name: 'message_2pane_list', sizes: [40, 60], direction: 'vertical' }">
+			<div class="panel center_panel messages_panel">
+				<div class="panel_content">
+					<!-- ko template: { name: '%ModuleName%_Messages_ToolbarView' } --><!-- /ko -->
+					<!-- ko template: { name: oMessageList.ViewTemplate, data: oMessageList} --><!-- /ko -->
+				</div>
+			</div>
+
+			<div class="panel item_viewer message_viewer">
+				<div class="panel_content">
+					<div class="middle_bar" data-bind="template: {name: messagePane().ViewTemplate, data: messagePane}"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

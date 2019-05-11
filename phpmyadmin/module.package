@@ -4,7 +4,7 @@
 	"category":		"DATABASE_MANAGEMENT",
 	"icon":			"view_compact",
 	"order":		2,
-	"description":	"",
+	"description":	"Integrates PHPMyAdmin in the user interface",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

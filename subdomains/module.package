@@ -4,7 +4,7 @@
 	"category":		"DOMAIN_MANAGEMENT",
 	"icon":			"subdirectory_arrow_right",
 	"order":		1,
-	"description":	"This module enables you to add or configure domain web hosting on your account.",
+	"description":	"Administration for subdomains with various functions",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

@@ -1,0 +1,13 @@
+{
+	"name": "afterlogic/aurora-module-cpanel-integrator",
+	"type": "aurora-module",
+	"require": {
+		"php": ">=5.4.0",
+		"afterlogic/aurora-framework": "~0.9.0",
+		"afterlogic/aurora-module-mail": "~0.9.0",
+		"gufy/cpanel-php": "~1.0"
+	},
+	"extra": {
+		"installer-name": "CpanelIntegrator"
+	}
+}

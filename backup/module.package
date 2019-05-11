@@ -4,7 +4,7 @@
 	"category":		"HOSTING_MANAGEMENT",
 	"icon":			"backup",
 	"order":		6,
-	"description":	"",
+	"description":	"This module allows you to conveniently create backups for your users.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

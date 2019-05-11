@@ -1,0 +1,69 @@
+<div class="panel_content">
+	<div class="toolbar">
+		<span class="content">
+			
+			<span class="item delete" data-bind="command: deleteCommand, customTooltip: 'COREWEBCLIENT/ACTION_DELETE'">
+				<span class="icon"></span>
+				<span class="hint" data-bind="text: selectedCount, visible: selectedCount() > 0"></span>
+				<span class="text" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_DELETE'}"></span>
+			</span>
+			<span class="item add_new_item" data-bind="click: function () { $root.createEntity(); }, customTooltip: sActionCreateText">
+				<span class="icon"></span>
+				<span class="text" data-bind="text: sActionCreateText"></span>
+			</span>
+			<!-- ko foreach: aAdditionalButtons -->
+				<!-- ko template: {name: $data.ButtonView.ViewTemplate, data: $data.ButtonView} --><!-- /ko -->
+			<!-- /ko -->
+			
+			<!-- ko foreach: aFilters -->
+			<span class="item filter" data-bind="visible: list().length > 0">
+				<select class="input" data-bind="options: list, value: selectedValue, optionsText: 'text', optionsValue: 'value'"></select>
+			</span>
+			<!-- /ko -->
+		</span>
+	</div>
+	<div class="middle_bar">
+		<div class="panel_top">
+			<span class="custom_checkbox" data-bind="click: groupCheck, css: {'checked': hasCheckedEntities}">
+				<span class="icon"></span>
+			</span>
+			<span class="search_block">
+				<span class="input" data-bind="css: {'focus': isSearchFocused}">
+					<span class="icon search" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SEARCH'}"></span>
+					<input class="field" spellcheck="false" type="text" data-bind="hasfocus: isSearchFocused, value: newSearchValue, onEnter: search, valueUpdate: 'afterkeydown'" />
+				</span>
+			</span>
+		</div>
+		<div class="panel_center" data-bind="customScrollbar: {x: false}">
+			<div class="scroll-inner">
+				<span class="list_notification" data-bind="visible: !loading() && searchValue() !== '' && entities().length === 0">
+					<span class="link" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CLEAR_SEARCH'}, click: clearSearch"></span>
+					<span class="description" data-bind="text: sNoEntitiesFoundText"></span>
+				</span>
+				<span class="list_notification" data-bind="visible: searchValue() !== '' && (!loading() && entities().length > 0 || loading())">
+					<span class="link" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CLEAR_SEARCH'}, click: clearSearch"></span>
+					<span class="description" data-bind="text: searchText"></span>
+				</span>
+				<span class="list_notification" data-bind="visible: loading()">
+					<span class="description" data-bind="i18n: {'key': 'COREWEBCLIENT/INFO_LOADING'}"></span>
+				</span>
+				<div class="items_list" data-bind="foreach: entities, visible: !loading()">
+					<div class="item canSelect" data-bind="click: function () { $root.changeEntity($parent.sType, Id); }, css: {'selected': $parent.current() === Id}">
+						<div class="item_content">
+							<span class="controls">
+								<span class="custom_checkbox" data-bind="click: trottleChecked, css: {'checked': checked()}">
+									<span class="icon"></span>
+								</span>
+							</span>
+							<span class="data">
+								<span class="title" data-bind="text: Name || PublicId"></span>
+								<span style="position: absolute; right: 15px; top: 15px;" data-bind="visible: typeof Count === 'number', text: typeof Count === 'number' ? Count : 0"></span>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel_bottom unselectable" data-bind="visible: oPageSwitcher.pages().length > 0, template: {name: oPageSwitcher.ViewTemplate, data: oPageSwitcher}"></div>
+	</div>
+</div>

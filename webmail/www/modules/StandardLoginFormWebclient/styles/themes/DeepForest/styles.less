@@ -1,0 +1,51 @@
+.theme-login-panel() {
+	@focused-background: #fff3ce;
+	
+	background: rgba(0,0,0,0.5);
+	box-shadow: 0 0 300px #A3A28B;
+	border-radius: 8px;
+	color: #fff;
+	
+	
+	.languages.demo {
+		background: rgba(0,0,0,0.5) !important;
+		border: 0px !important;
+		
+		.langs_heading {
+			color: #ccc !important;
+		}
+		 
+		.item {
+			color: #ccc !important;
+			
+			&.selected .item_content {
+				background: #6C859B !important;
+			}
+			
+			.item_content:hover {
+				background: #B3BAC2 !important;
+				color: #333333 !important;
+			}
+		}
+	}
+}
+
+.theme-login-header() {
+	.icon {
+		height: 95px;
+		width: 130px;
+
+		.init-icon-font();
+
+		&:before {
+			color: #fff;
+			content: "\e63c";
+			display: inline-block;
+			font-size: 140px;
+			height: 100%;
+			margin-top: -20px;
+			vertical-align: middle;
+			width: 100%;
+		}
+	}
+}

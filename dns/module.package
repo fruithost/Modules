@@ -4,7 +4,7 @@
 	"category":		"DOMAIN_MANAGEMENT",
 	"icon":			"dns",
 	"order":		3,
-	"description":	"",
+	"description":	"DNS settings for your nameserver with extended zonefile administration.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

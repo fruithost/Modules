@@ -1,0 +1,67 @@
+<div class="item file attachment" data-bind="
+	css: cssClasses,
+	event: allowDrag() ? { 'dragstart': eventDragStart } : null,
+	draggablePlace: allowDrag() ? $parent.dragAndDropHelperBound : null,
+	draggableDragStartCallback: function() { if (allowDrag()) { $root.dragover(true); } },
+	draggableDragStopCallback: function() { if (allowDrag()) { $root.dragover(false); } }
+">
+
+	<!-- ko if: (sHeaderText.length > 0) -->
+	<span class="header" data-bind="text: sHeaderText"></span>
+	<!-- /ko -->
+
+	<span class="item_content ui-droppable dragHandle">
+
+		<span class="cancel" data-bind="visible: visibleCancelButton, click: function () { $parent.onFileRemove( uploadUid(), $data); }, customTooltip: '%MODULENAME%/ACTION_CANCEL'"></span>
+
+		<span class="image" data-bind="customTooltip: getTooltip(iconAction()), click: function () { executeAction(iconAction()); }, 
+				css: {'has_action': iconAction() !== ''}, clickBubble: iconAction() === ''">
+			<!-- ko if: thumbnailSrc() !== '' -->
+			<img data-bind="attr: {'src': thumbnailSrc()}" />
+			<span class="icon play" data-bind="click: viewFile, visible: bHasHtmlEmbed"></span>
+			<!-- /ko -->
+			<!-- ko if: thumbnailSrc() === '' -->
+			<span class="icon" data-bind="css: extension().toLowerCase() + (bHasHtmlEmbed ? ' ' + sLinkType.toLowerCase() : '')"></span>
+			<!-- /ko -->
+		</span>
+
+		<!-- ko if: (allowPublicLink()) -->
+		<span class="published_icon" data-bind="css: {'with_thumb': thumbnailSrc() !== ''}, click: function (oItem) { $root.onShareIconClick(oItem); }"></span>
+		<!-- /ko -->
+		<!-- ko if: (bIsSecure()) -->
+		<span class="secure-image"></span>
+		<!-- /ko -->
+		<!-- ko if: (isShared()) -->
+		<span class="shared-image" data-bind="css: {'with_thumb': thumbnailSrc() !== ''}"></span>
+		<!-- /ko -->
+		<div class="footer">
+			<span class="progress" data-bind="visible: visibleProgress()">
+				<span data-bind="style: {'width': progressPercent() + '%'}"></span>
+				<span class="progress-percent" data-bind="text: progressPercent() + '%'"></span>
+			</span>
+			<span class="status_text" data-bind="text: statusText(), css: {'error': uploadError()}, customTooltip: statusTooltip, visible: statusText().length > 0"></span>
+			<div class="buttons" data-bind="visible: allowActions() && uploaded() && !uploadError() && statusText().length === 0 && !downloading() && !visibleProgress()">
+				<a class="button view" href="javascript: void(0)" data-bind="visible: firstAction().length > 0, 
+						click: function () { executeAction(firstAction()); }, text: getActionText(firstAction()), clickBubble: false"></a>
+				<a class="button download" href="javascript: void(0)" data-bind="visible: secondAction().length > 0, 
+						click: function () { executeAction(secondAction()); }, text: getActionText(secondAction()), clickBubble: false"></a>
+			</div>
+		</div>
+	</span>
+
+	<span class="size" data-bind="text: friendlySize()"></span>
+
+	<span class="title" data-bind="customTooltip: fileName(), css: {entire_line: friendlySize() === ''}">
+		<span class="name" data-bind="text: displayName()"></span>
+	</span>
+	
+	<div class="children" data-bind="visible: subFilesExpanded()">
+		<!-- ko template: {name: 'CoreWebclient_FileView', foreach: subFiles} --><!-- /ko -->
+	</div>
+</div>
+
+<!-- ko foreach: otherTemplates -->
+	<!-- ko if: $data.data() !== null -->
+		<!-- ko template: $data --><!-- /ko -->
+	<!-- /ko -->
+<!-- /ko -->

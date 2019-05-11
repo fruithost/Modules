@@ -1,0 +1,18 @@
+{
+    "Disabled": [
+        true,
+        "bool"
+    ],
+    "EnableModule": [
+        false,
+        "bool"
+    ],
+    "Id": [
+        "",
+        "string"
+    ],
+    "Secret": [
+        "",
+        "string"
+    ]
+}

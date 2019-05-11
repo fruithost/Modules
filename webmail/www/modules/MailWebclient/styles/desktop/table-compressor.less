@@ -1,0 +1,38 @@
+.table-compressor {
+	bottom: 0;
+	color: #cccccc;
+	cursor: pointer;
+	height: 16px;
+	left: 0%;
+	margin-bottom: -8px;
+	overflow: hidden;
+	position: absolute;
+	text-align: center;
+	width: 100%;
+	z-index: 2;
+	
+	&:hover {
+		color: #999999;
+	}
+	
+	&.compressed .arrow {
+		.transform(rotate(180deg));
+	}
+	
+	.arrow {
+		position: absolute;
+		top: -2px;
+		.transition(transform .4s);
+		
+		&:after {
+			background: white;
+			content: "\e66e";
+			font-family: 'afterlogic';
+			font-size: 18px;
+			line-height: 15px;
+			position: relative;
+			display:inline-block;
+			border-radius: 4px;
+		}
+	}
+}

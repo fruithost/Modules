@@ -4,7 +4,7 @@
 	"category":		"EXTENDED_MANAGEMENT",
 	"icon":			"assessment",
 	"order":		3,
-	"description":	"",
+	"description":	"Various statistics for the user.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

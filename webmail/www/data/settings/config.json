@@ -1,0 +1,188 @@
+{
+    "LicenseKey": [
+        "",
+        "string"
+    ],
+    "AdminLogin": [
+        "root",
+        "string"
+    ],
+    "AdminPassword": [
+        "",
+        "string"
+    ],
+    "AdminLanguage": [
+        "English",
+        "string"
+    ],
+    "DBType": [
+        "MySQL",
+        "spec",
+        "\\Aurora\\System\\Enums\\DbType"
+    ],
+    "DBPrefix": [
+        "au_",
+        "string"
+    ],
+    "DBHost": [
+        "localhost",
+        "string"
+    ],
+    "DBName": [
+        "webmail",
+        "string"
+    ],
+    "DBLogin": [
+        "webmail",
+        "string"
+    ],
+    "DBPassword": [
+        "",
+        "string"
+    ],
+    "UseSlaveConnection": [
+        false,
+        "bool"
+    ],
+    "DBSlaveHost": [
+        "127.0.0.1",
+        "string"
+    ],
+    "DBSlaveName": [
+        "",
+        "string"
+    ],
+    "DBSlaveLogin": [
+        "root",
+        "string"
+    ],
+    "DBSlavePassword": [
+        "",
+        "string"
+    ],
+    "DBUseExplain": [
+        false,
+        "bool"
+    ],
+    "DBUseExplainExtended": [
+        false,
+        "bool"
+    ],
+    "DBLogQueryParams": [
+        false,
+        "bool"
+    ],
+    "DBDebugBacktraceLimit": [
+        false,
+        "bool"
+    ],
+    "EnableLogging": [
+        false,
+        "bool"
+    ],
+    "EnableEventLogging": [
+        false,
+        "bool"
+    ],
+    "LoggingLevel": [
+        "Full",
+        "spec",
+        "\\Aurora\\System\\Enums\\LogLevel"
+    ],
+    "LogFileName": [
+        "log-{Y-m-d}.txt",
+        "string"
+    ],
+    "LogCustomFullPath": [
+        "",
+        "string"
+    ],
+    "LogPostView": [
+        false,
+        "bool"
+    ],
+    "EnableMultiChannel": [
+        false,
+        "bool"
+    ],
+    "EnableMultiTenant": [
+        false,
+        "bool"
+    ],
+    "TenantGlobalCapa": [
+        "",
+        "string"
+    ],
+    "AllowThumbnail": [
+        true,
+        "bool"
+    ],
+    "ThumbnailMaxFileSizeMb": [
+        5,
+        "int"
+    ],
+    "CacheCtrl": [
+        true,
+        "bool"
+    ],
+    "CacheLangs": [
+        true,
+        "bool"
+    ],
+    "CacheTemplates": [
+        true,
+        "bool"
+    ],
+    "DisplayServerErrorInformation": [
+        true,
+        "bool"
+    ],
+    "EnableImap4PlainAuth": [
+        false,
+        "bool"
+    ],
+    "RedirectToHttps": [
+        false,
+        "bool"
+    ],
+    "SocketConnectTimeoutSeconds": [
+        20,
+        "int"
+    ],
+    "SocketGetTimeoutSeconds": [
+        20,
+        "int"
+    ],
+    "SocketVerifySsl": [
+        false,
+        "bool"
+    ],
+    "UseAppMinJs": [
+        true,
+        "bool"
+    ],
+    "XFrameOptions": [
+        "",
+        "string"
+    ],
+    "RemoveOldLogs": [
+        true,
+        "bool"
+    ],
+    "LogStackTrace": [
+        false,
+        "bool"
+    ],
+    "ExpireUserSessionsBefore": [
+        0,
+        "int"
+    ],
+    "PasswordMinLength": [
+        0,
+        "int"
+    ],
+    "PasswordMustBeComplex": [
+        false,
+        "bool"
+    ]
+}

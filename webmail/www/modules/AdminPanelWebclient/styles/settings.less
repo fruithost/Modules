@@ -1,0 +1,293 @@
+.panels {
+	overflow: auto;
+}
+.panel {
+	&.left_panel {
+		flex-grow: 0;
+		width: 250px;
+	}
+	&.data {
+		min-width: 380px;
+		width: 750px;
+		
+		
+		&.modules {
+			min-width: 200px;
+			width: 250px;
+			overflow: hidden;
+			flex-grow: 0;
+		}
+		
+		.panel_top {
+			border: 0px;
+			padding: 0px;
+		}
+		
+		.buttons {
+			margin: 0px 20px 15px;
+			
+			.button.left_button {
+				float: left;
+			}
+		}
+
+		.fieldset .buttons {
+			margin: 0px 0px 15px 0px;
+		}
+	}
+}
+
+.settings_heading {
+	color: #4d4d4d;
+	margin: 0px;
+	padding: 35px 20px 15px;
+}
+
+.fieldset {
+	background: #f1f1f1;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACtJREFUeNo0iIEJACAAwlT8/1GPMAsaKGNMYpskAOPRdq9tWbrifpaOAAMAMvEO3ANCJPYAAAAASUVORK5CYII=');
+	background-position: 0 0;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	margin: 0px 20px 20px;
+	padding: 20px;
+}
+
+.fieldblock {
+	background: none repeat scroll 0 0 rgba(0, 0, 0, 0.1);
+	border: 1px solid #d0d0da;
+	border-radius: 4px 4px 4px 4px;
+	margin-bottom: 14px;
+	padding: 14px;
+}
+
+.fields {
+	.row {
+		margin-bottom: 14px;
+
+		&.keys_label {
+			margin-bottom: 6px !important;
+		}
+
+		&:last-child {
+			margin-bottom: 0px;
+		}
+
+		.label {
+			color: #626262;
+			width: 150px;
+			word-wrap: break-word;
+		}
+		label {
+			color: #626262;
+		}
+		&.smtp_authentication {
+			.input {
+				width: 150px;
+				margin-left: 16px;
+				margin-right: 0;
+			}
+		}
+
+		.input {
+			font-size: 10pt;
+			padding: 7px 9px 6px;
+		}
+
+		.value {
+			&.offset {
+				display: inline-block;
+				padding-left: 150px;
+			}
+
+			&.text {
+				font-weight: bold;
+				display: inline-block;
+				padding: 7px 9px 6px;
+				width: 300px;
+
+				&.port {
+					width: auto;
+				}
+			}
+		}
+
+		.custom_radio {
+			margin-left: 16px;
+
+			&:first-child {
+				margin-left: 0px;
+			}
+		}
+	}
+
+	.fieldblock .label {
+		width: 135px;
+	}
+
+	.fields .hint {
+		padding: 4px 6px;
+		margin: -12px -6px 12px;
+	}
+
+	.tabs  {
+		margin-bottom: 16px;
+		margin-top: 20px;
+		
+		.tabs-links {
+			height: 0;
+			opacity: 0;
+			overflow: hidden;
+			width: 0;
+		}
+		
+		.shortcuts  {
+			font-size: 0pt;
+			margin: 0px 20px;
+			padding: 0px 0px 0px 20px;
+			
+			.item {
+				display: inline-block;
+				font-size: 9pt;
+				vertical-align: bottom;
+				
+				a {
+					background: #f5f5f5;
+					border: 1px solid #e0e0e0;
+					border-bottom: 0px;
+					border-radius: 4px 4px 0px 0px;
+					color: #828282;
+					display: inline-block;
+					font-weight: bold;
+					margin-right: 4px;
+					outline: none;
+					padding: 6px 12px 6px;
+					text-decoration: none;
+				}
+				
+				&.selected a {
+					background: #f1f1f1;
+					color: #3d3d3d;
+					margin-bottom: -1px;
+					padding-bottom: 7px;
+				}
+			}
+		}
+	}
+}
+
+.account_list {
+	background: #fafafa;
+	border: 1px solid #d5d9dc;
+	border-radius: 4px;
+	margin: 0px 20px;
+	overflow: hidden;
+
+	.clearfixHelper();
+
+	.item {
+		border-bottom: 1px solid #d5d9dc;
+		color: #626262;
+		cursor: pointer;
+		padding: 6px 10px;
+		
+		&.account {
+			padding: 11px 16px;
+
+			.title {
+				float: left;
+				margin: 0;
+			}
+			.link {
+				float: right;
+			}
+		}
+		
+		&.fetcher {
+			.icon {
+				display: inline-block;
+				font-size: 20px;
+				height: 18px;
+				vertical-align: bottom;
+				width: 18px;
+
+				.init-icon-font();
+			}
+
+			.icon.fetcher:before {
+				content: "\e65b";
+			}
+
+			.icon.default-identity {
+				font-family: monospace;
+				font-size: 19px;
+				height: 17px;
+				margin-left: 10px;
+			}
+
+			.label {
+				color: #929292;
+			}
+
+			.title {
+				font-weight: bold;
+			}
+
+			.info {
+				float: right;
+			}
+		}
+
+		&:last-child {
+			border-bottom: 0px;
+		}
+
+		&.selected {
+			background: #f1f1f1;
+			color: #4d4d4d;
+			font-weight: bold;
+		}
+
+		.link.fetcher {
+			float: right;
+			font-weight: normal;
+			margin-left: 12px;
+		}
+
+		.button {
+			background: none repeat scroll 0 0 #6fa8de;
+			border: 1px solid #5d97cd;
+			border-radius: 4px 4px 4px 4px;
+			color: #ffffff;
+			cursor: pointer;
+			display: inline-block;
+			font-size: 9pt !important;
+			padding: 1px 5px;
+			text-shadow: 0 1px 0 #4d759b;
+		}
+	}
+
+	.buttons {
+		margin: 15px 0px;
+
+		.button {
+			font-size: 10pt;
+			float: right;
+		}
+	}
+
+	.title {
+		display: inline-block;
+		font-size: 9pt;
+		padding: 0px;
+	}
+}
+
+.mail-servers .account_list {
+	margin-bottom: 30px;
+}
+
+.mail-servers .panel_top .buttons {
+	float: right;
+	margin: 30px 20px 15px;
+}

@@ -1,0 +1,33 @@
+<span class="title" data-bind="css: {'cannotDrag': $parent.subfolders && $parent.subfolders().length === 1}">
+	<span class="controls">
+		<span class="button always-refresh" data-bind="customTooltip: alwaysRefreshButtonHint, 
+			css: {'turned-on': isAlwaysRefresh()}, 
+			click: triggerAlwaysRefreshState, visible: bAllowAlwaysRefreshFolders"></span>
+		<span class="button" data-bind="customTooltip: templateButtonHint, 
+			css: {'turned-on': isTemplateStorage(), 'template': visibleTemplateTrigger}, 
+			click: triggerTemplateState, visible: bAllowTemplateFolders"></span>
+		<span class="button subscribe" data-bind="customTooltip: subscribeButtonHint(), visible: !bIgnoreImapSubscription, 
+			css: {'subscribed': subscribed(), 'disabled': !canSubscribe()}, click: onSubscribeClick"></span>
+		<span class="button disabled" data-bind="customTooltip: deleteButtonHint(), 
+			css: {'delete': !isSystem() && bSelectable, 'disabled': !canDelete()}, click: onDeleteClick"></span>
+	</span>
+	<span class="count" data-bind="text: messageCount"></span>
+	<span class="name">
+		<span class="icon" data-bind="css: 'type' + type()"></span>
+		<span class="text" data-bind="css: {'link': canRename}, text: name, visible: !edited(), 
+			click: function(){if (canRename()) edited(true);}"></span>
+		<input type="text" spellcheck="false" class="input" maxlength="30" data-bind="value: nameForEdit, 
+			visible: edited, hasfocus: edited, onEnter: applyNameEdit, valueUpdate: 'afterkeydown', 
+			onEsc: cancelNameEdit">
+		<span class="text" data-bind="text: usedAs()"></span>
+	</span>
+</span>
+
+<!-- ko if: subfolders().length > 0 -->
+<div class="children" data-bind="sortable: {data: subfolders, connectClass: fullNameHash(), 
+	 afterMove: function () { afterMove($parents); }, options: {axis: 'y', revert: false}}">
+	<div data-bind="attr: {'class': 'item canSelect canDrag folder-level' + (iLevel + 1)}, 
+		visible: !bVirtual, template: { name: '%ModuleName%_Settings_AccountFolderItemMovedWithMouse'},
+		css: {'canSubscribe': canSubscribe, 'canRename': canRename, 'canDelete': canDelete}"></div>
+</div>
+<!-- /ko -->

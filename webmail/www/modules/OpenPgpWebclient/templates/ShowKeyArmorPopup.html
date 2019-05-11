@@ -1,0 +1,23 @@
+<!-- This template is used by 2 JS view models -->
+<div class="popup" style="display: none;">
+	<div class="mask" data-bind="click: cancelPopup"></div>
+	<div class="popup_panel">
+		<span class="close" data-bind="click: cancelPopup"></span>
+		<span class="popup_heading" data-bind="text: popupHeading"></span>
+
+		<div class="fields">
+			<div class="row view_pgp_key_area" data-bind="customScrollbar: {x: false, 'reset': htmlArmor()}">
+				<div class="scroll-inner">
+					<pre data-bind="text: htmlArmor, initDom: domKey"></pre>
+				</div>
+			</div>
+			<div class="buttons">
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SEND'}, click: send, visible: bAllowSendEmails"></span>
+				<a class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_DOWNLOAD'}, attr: {'href': downloadLinkHref, 'download': downloadLinkFilename}, visible: downloadLinkHref() !== '#'"></a>
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SELECT'}, click: select"></span>
+				<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CLOSE'}, click: closePopup"></span>
+			</div>
+		</div>
+	</div>
+	<span class="helper"></span>
+</div>

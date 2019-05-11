@@ -4,7 +4,7 @@
 	"category":		"NULL",
 	"icon":			"color_lens",
 	"order":		4,
-	"description":	"",
+	"description":	"With this module the user can change the theme.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

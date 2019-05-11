@@ -4,7 +4,7 @@
 	"category":		"DOMAIN_MANAGEMENT",
 	"icon":			"directions_car",
 	"order":		4,
-	"description":	"This module enables you to add or configure domain web hosting on your account.",
+	"description":	"Allows parking of domains for your customers.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

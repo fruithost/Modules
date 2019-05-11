@@ -1,0 +1,45 @@
+<div class="fields">
+	<div class="fieldset">
+		<div class="row allow_sending">
+			<div>
+				<label class="custom_checkbox" data-bind="css: {'checked': isOutgoingEnabled, 'disabled': !isEnabled()}">
+					<span class="icon"></span>
+					<input type="checkbox" id="sending_from_this_account" data-bind="checked: isOutgoingEnabled, enable: isEnabled" />
+				</label>
+				<label for="sending_from_this_account" data-bind="i18n: {'key': '%MODULENAME%/LABEL_FETCHER_ALLOW_SENDING'}, css: {'disabled': !isEnabled()}"></label>
+			</div>
+		</div>
+		<div class="row outgoing">
+			<!-- ko template: {name: '%ModuleName%_Settings_ServerPropertiesView', data: oOutgoing} --><!-- /ko -->
+		</div>
+
+		<div class="row smtp_authentication">
+			<div>
+				<label class="custom_checkbox" data-bind="css: {'checked': outgoingUseAuth, 'disabled': !isAllEnabled()}">
+					<span class="icon"></span>
+					<input type="checkbox" id="use_smtp_authentication" data-bind="checked: outgoingUseAuth, enable: isAllEnabled" />
+				</label>
+				<label for="use_smtp_authentication" data-bind="i18n: {'key': '%MODULENAME%/LABEL_USE_SMTP_AUTHENTICATION'}, css: {'disabled': !isAllEnabled()}"></label>
+			</div>
+		</div>
+
+		<div class="row name">
+			<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_YOUR_NAME'}, css: {'disabled': !isAllEnabled()}"></span>
+			<input class="value input" spellcheck="false" type="text" maxlength="65" data-bind="value: userName, valueUpdate: 'afterkeydown', onEnter: save, enable: isAllEnabled, css: {'disabled': !isAllEnabled()}"/>
+		</div>
+
+		<div class="row email">
+			<span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_EMAIL'}, css: {'disabled': !isAllEnabled()}"></span>
+			<input class="value input" spellcheck="false" type="text" maxlength="65" data-bind="value: email, hasfocus: focusEmail, valueUpdate: 'afterkeydown', onEnter: save, enable: isAllEnabled, css: {'disabled': !isAllEnabled()}"/>
+		</div>
+
+		<div class="row hint">
+			<span data-bind="i18n: {'key': '%MODULENAME%/INFO_FETCHER_ON_COMPOSE'}"></span>
+		</div>
+	</div>
+
+	<div class="buttons">
+		<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}, click: save, visible: !isSaving(), css: {'disabled': !isEnabled()}"></span>
+		<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}, visible: isSaving()"></span>
+	</div>
+</div>

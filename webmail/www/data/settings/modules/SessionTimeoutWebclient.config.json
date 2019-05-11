@@ -1,0 +1,14 @@
+{
+    "Disabled": [
+		true,
+		"bool"
+	],
+    "TimeoutMinutes": [
+		30,
+		"int"
+	],
+    "IncludeInMobile": [
+		true,
+		"bool"
+	]
+}

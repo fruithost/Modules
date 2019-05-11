@@ -1,0 +1,74 @@
+<div class="fields">
+	<div class="fieldset">
+		<div class="row" data-bind="visible: !isDefaultAccount() && canBeUsedToAuthorize()">
+			<span class="value offset">
+				<label class="custom_checkbox" data-bind="css: {'checked': useToAuthorize(), 'disabled': isDisableAuthorize()}">
+					<span class="icon"></span>
+					<input type="checkbox" id="account_use_to_authorize" data-bind="checked:isDisableAuthorize() ? true : useToAuthorize" />
+				</label>
+				<label for="account_use_to_authorize" data-bind="i18n: {'key': '%MODULENAME%/LABEL_USE_TO_AUTHORIZE'}"></label>
+			</span>	
+		</div>
+		
+		<div class="row" data-bind="visible: !bAllowIdentities">
+			<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_YOUR_NAME'}"></span>
+			<input class="value input" spellcheck="false" type="text" maxlength="65" data-bind="value: friendlyName, valueUpdate: 'afterkeydown', onEnter: save"/>
+		</div>
+
+        <div data-bind="visible: !isDefaultAccount()">
+            <div class="row">
+                <span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_LOGIN'}"></span>
+                <input class="value input" spellcheck="false" type="text" maxlength="255" data-bind="value: incomingLogin, hasfocus: incLoginFocused, valueUpdate: 'afterkeydown', onEnter: save"/>
+            </div>
+            <div class="row">
+                <span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_PASSWORD'}"></span>
+                <input class="value input" spellcheck="false" autocomplete="new-password" type="password" maxlength="255" data-bind="value: incomingPassword, valueUpdate: 'afterkeydown', onEnter: save"/>
+            </div>
+			
+			<!-- ko template: {name: oServerPairPropertiesView.ViewTemplate, data: oServerPairPropertiesView} --><!-- /ko -->
+			
+		</div>
+		
+		<div class="row" data-bind="visible: enableThreading">
+			<span class="value" data-bind="css: {'offset': !isDefaultAccount()}">
+				<label class="custom_checkbox" data-bind="css: {'checked': useThreading()}">
+					<span class="icon"></span>
+					<input type="checkbox" id="useThreading" data-bind="checked: useThreading" />
+				</label>
+				<label for="useThreading" data-bind="i18n: {'key': '%MODULENAME%/LABEL_USE_THREADING'}"></label>
+			</span>	
+		</div>
+		<div class="row">
+			<span class="value" data-bind="css: {'offset': !isDefaultAccount()}">
+				<label class="custom_checkbox" data-bind="css: {'checked': saveRepliesToCurrFolder}">
+					<span class="icon"></span>
+					<input type="checkbox" id="saveRepliesToCurrFolder" data-bind="checked: saveRepliesToCurrFolder" />
+				</label>
+				<label for="saveRepliesToCurrFolder" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SAVE_REPLIED_TO_CURR_FOLDER'}"></label>
+			</span>
+		</div>
+		<div class="hint row">
+			<span class="value" data-bind="css: {'offset': !isDefaultAccount()}, i18n: {'key': '%MODULENAME%/INFO_SAVE_REPLIED_TO_CURR_FOLDER'}"></span>
+		</div>
+		
+		<div data-bind="visible: !isDefaultAccount()">
+            <div class="row remove_account">
+				<span class="link" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_REMOVE_ACCOUNT'}, click: remove, attr: {'id': 'selenium_settings_delete_account_' + email()}, css: {'disabled': isDisableAuthorize()}"></span>
+            </div>
+            <div class="hint">
+                <span data-bind="i18n: {'key': '%MODULENAME%/INFO_REMOVE_ACCOUNT'}"></span>
+            </div>
+        </div>
+		
+		<!-- ko if: isDefaultAccount -->
+			<!-- ko template: {name: oDefaultAccountHostsSettingsView.ViewTemplate, data: oDefaultAccountHostsSettingsView} --><!-- /ko -->
+		<!-- /ko -->
+
+    </div>
+	
+	<div class="buttons">
+		<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CHANGE_PASSWORD'}, click: changePassword, visible: allowChangePassword" style="float: left;"></span>
+		<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}, click: save, visible: !isSaving()"></span>
+		<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}, click: save, visible: isSaving()"></span>
+	</div>
+</div>

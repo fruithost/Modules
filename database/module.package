@@ -4,7 +4,7 @@
 	"category":		"DATABASE_MANAGEMENT",
 	"icon":			"lock",
 	"order":		1,
-	"description":	"",
+	"description":	"Simple database and user management for MySQL Server.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

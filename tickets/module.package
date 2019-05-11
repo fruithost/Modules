@@ -4,7 +4,7 @@
 	"category":		"SUPPORT_MANAGEMENT",
 	"icon":			"flag",
 	"order":		2,
-	"description":	"",
+	"description":	"Ticket system for your support platform",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

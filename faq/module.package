@@ -4,7 +4,7 @@
 	"category":		"SUPPORT_MANAGEMENT",
 	"icon":			"help",
 	"order":		3,
-	"description":	"",
+	"description":	"Administer frequently asked questions to provide the user with a support platform.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

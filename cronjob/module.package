@@ -4,7 +4,7 @@
 	"category":		"HOSTING_MANAGEMENT",
 	"icon":			"schedule",
 	"order":		4,
-	"description":	"",
+	"description":	"Creates time-based tasks and controls web addresses or PHP scripts.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

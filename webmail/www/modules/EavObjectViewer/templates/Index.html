@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>EAV objects viewer</title>
+
+	<link rel="stylesheet" href="%MODULE_PATH%/js/vendor/bootstrap/css/bootstrap.min.css" />
+	
+    <script src="%MODULE_PATH%/js/vendor/jquery/jquery-2.2.4.min.js"></script>
+    <script src="%MODULE_PATH%/js/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="%MODULE_PATH%/js/vendor/underscore/underscore-min.js"></script>
+    <script src="%MODULE_PATH%/js/vendor/knockout/build/output/knockout-latest.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-8">
+				<div class="page-header">
+					<h1>EAV objects viewer <small>beta 0.1</small></h1>
+				</div>
+			</div>
+		</div>
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="objects">
+				<div id="objects-screen" class="row">
+					<div class="col-sm-12">
+						<ul id="object-tabs" class="nav nav-tabs" role="tablist" data-bind="foreach: objectTypes">
+							<li role="presentation">
+								<a href="#ajax" 
+								   aria-controls="ajax" 
+								   role="tab" 
+								   data-toggle="tab" 
+								   data-bind="text: $data, attr: {'href': '#object-'+$data}, click: $parent.switchTab">
+								</a>
+							</li>
+						</ul>
+						<div data-bind=" visible: propsList().length > 0">
+							<select data-bind="options: propsList, value: searchField"></select>							
+							<input data-bind="textInput: searchText"/>
+							<button data-bind="click: searchClick"/>Search</button>
+						</div>
+						<div class="tab-content" data-bind="foreach: objectTypes">
+							<div role="tabpanel" class="table-responsive tab-pane" id="" data-bind="attr: {'id': 'object-'+$data}">
+								<table class="table table-striped">
+									<tr>
+										<th>
+											<input type="checkbox" name="test" />
+										</th>
+										<!-- ko foreach: $parent.propsList -->
+										<th>
+											<span data-bind="text: $data"></span>
+											<br />
+											<span data-bind="text: '(' + $root.propsTypeList()[$index()] + ')'"></span>
+										</th>
+										<!-- /ko -->
+									</tr>
+									<!-- ko foreach: $parent.objectsList -->
+									<tr data-bind="click: $parents[1].selectItem, css: {'warning': $parents[1].selectedItem() == $data, 'info': _.contains($parents[1].checkedItems(), $data[0])}">
+										<th>
+											<input type="checkbox" 
+												   class="checkbox" 
+												   name="test" 
+												   data-bind="click: $parents[1].checkItem, checked: _.contains($parents[1].checkedItems(), $data[0])" 
+											/>
+										</th>
+										<!-- ko foreach: $data -->
+											<th nowrap data-bind="text: $data;"></th>
+									<!-- /ko -->
+									</tr>
+									<!-- /ko -->
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-12">
+						<div data-bind="with: checkedItems().length > 0">
+							<br />
+							<label>Delete items</label>
+							<form method="POST">
+								<input type="hidden" name="manager" value="objects" />
+								<input type="hidden" name="action" value="delete_multiple" />
+								<input type="hidden" name="ids" data-bind="textInput: $parent.checkedItems().join(',');" />
+
+								<input type="submit" 
+									   value="Delete" 
+									   class="btn btn-danger" 
+									   data-bind="click: $parent.postForm, value: 'Delete: '+ $parent.checkedItems().join(', ');" 
+								/>
+							</form>
+						</div>						
+						<div data-bind="with: selectedItem">
+							<br />
+							<label>Edit item</label>
+							<form method="POST" onsubmit="return false;">
+								<input type="hidden" name="ObjectName" data-bind="value: $parent.selectedObjectName"/>
+								<input type="hidden" name="manager" value="objects" />
+								<input type="hidden" name="action" value="edit"/>
+
+								<div class="table-responsive">
+									<table class="table table-striped">
+										<tbody>
+										<!-- ko foreach: $data -->
+										<tr class="form-group">
+											<th  style="width: 30px;" data-bind="text: $parents[1].propsList()[$index()];"></th>
+											<td>
+												<input type="text" 
+													   data-bind="value: $data, attr: {'name': $parents[1].propsList()[$index()]}" 
+													   class="form-control" 
+													   style="min-width: 100px;" 
+												/>
+											</td>
+										</tr>
+										<!-- /ko -->
+										</tbody>
+									</table>
+								</div>
+								<input type="submit" value="Update" class="btn btn-danger" data-bind="click: $parent.postForm" />
+							</form>
+						</div>
+					</div>
+				</div>
+				<script>
+					$('#object-tabs')
+						.click(function (e) {
+							e.preventDefault();
+							$(this).tab('show');
+						});
+				</script>
+				<script src="modules/EavObjectViewer/js/objects.js"></script>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

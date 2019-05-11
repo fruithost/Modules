@@ -4,7 +4,7 @@
 	"category":		"HOSTING_MANAGEMENT",
 	"icon":			"code",
 	"order":		3,
-	"description":	"",
+	"description":	"PHP specific settings that can be set globally as well as domain related.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

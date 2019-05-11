@@ -1,0 +1,23 @@
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_EMAIL'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: publicId, valueUpdate: 'afterkeydown', enable: id() === 0, css: {'disabled': id() !== 0}, 
+			onEnter: function () { saveEntity($parents, $root); }" />
+	</span>
+</div>
+<div class="row" style="display: none;">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ROLE'}"></span>
+	<span class="value">
+		<select class="input start" data-bind="value: role, options: aRoles, optionsText: 'text', optionsValue: 'value'"></select>
+	</span>
+</div>
+<div class="row" data-bind="visible: id() !== 0"> 
+	<span class="value">
+		<label class="custom_checkbox checked" data-bind="css: {'checked': writeSeparateLog}">
+			<span class="icon"></span>
+			<input type="checkbox" id="writeSeparateLog" data-bind="checked: writeSeparateLog">
+		</label>
+		<label for="writeSeparateLog" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LOGGING_SEPARATE_LOG_FOR_USER'}"></label>
+	</span>
+</div>
+{%INCLUDE-START/Edit-User-After/INCLUDE-END%}

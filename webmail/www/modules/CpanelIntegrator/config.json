@@ -1,0 +1,30 @@
+{
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"CpanelHost": [
+		"127.0.0.1",
+		"string"
+	],
+	"CpanelPort": [
+		"2083",
+		"string"
+	],
+	"CpanelUser": [
+		"",
+		"string"
+	],
+	"CpanelPassword": [
+		"",
+		"string"
+	],
+	"UserDefaultQuotaMB": [
+		1,
+		"int"
+	],
+	"SupportedServers": [
+		["*"],
+		"array"
+	]
+}

@@ -1,0 +1,38 @@
+@import "./common/html-editor.less";
+@import "./desktop/folders.less";
+@import "./desktop/mail.less";
+@import "./desktop/compose.less";
+@import "./common/blockquote.less";
+@import "./desktop/settings.less";
+@import "./desktop/buttons.less";
+@import "./desktop/table-compressor.less";
+@import "./desktop/layout-horiz-split.less";
+
+.settings .folders .controls .button {
+	&.template {
+		&:before {
+			content: "\e90f";
+		}
+
+		&.turned-on {
+			&:before {
+				content: "\e90e";
+			}
+		}
+	}
+	&.always-refresh {
+		&:before {
+			content: "\e911";
+		}
+
+		&.turned-on {
+			&:before {
+				content: "\e910";
+			}
+		}
+	}
+}
+
+.folders .item .icon.type8:before {
+	content: "\e90e";
+}

@@ -1,0 +1,10 @@
+{
+    "Disabled": [
+		false,
+		"bool"
+	],
+    "TabsOrder": [
+		["common", "mail", "mail-accounts", "calendar", "files", "mobilesync", "outlooksync", "helpdesk", "openpgp"],
+		"array"
+	]
+}

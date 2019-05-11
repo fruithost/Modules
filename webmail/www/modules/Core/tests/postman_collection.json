@@ -1,0 +1,313 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Aurora Core Module",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "LoginAsAdmin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ",
+							"    oResponse = JSON.parse(responseBody),",
+							"    bResult = false",
+							";",
+							"if (oResponse.Result && oResponse.Result.AuthToken) {",
+							"    bResult = true;",
+							"\tpostman.setEnvironmentVariable(\"AuthToken\", oResponse.Result.AuthToken);",
+							"}",
+							"tests[\"Login As Admin\"] = bResult ? oResponse.Result.AuthToken : undefined;"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{ApiUrl}}/?/Api/",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "/Api/",
+							"value": "",
+							"equals": false,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "Module",
+							"value": "StandardLoginFormWebclient",
+							"type": "text"
+						},
+						{
+							"key": "Method",
+							"value": "Login",
+							"type": "text"
+						},
+						{
+							"key": "Parameters",
+							"value": "{\"Login\": \"superadmin\",\"Password\": \"\"}",
+							"type": "text"
+						}
+					]
+				},
+				"description": "Should be the first for get valid AuthToken"
+			},
+			"response": []
+		},
+		{
+			"name": "CreateTables",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ",
+							"    oResponse = JSON.parse(responseBody),",
+							"    bResult = false",
+							";",
+							"if (oResponse.Result) {",
+							"    bResult = true;",
+							"}",
+							"tests[\"Result\"] = oResponse.Result;"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{ApiUrl}}/?/Api/",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "/Api/",
+							"value": "",
+							"equals": false,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AuthToken}}",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "Module",
+							"value": "Core",
+							"type": "text"
+						},
+						{
+							"key": "Method",
+							"value": "CreateTables",
+							"type": "text"
+						},
+						{
+							"key": "Parameters",
+							"value": "{\"Login\": \"{{Login}}\",\"Password\": \"{{Password}}\"}",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "CreateUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var oResponse = JSON.parse(responseBody);",
+							"",
+							"if (oResponse.ErrorCode === 111)",
+							"{",
+							"    tests[\"User has been already created\"] = true;",
+							"}",
+							"else",
+							"{",
+							"    if (oResponse.Result)",
+							"    {",
+							"        postman.setEnvironmentVariable(\"UserId\", oResponse.Result);",
+							"        tests[\"New user id: \" + oResponse.Result] = true;",
+							"    }",
+							"}",
+							"    ",
+							"",
+							""
+						]
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var iRandomUserIndex = Math.floor(Math.random() * 1000);",
+							"",
+							"postman.setEnvironmentVariable(\"TestUserLogin\", \"testuser\"+iRandomUserIndex);"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{ApiUrl}}/?/Api/",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "/Api/",
+							"value": "",
+							"equals": false,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AdminAuthToken}}",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "Module",
+							"value": "Core",
+							"type": "text"
+						},
+						{
+							"key": "Method",
+							"value": "CreateUser",
+							"type": "text"
+						},
+						{
+							"key": "Parameters",
+							"value": "{\"PublicId\": \"{{TestUserLogin}}\"}",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var oResponse = JSON.parse(responseBody);",
+							"",
+							"if (oResponse.Result)",
+							"{",
+							"    tests[\"Deleted UserId: \" + postman.getEnvironmentVariable(\"TestUserId\")] = true;",
+							"    postman.clearEnvironmentVariable(\"TestUserId\");",
+							"}",
+							"else",
+							"{",
+							"    tests[\"Can't deleted User: \" + postman.getEnvironmentVariable(\"TestUserId\")] = false;",
+							"}"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{ApiUrl}}/?/Api/",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "/Api/",
+							"value": "",
+							"equals": false,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{AdminAuthToken}}",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "Module",
+							"value": "Core",
+							"type": "text"
+						},
+						{
+							"key": "Method",
+							"value": "DeleteUser",
+							"type": "text"
+						},
+						{
+							"key": "Parameters",
+							"value": "{\"UserId\": \"{{TestUserId}}\"}",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

@@ -4,7 +4,7 @@
 	"category":		"EXTENDED_MANAGEMENT",
 	"icon":			"perm_media",
 	"order":		4,
-	"description":	"",
+	"description":	"Web-based file manager with upload or backup functions and advanced editor.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

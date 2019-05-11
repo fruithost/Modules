@@ -4,7 +4,7 @@
 	"category":		"HOSTING_MANAGEMENT",
 	"icon":			"cloud",
 	"order":		2,
-	"description":	"",
+	"description":	"User-specific web server settings can be easily set by the user.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

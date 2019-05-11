@@ -1,0 +1,24 @@
+{
+    "name": "gufy/cpanel-php",
+    "description": "Cpanel/WHM API for PHP",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mochamad Gufron",
+            "email": "mgufronefendi@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.7",
+        "guzzlehttp/guzzle":"~6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.7.*@dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "Gufy\\CpanelPhp\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}

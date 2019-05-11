@@ -1,0 +1,9 @@
+<div class="popup add_account" style="display: none;">
+	<div class="mask" data-bind="click: cancelPopup"></div>
+	<div class="popup_panel">
+		<span class="close" data-bind="click: cancelPopup"></span>
+		<span class="popup_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_CREATE_IDENTITY'}"></span>
+		<!-- ko template: {name: oIdentitySettingsFormView.ViewTemplate, data: oIdentitySettingsFormView} --><!-- /ko -->
+	</div>
+	<span class="helper"></span>
+</div>

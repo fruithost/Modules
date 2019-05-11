@@ -1,0 +1,48 @@
+<!-- ko if: visible -->
+	<div data-bind="visible: visible(),
+		 css: 'item folder-level' + (iLevel + 1) + ' ' + name() + (selected() ? ' selected' : '') + 
+					(canBeSelected() ? ' canSelect' : ' canNotSelect') + (bExists ? ' exists' : '') + 
+					(subscribed() ? ' subscribed' : '') + (isSystem() ? ' system' : ' user') + 
+					(virtualEmpty() ? ' virtualEmpty' : '') + (subfolders().length !== 0 ? ' accordion' : '') + 
+					(expanded() ? ' expanded' : ' collapsed')">
+		<a class="title" href="javascript: void(0);" data-bind="
+			css: {'recivedAnim': recivedAnim()},
+			attr: {href: routingHash},
+			visible: canBeSelected(),
+			droppable: {valueFunc: bVirtual ? false : function (oEvent, oUi) { $root.messagesDrop($data, oEvent, oUi); }, switchObserv: selected}
+		">
+			<!-- ko if: showMessagesCount -->
+				<!-- .count:first-child css selector is used here so this span should not always be rendered -->
+				<span class="count total" data-bind="text: messageCount"></span>
+			<!-- /ko -->
+			<span class="count unseen" data-bind="visible: showUnseenMessagesCount, text: unseenMessagesCountToShow,
+				  click: executeUnseenFilter, customTooltip: '%MODULENAME%/ACTION_SHOW_UNREAD_MESSAGES'"></span>
+			<span class="name">
+				<span class="icon" data-bind="css: 'type' + type() + ' ' + name()"></span>
+				<span class="collapse_handler" data-bind="visible: canExpand, css: {'expanded': expanded(), 'collapsed': !expanded()}, click: onAccordion"></span>
+				<span class="text animGoal" data-bind="text: displayName"></span>
+			</span>
+		</a>
+		<span class="title" data-bind="visible: !canBeSelected()">
+			<!-- ko if: showMessagesCount -->
+			<span class="count total" data-bind="text: messageCount"></span>
+			<!-- /ko -->
+			<span class="count unseen" data-bind="visible: showUnseenMessagesCount, text: unseenMessagesCountToShow"></span>
+			<span class="name">
+				<span class="icon" data-bind="css: 'type' + type()"></span>
+				<span class="collapse_handler" data-bind="visible: canExpand, css: {'expanded': expanded(), 'collapsed': !expanded()}, click: onAccordion"></span>
+				<span class="text animGoal" data-bind="text: displayName, attr: {'id':	(type() === Enums.FolderTypes.Inbox) ? 'selenium_folder_inbox' :
+																						((type() === Enums.FolderTypes.Sent) ? 'selenium_folder_sent' :
+																						((type() === Enums.FolderTypes.Drafts) ? 'selenium_folder_drafts' :
+																						((type() === Enums.FolderTypes.Spam) ? 'selenium_folder_spam' :
+																						((type() === Enums.FolderTypes.Trash) ? 'selenium_folder_trash' : ''))))}"></span>
+			</span>
+		</span>
+		<!-- ko if: !bNamespace -->
+		<div class="children" data-bind="template: { name: '%ModuleName%_FolderView', foreach: subfolders }"></div>
+		<!-- /ko -->
+	</div>
+	<!-- ko if: bNamespace -->
+		<!-- ko template: {name: '%ModuleName%_FolderView', foreach: subfolders} --><!-- /ko -->
+	<!-- /ko -->
+<!-- /ko -->

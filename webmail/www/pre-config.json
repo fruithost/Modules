@@ -1,0 +1,59 @@
+{
+	"system": {
+	},
+	"modules": {
+		"Core": {
+			"ProductName": "Webmail"
+		},
+		"CoreWebclient": {
+			"HeaderModulesOrder": ["mail", "contacts"],
+			"DefaultAnonymScreenHash": "login",
+			"DefaultUserScreenHash": "mail",
+			"ThemeList": ["Default","DeepForest","Funny"]
+		},
+		"Dropbox": {
+			"Disabled": true
+		},
+		"DropboxAuthWebclient": {
+			"Scopes": "auth"
+		},
+		"Mail": {
+			"AllowDefaultAccountForUser": true,
+			"AutocreateMailAccountOnNewUserFirstLogin": true
+		},
+		"OAuthIntegratorWebclient": {
+			"AllowNewUsersRegister": false
+		},
+		"ChangePasswordWebclient": {
+			"Disabled": true
+		},
+		"MailChangePasswordPoppassdPlugin": {
+			"Disabled": true
+		},
+		"MailSaveMessageAsPdfPlugin": {
+			"Disabled": true
+		},
+		"MailTnefWebclientPlugin": {
+			"Disabled": true
+		},
+		"MailAuthCpanel": {
+			"Disabled": true
+		},
+		"CpanelIntegrator": {
+			"Disabled": true
+		},
+		"StandardLoginFormWebclient": {
+			"UseDropdownLanguagesView": true,
+			"BottomInfoHtmlText": ""
+		},
+		"StandardRegisterFormWebclient": {
+			"BottomInfoHtmlText": ""
+		},
+		"MailNotesPlugin": {
+			"Disabled": true
+		},
+		"OverrideUserSettings": {
+			"Disabled": true
+		}
+	}
+}

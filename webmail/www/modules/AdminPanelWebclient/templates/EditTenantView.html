@@ -1,0 +1,36 @@
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_NAME'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="visible: id() === 0, value: name" />
+		<span data-bind="visible: id() !== 0, text: name"></span>
+	</span>
+</div>
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DESCRIPTION'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: description" />
+	</span>
+</div>
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_WEB_DOMAIN'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: webDomain" />
+	</span>
+</div>
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_SITENAME'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: siteName" />
+	</span>
+</div>
+<!-- ko foreach: aAdditionalFields -->
+	<div class="row" style="margin-bottom: 6px;">
+		<span class="label" data-bind="text: DisplayName"></span>
+		<span class="value">
+			<input class="input" type="text" data-bind="value: value" />
+		</span>
+	</div>
+	<div class="row hint" data-bind="visible: Hint.length > 0">
+		<span class="value" style="margin-left: 150px; display: block;" data-bind="text: Hint"></span>
+	</div>
+<!-- /ko -->

@@ -1,0 +1,13 @@
+{
+	"name": "afterlogic/aurora-module-mail",
+	"type": "aurora-module",
+	"require":{
+		"php":">=5.4.0",
+		"afterlogic/aurora-framework": "~0.9.0",
+		"tijsverkoyen/css-to-inline-styles": "~1.3.0",
+		"knplabs/knp-snappy": "0.4.3"
+	},
+	"extra": {
+		"installer-name": "Mail"
+	}
+}

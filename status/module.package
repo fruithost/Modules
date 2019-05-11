@@ -4,7 +4,7 @@
 	"category":		"EXTENDED_MANAGEMENT",
 	"icon":			"network_check",
 	"order":		1,
-	"description":	"",
+	"description":	"Displays the current status of the services.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

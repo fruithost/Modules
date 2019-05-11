@@ -4,7 +4,7 @@
 	"category":		"SUPPORT_MANAGEMENT",
 	"icon":			"chat",
 	"order":		1,
-	"description":	"",
+	"description":	"Provides a live chat for your support platform.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

@@ -1,0 +1,47 @@
+.fadeout-text-init() {
+	overflow: hidden;
+
+	&:after {
+		content: "";
+		display: block;
+		float: right;
+		height: 100px;
+		margin-left: 0;
+		margin-top: -100px;
+		pointer-events: none;
+		position: relative;
+		width: 10px;
+		
+		html.rtl & {
+			float: left;
+		}
+		
+		.recivedAnim & {
+			background: none !important;
+		}
+	}
+}
+
+.fadeout-text(@color) when (iscolor(@color)) {
+	&:after {
+		.fade-gradient(@color);
+		
+		html.rtl & {
+			.fade-gradient(rtl, @color);
+		}
+	}
+}
+
+.fadeout() {
+	mask: url(../../images/filters.svg#masking);
+	-webkit-mask: url(../../images/mask.png) repeat-y top right;
+	-o-mask: url(../../images/mask.png?) repeat-y top right;
+	-ms-mask: url(../../images/mask.png) repeat-y top right;
+	
+	html.rtl & {
+		mask: url(../../images/filters.svg#masking_rtl);
+		-webkit-mask: url(../../images/mask_rtl.png) repeat-y top left;
+		-o-mask: url(../../images/mask_rtl.png) repeat-y top left;
+		-ms-mask: url(../../images/mask_rtl.png) repeat-y top left;
+	}
+}

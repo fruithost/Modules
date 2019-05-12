@@ -9,22 +9,22 @@
 		private $users		= [];
 		
 		public function init() {
-			$this->databases = fruithost\Database::fetch('SELECT * FROM `fh_mysql_databases` WHERE `user_id`=:user ORDER BY `name` ASC', [
+			$this->databases = fruithost\Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'mysql_databases` WHERE `user_id`=:user ORDER BY `name` ASC', [
 				'user'	=> Auth::getID()
 			]);
 			
 			$this->users = fruithost\Database::fetch('SELECT
-				`fh_mysql_users`.*,
-				`fh_mysql_databases`.`name` AS `database`
+				`' . DATABASE_PREFIX . 'mysql_users`.*,
+				`' . DATABASE_PREFIX . 'mysql_databases`.`name` AS `database`
 			FROM
-				`fh_mysql_users`,
-				`fh_mysql_databases`
+				`' . DATABASE_PREFIX . 'mysql_users`,
+				`' . DATABASE_PREFIX . 'mysql_databases`
 			WHERE
-				`fh_mysql_users`.`user_id`=:user
+				`' . DATABASE_PREFIX . 'mysql_users`.`user_id`=:user
 			AND
-				`fh_mysql_databases`.`id`=`fh_mysql_users`.`database`
+				`' . DATABASE_PREFIX . 'mysql_databases`.`id`=`fh_mysql_users`.`database`
 			ORDER BY
-				`fh_mysql_users`.`name`
+				`' . DATABASE_PREFIX . 'mysql_users`.`name`
 			ASC', [
 				'user'	=> Auth::getID()
 			]);
@@ -92,7 +92,7 @@
 				break;
 			}
 			
-			$id = fruithost\Database::insert('fh_mysql_users', [
+			$id = fruithost\Database::insert(DATABASE_PREFIX . 'mysql_users', [
 				'id'			=> null,
 				'user_id'		=> Auth::getID(),
 				'database'		=> $data['database'],
@@ -112,7 +112,7 @@
 			
 			$name = sprintf('%s_%s', Auth::getUsername(), $data['name']);
 			
-			$id = fruithost\Database::insert('fh_mysql_databases', [
+			$id = fruithost\Database::insert(DATABASE_PREFIX . 'mysql_databases', [
 				'id'			=> null,
 				'user_id'		=> Auth::getID(),
 				'name'			=> $data['name'],

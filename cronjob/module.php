@@ -14,7 +14,7 @@
 				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
 			])->onSave([ $this, 'onSave' ]));
 			
-			$this->cronjobs = Database::fetch('SELECT * FROM `fh_cronjobs` WHERE `user_id`=:user ORDER BY `id` ASC', [
+			$this->cronjobs = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'cronjobs` WHERE `user_id`=:user ORDER BY `id` ASC', [
 				'user'	=> Auth::getID()
 			]);
 		}
@@ -57,7 +57,7 @@
 						return 'Please enter a valid PHP script!';
 					}
 					
-					$id = Database::insert('fh_cronjobs', [
+					$id = Database::insert(DATABASE_PREFIX . 'cronjobs', [
 						'id'			=> null,
 						'user_id'		=> Auth::getID(),
 						'task_minute'	=> $data['minute'],
@@ -82,7 +82,7 @@
 						return 'Please enter a valid URL!';
 					}
 					
-					$id = Database::insert('fh_cronjobs', [
+					$id = Database::insert(DATABASE_PREFIX . 'cronjobs', [
 						'id'			=> null,
 						'user_id'		=> Auth::getID(),
 						'task_minute'	=> $data['minute'],

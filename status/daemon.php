@@ -11,7 +11,7 @@
 				print TAB . 'Checking ' . $service->name . ': ' . TAB . ($status ? "\033[0;32mOnline\033[0m" : "\033[31;31mOFFLINE\033[0m") . ' (' . $service->service . ')' . PHP_EOL;
 				
 				try {
-					Database::update('fh_status', 'id', [
+					Database::update(DATABASE_PREFIX . 'status', 'id', [
 						'id'		=> $service->id,
 						'time'		=> date('Y-m-d H:i:s', time()),
 						'status'	=> ($status ? 'ONLINE' : 'OFFLINE')
@@ -23,7 +23,7 @@
 		}
 		
 		protected function getServices($sql = '') {
-			return Database::fetch('SELECT * FROM `fh_status`', []);;
+			return Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'status`', []);;
 		}
 		
 		private function checkPort($port) {

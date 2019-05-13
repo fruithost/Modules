@@ -3,7 +3,7 @@
 	
 	class CronjobDaemon {
 		public function __construct() {
-			$cronjobs = Database::fetch('SELECT `fh_cronjobs`.*, `fh_users`.`username` FROM `fh_cronjobs`, `fh_users` WHERE `fh_users`.`id`=`fh_cronjobs`.`user_id`', []);
+			$cronjobs = Database::fetch('SELECT `' . DATABASE_PREFIX . 'cronjobs`.*, `' . DATABASE_PREFIX . 'users`.`username` FROM `' . DATABASE_PREFIX . 'cronjobs`, `' . DATABASE_PREFIX . 'users` WHERE `' . DATABASE_PREFIX . 'users`.`id`=`' . DATABASE_PREFIX . 'cronjobs`.`user_id`', []);
 			
 			foreach($cronjobs AS $cronjob) {
 				print TAB . (empty($cronjob->name) ? 'Unnamed' : $cronjob->name) . ' Cron (from ' . $cronjob->username . ')' . PHP_EOL;
@@ -60,7 +60,7 @@
 			
 			#print_r($result);
 			
-			Database::update('fh_cronjobs', 'id', [
+			Database::update(DATABASE_PREFIX . 'cronjobs', 'id', [
 				'id'			=> $cronjob->id,
 				'time_running'	=> date('Y-m-d H:i:s', time())
 			]);

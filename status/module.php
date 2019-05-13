@@ -9,7 +9,7 @@
 		private $services = NULL;
 		
 		public function init() {
-			$this->services = Database::fetch('SELECT * FROM `fh_status`', []);
+			$this->services = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'status`', []);
 		}
 		
 		public function content() {

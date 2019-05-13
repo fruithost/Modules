@@ -6,16 +6,16 @@
 		private $categories = [];
 		
 		public function init() {
-			$this->categories = Database::fetch('SELECT * FROM `fh_faq_categories`');
+			$this->categories = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'faq_categories`');
 			
 			foreach($this->categories AS $index => $category) {
 				if(isset($_POST['query']) && !empty($_POST['query'])) {
-					$this->categories[$index]->entries = Database::fetch('SELECT * FROM `fh_faq_entries` WHERE `category`=:category AND (`question` LIKE :query OR `answer` LIKE :query)', [
+					$this->categories[$index]->entries = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'faq_entries` WHERE `category`=:category AND (`question` LIKE :query OR `answer` LIKE :query)', [
 						'category'	=> $category->id,
 						'query'		=> sprintf('%%%s%%', $_POST['query'])
 					]);
 				} else {
-					$this->categories[$index]->entries = Database::fetch('SELECT * FROM `fh_faq_entries` WHERE `category`=:category', [
+					$this->categories[$index]->entries = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'faq_entries` WHERE `category`=:category', [
 						'category' => $category->id
 					]);
 				}

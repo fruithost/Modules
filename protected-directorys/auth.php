@@ -18,7 +18,7 @@
 	$directory	= $argv[1];
 	$username	= trim(fgets(STDIN));
 	$password	= trim(fgets(STDIN));
-	$result		= Database::single('SELECT * FROM `fh_protected_users` WHERE `username`=:username AND `password`=:password and `id`=:directory LIMIT 1', [
+	$result		= Database::single('SELECT * FROM `' . DATABASE_PREFIX . 'protected_users` WHERE `username`=:username AND `password`=:password and `id`=:directory LIMIT 1', [
 		'username'	=> $username,
 		'password'	=> $password,
 		'directory'	=> $directory

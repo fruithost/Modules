@@ -4,9 +4,9 @@
 	class ProtectedDirectorysDaemon {
 		public function __construct() {
 			$entries = $this->getEntries('AND
-										`fh_protected_directorys`.`time_created` IS NULL
+										`' . DATABASE_PREFIX . 'protected_directorys`.`time_created` IS NULL
 									AND
-										`fh_protected_directorys`.`time_deleted` IS NULL');
+										`' . DATABASE_PREFIX . 'protected_directorys`.`time_deleted` IS NULL');
 										
 			foreach($entries AS $entry) {
 				print 'Create VHost Configuration for ' . $entry->id . PHP_EOL;
@@ -23,15 +23,15 @@
 		
 		protected function getEntries($sql = '') {
 			return Database::fetch('SELECT
-										`fh_protected_directorys`.*,
-										`fh_users`.`username` AS `username`
+										`' . DATABASE_PREFIX . 'protected_directorys`.*,
+										`' . DATABASE_PREFIX . 'users`.`username` AS `username`
 									FROM
-										`fh_protected_directorys`,
-										`fh_users`
+										`' . DATABASE_PREFIX . 'protected_directorys`,
+										`' . DATABASE_PREFIX . 'users`
 									WHERE
-										`fh_users`.`id`=`fh_protected_directorys`.`user_id`
+										`' . DATABASE_PREFIX . 'users`.`id`=`' . DATABASE_PREFIX . 'protected_directorys`.`user_id`
 									' . $sql . '
-									ORDER BY `fh_protected_directorys`.`id` ASC', []);
+									ORDER BY `' . DATABASE_PREFIX . 'protected_directorys`.`id` ASC', []);
 		}
 		
 		protected function createConfiguration($entry, $path) {
@@ -48,7 +48,7 @@
 			
 			file_put_contents(sprintf('/etc/fruithost/config/apache2/vhosts/%s.%s.protected.conf', $entry->username, $entry->id), $config);
 			
-			Database::update('fh_protected_directorys', 'id', [
+			Database::update(DATABASE_PREFIX . 'protected_directorys', 'id', [
 				'id'			=> $entry->id,
 				'time_created'	=> date('Y-m-d H:i:s', time())
 			]);

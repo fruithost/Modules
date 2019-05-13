@@ -4,9 +4,9 @@
 	class DomainsDaemon {
 		public function __construct() {
 			$domains = $this->getDomains('AND
-										`fh_domains`.`time_created` IS NULL
+										`' . DATABASE_PREFIX . 'domains`.`time_created` IS NULL
 									AND
-										`fh_domains`.`time_deleted` IS NULL');
+										`' . DATABASE_PREFIX . 'domains`.`time_deleted` IS NULL');
 			
 			foreach($domains AS $domain) {
 				print 'Create VHost for ' . $domain->name . PHP_EOL;
@@ -37,17 +37,17 @@
 		
 		protected function getDomains($sql = '') {
 			return Database::fetch('SELECT
-										`fh_domains`.*,
-										`fh_users`.`username` AS `username`
+										`' . DATABASE_PREFIX . 'domains`.*,
+										`' . DATABASE_PREFIX . 'users`.`username` AS `username`
 									FROM
-										`fh_domains`,
-										`fh_users`
+										`' . DATABASE_PREFIX . 'domains`,
+										`' . DATABASE_PREFIX . 'users`
 									WHERE
-										`fh_users`.`id`=`fh_domains`.`user_id`
+										`' . DATABASE_PREFIX . 'users`.`id`=`' . DATABASE_PREFIX . 'domains`.`user_id`
 									' . $sql . '
 									AND
-										`fh_domains`.`type`=\'DOMAIN\'
-									ORDER BY `fh_domains`.`name` ASC', []);
+										`' . DATABASE_PREFIX . 'domains`.`type`=\'DOMAIN\'
+									ORDER BY `' . DATABASE_PREFIX . 'domains`.`name` ASC', []);
 		}
 		
 		protected function createVirtualHost($domain, $path) {
@@ -99,7 +99,7 @@
 		}
 		
 		protected function updateDomain($domain) {
-			Database::update('fh_domains', 'id', [
+			Database::update(DATABASE_PREFIX . 'domains', 'id', [
 				'id'			=> $domain->id,
 				'time_created'	=> date('Y-m-d H:i:s', time()),
 				'time_deleted'	=> NULL

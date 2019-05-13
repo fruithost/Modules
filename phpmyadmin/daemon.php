@@ -4,7 +4,7 @@
 	
 	class PHPMyAdminDaemon {
 		public function __construct() {
-			$users		= Database::fetch('SELECT `username`, `password` FROM `fh_users`', []);
+			$users		= Database::fetch('SELECT `username`, `password` FROM `' . DATABASE_PREFIX . 'users`', []);
 			$databases	= Database::fetch('SHOW DATABASES');
 			
 			foreach($users AS $user) {

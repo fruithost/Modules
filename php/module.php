@@ -14,7 +14,7 @@
 		];
 		
 		public function init() {
-			$this->domains	= Database::fetch('SELECT * FROM `fh_domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
+			$this->domains	= Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
 				'user'	=> Auth::getID()
 			]);
 			

@@ -6,7 +6,7 @@
 	class PHPMyAdmin extends ModuleInterface {
 		public function init() {
 			if(Auth::isLoggedIn()) {
-				$user = Database::single('SELECT `password` FROM `fh_users` WHERE `id`=:id LIMIT 1', [
+				$user = Database::single('SELECT `password` FROM `' . DATABASE_PREFIX . 'users` WHERE `id`=:id LIMIT 1', [
 					'id'	=> Auth::getID()
 				]);
 				

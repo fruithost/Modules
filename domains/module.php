@@ -14,7 +14,7 @@
 				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
 			])->onSave([ $this, 'onSave' ]));
 			
-			$this->domains = Database::fetch('SELECT * FROM `fh_domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
+			$this->domains = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
 				'user'	=> Auth::getID()
 			]);
 		}
@@ -66,7 +66,7 @@
 				break;
 			}
 			
-			$id = Database::insert('fh_domains', [
+			$id = Database::insert(DATABASE_PREFIX . 'domains', [
 				'id'			=> null,
 				'user_id'		=> Auth::getID(),
 				'name'			=> $data['domain'],

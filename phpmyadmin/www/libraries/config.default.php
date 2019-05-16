@@ -296,7 +296,7 @@ $cfg['Servers'][$i]['SignonScript'] = '';
  * @global string $cfg['Servers'][$i]['SignonURL']
  */
  
-$cfg['Servers'][$i]['SignonURL'] = sprintf('http://%s/', $_SERVER['HTTP_HOST']);
+$cfg['Servers'][$i]['SignonURL'] = sprintf('http://%s/module/phpmyadmin?error=auth', $_SERVER['HTTP_HOST']);;
 
 /**
  * URL where to redirect user after logout

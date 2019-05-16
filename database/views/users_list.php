@@ -1,50 +1,54 @@
 <?php
 	use fruithost\Auth;
 ?>
-<table class="table table-striped table-hover">
-	<tr>
-		<th colspan="2">Username</th>
-		<th>Password</th>
-		<th>Database</th>
-		<th>Status</th>
-		<th></th>
-	</tr>
-	<?php
-		foreach($this->users AS $user) {
-			?>
-				<tr>
-					<td scope="row" width="1px"><input type="checkbox" name="user[]" value="<?php print $user->id; ?>" /></td>
-					<td><?php print Auth::getUsername($user->user_id); ?>_<?php print $user->name; ?></td>
-					<td><?php print (empty($user->password) ? '<span class="text-warning">Pending...</span>' : sprintf('
-					<div class="input-group input-group-sm w-50">
-						<input type="password" class="form-control" value="%s" aria-label="Password" aria-describedby="inputGroup-sizing-sm">
-						<div class="input-group-append">
-							<button type="button" class="input-group-text" id="inputGroup-sizing-sm" name="password">Show</button>
-						</div>
-					</div>', $user->password)); ?></td>
-					<td><?php print Auth::getUsername($user->user_id) . '_' . $user->database; ?></td>
-					<td>
-						<?php
-							if($user->time_created === null) {
-								print '<span class="text-warning">Pending...</span>';
-							} else if($user->time_created !== null) {
-								if(fruithost\Database::count('SHOW DATABASES WHERE `Database`=:name', [
-									'name'	=> sprintf('%s_%s', Auth::getUsername($user->user_id), $user->database)
-								]) === 0) {
-									print '<span class="text-danger">Error</span>';
-								} else {
-									print '<span class="text-success">Live</span>';
+<table class="table table-borderless table-striped table-hover">
+	<thead>
+		<tr>
+			<th colspan="2">Username</th>
+			<th>Password</th>
+			<th>Database</th>
+			<th>Status</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		<?php
+			foreach($this->users AS $user) {
+				?>
+					<tr>
+						<td scope="row" width="1px"><input type="checkbox" name="user[]" value="<?php print $user->id; ?>" /></td>
+						<td><?php print Auth::getUsername($user->user_id); ?>_<?php print $user->name; ?></td>
+						<td><?php print (empty($user->password) ? '<span class="text-warning">Pending...</span>' : sprintf('
+						<div class="input-group input-group-sm w-50">
+							<input type="password" class="form-control" value="%s" aria-label="Password" aria-describedby="inputGroup-sizing-sm">
+							<div class="input-group-append">
+								<button type="button" class="input-group-text" id="inputGroup-sizing-sm" name="password">Show</button>
+							</div>
+						</div>', $user->password)); ?></td>
+						<td><?php print Auth::getUsername($user->user_id) . '_' . $user->database; ?></td>
+						<td>
+							<?php
+								if($user->time_created === null) {
+									print '<span class="text-warning">Pending...</span>';
+								} else if($user->time_created !== null) {
+									if(fruithost\Database::count('SHOW DATABASES WHERE `Database`=:name', [
+										'name'	=> sprintf('%s_%s', Auth::getUsername($user->user_id), $user->database)
+									]) === 0) {
+										print '<span class="text-danger">Error</span>';
+									} else {
+										print '<span class="text-success">Live</span>';
+									}
 								}
-							}
-						?>
-					</td>
-					<td class="text-right">
-						<button class="delete btn btn-sm btn-danger" type="submit" id="button" name="delete" id="delete_<?php print $user->id; ?>" value="<?php print $user->id; ?>">Delete</button>
-					</td>
-				</tr>
-			<?php
-		}
-	?>
+							?>
+						</td>
+						<td class="text-right">
+							<button class="delete btn btn-sm btn-danger" type="submit" id="button" name="delete" id="delete_<?php print $user->id; ?>" value="<?php print $user->id; ?>">Delete</button>
+						</td>
+					</tr>
+				<?php
+			}
+		?>
+	</tbody>
 </table>
 <script type="text/javascript">
 	_watcher = setInterval(function() {

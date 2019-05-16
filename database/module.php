@@ -22,7 +22,7 @@
 			WHERE
 				`' . DATABASE_PREFIX . 'mysql_users`.`user_id`=:user
 			AND
-				`' . DATABASE_PREFIX . 'mysql_databases`.`id`=`fh_mysql_users`.`database`
+				`' . DATABASE_PREFIX . 'mysql_databases`.`id`=`' . DATABASE_PREFIX . 'mysql_users`.`database`
 			ORDER BY
 				`' . DATABASE_PREFIX . 'mysql_users`.`name`
 			ASC', [

@@ -15,7 +15,7 @@
 		public function content() {
 			?>
 			<h4>Checking status of server</h4>
-			<table class="table table-sm table-striped table-hover mt-4">
+			<table class="table table-striped table-hover mt-4">
 				<tr>
 					<th>Service</th>
 					<th>Status</th>

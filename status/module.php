@@ -15,23 +15,27 @@
 		public function content() {
 			?>
 			<h4>Checking status of server</h4>
-			<table class="table table-striped table-hover mt-4">
-				<tr>
-					<th>Service</th>
-					<th>Status</th>
-					<th></th>
-				</tr>
-				<?php
-					foreach($this->services AS $service) {
-						?>
-							<tr>
-								<td><?php print $service->name; ?></td>
-								<td><?php print $this->getStatus($service->status, true)?></td>
-								<td><small>Port <?php print $service->port; ?> is <?php print $this->getStatus($service->status)?>.</small></td>
-							</tr>
-						<?php
-					}
-				?>
+			<table class="table table-borderless table-striped table-hover mt-4 mb-4">
+				<thead>
+					<tr>
+						<th scope="col">Service</th>
+						<th scope="col">Status</th>
+						<th scope="col"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php
+						foreach($this->services AS $service) {
+							?>
+								<tr>
+									<td><?php print $service->name; ?></td>
+									<td><?php print $this->getStatus($service->status, true)?></td>
+									<td><small>Port <?php print $service->port; ?> is <?php print $this->getStatus($service->status)?>.</small></td>
+								</tr>
+							<?php
+						}
+					?>
+				</tbody>
 			</table>
 			
 			<h4>Servcer Uptime</h4>

@@ -7,7 +7,7 @@
 		}
 
 		if(preg_match('/\.protected\.conf$/', $info->getFilename())) {
-			@unlink(sprintf('%s%s%s', $info->getPath(), DS, $info->getFilename());
+			@unlink(sprintf('%s%s%s', $info->getPath(), DS, $info->getFilename()));
 		}
 	}
 	

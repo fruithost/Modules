@@ -7,7 +7,9 @@
 	require_once(PATH . '/panel/config.php');
 	require_once(PATH . '/panel/classes/Database.class.php');
 	require_once(PATH . '/panel/classes/DatabaseFactory.class.php');
+	require_once(PATH . '/panel/classes/Encryption.class.php');
 
+	use fruithost\Encryption;
 	use fruithost\Database;
 	
 	define('TAB', "\t");
@@ -20,7 +22,7 @@
 	$password	= trim(fgets(STDIN));
 	$result		= Database::single('SELECT * FROM `' . DATABASE_PREFIX . 'protected_users` WHERE `username`=:username AND `password`=:password and `id`=:directory LIMIT 1', [
 		'username'	=> $username,
-		'password'	=> $password,
+		'password'	=> Encryption::encrypt($password, ENCRYPTION_SALT),
 		'directory'	=> $directory
 	]);
 	

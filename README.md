@@ -9,7 +9,7 @@ Official repository for modules
 - ❌ domains
 - ❌ faq
 - ❌ filemanager
-- ❌ ftp
+- ✔️ [ftp](https://github.com/fruithost/Modules/tree/master/ftp)
 - ❌ live-chat
 - ❌ logfiles
 - ❌ mailserver

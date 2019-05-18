@@ -1,6 +1,6 @@
 {
 	"name":			"PHPMyAdmin",
-	"version":		"1.0.0",
+	"version":		"1.5.0",
 	"category":		"DATABASE_MANAGEMENT",
 	"icon":			"view_compact",
 	"order":		2,

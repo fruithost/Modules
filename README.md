@@ -15,7 +15,7 @@ Official repository for modules
 - ❌ mailserver
 - ❌ parked-domains
 - ❌ php
-- ❌ phpmyadmin
+- ✔️ [phpmyadmin](https://github.com/fruithost/Modules/tree/master/phpmyadmin)
 - ✔️ [protected-directorys](https://github.com/fruithost/Modules/tree/master/protected-directorys)
 - ❌ ssl
 - ❌ statistics

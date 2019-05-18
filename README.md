@@ -21,7 +21,7 @@ Official repository for modules
 - ❌ statistics
 - ✔️ [status](https://github.com/fruithost/Modules/tree/master/status)
 - ❌ subdomains
-- ❌ theme
+- ✔️ [theme](https://github.com/fruithost/Modules/tree/master/theme)
 - ❌ tickets
 - ❌ Webmail
 - ❌ webserver

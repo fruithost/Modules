@@ -12,6 +12,52 @@
 			$this->services = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'status`', []);
 		}
 		
+		public function getServices() {
+			return $this->services;
+		}
+		
+		public function onSettings($data = []) {
+			if(isset($data['UPTIME'])) {
+				if(in_array($data['UPTIME'], [
+					'true',
+					'false'
+				])) {
+					$this->setSettings('UPTIME', $data['UPTIME']);
+				}
+			}
+			
+			if(isset($data['service'])) {
+				foreach($data['service'] AS $entry) {
+					if($entry['id'] === 'new') {
+						Database::insert(DATABASE_PREFIX . 'status', [
+							'id'		=> NULL,
+							'service'	=> $entry['service'],
+							'name'		=> $entry['name'],
+							'port'		=> $entry['port'],
+							'status'	=> 'OFFLINE',
+							'time'		=> NULL
+						]);
+					} else {
+						if(isset($entry['delete'])) {
+							Database::delete(DATABASE_PREFIX . 'status', [
+								'id'		=> $entry['id']
+							]);
+						} else {
+							Database::update(DATABASE_PREFIX . 'status', 'id', [
+								'id'		=> $entry['id'],
+								'service'	=> $entry['service'],
+								'name'		=> $entry['name'],
+								'port'		=> $entry['port']
+							]);
+						}
+					}
+				}
+			}
+			
+			$this->services = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'status`', []);
+			$this->getTemplate()->assign('success', 'Settings was successfully saved!');
+		}
+		
 		public function content() {
 			?>
 			<h4>Checking status of server</h4>
@@ -37,10 +83,13 @@
 					?>
 				</tbody>
 			</table>
-			
-			<h4>Servcer Uptime</h4>
-			<p>Since <?php print $this->getUptime(); ?></p>
 			<?php
+				if($this->getSettings('UPTIME', 'true') === 'true') {
+					?>
+						<h4>Servcer Uptime</h4>
+						<p>Since <?php print $this->getUptime(); ?></p>
+					<?php
+				}
 		}
 		
 		public function getUptime() {

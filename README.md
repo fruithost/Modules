@@ -19,7 +19,7 @@ Official repository for modules
 - ✔️ [protected-directorys](https://github.com/fruithost/Modules/tree/master/protected-directorys)
 - ❌ ssl
 - ❌ statistics
-- ❌ status
+- ✔️ [status](https://github.com/fruithost/Modules/tree/master/status)
 - ❌ subdomains
 - ❌ theme
 - ❌ tickets

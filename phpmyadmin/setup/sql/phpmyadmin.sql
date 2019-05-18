@@ -6,7 +6,7 @@ CREATE DATABASE IF NOT EXISTS `phpmyadmin` DEFAULT CHARACTER SET 'utf8' COLLATE 
 -- Create User
 CREATE USER IF NOT EXISTS pma@localhost;
 GRANT USAGE ON *.* TO pma@localhost;
-GRANT ALL PRIVILEGES ON `pma`.* TO pma@localhost;
+GRANT ALL PRIVILEGES ON `phpmyadmin`.* TO pma@localhost;
 GRANT SELECT ON `mysql`.* TO pma@localhost;
 FLUSH PRIVILEGES;
 

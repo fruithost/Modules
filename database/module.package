@@ -1,9 +1,6 @@
 {
 	"name":			"Database",
 	"version":		"1.0.0",
-	"category":		"DATABASE_MANAGEMENT",
-	"icon":			"lock",
-	"order":		1,
 	"description":	"Simple database and user management for MySQL Server.",
 	"author":		{
 		"name":		"Adrian Preuß",

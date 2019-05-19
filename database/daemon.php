@@ -1,5 +1,6 @@
 <?php
 	use fruithost\Database;
+	use fruithost\Encryption;
 	
 	class DatabaseDaemon {
 		public function __construct() {
@@ -29,7 +30,7 @@
 										
 			foreach($users AS $user) {
 				$name		= $user->username . '_' . $user->name;
-				$password	= $this->createRandomPassword();
+				$password	= Encryption::decrypt($user->password, ENCRYPTION_SALT); //$this->createRandomPassword();
 				$connection	= 'localhost';
 				
 				print 'Create User ' . $name . PHP_EOL;
@@ -68,7 +69,7 @@
 				
 				Database::update(DATABASE_PREFIX . 'mysql_users', 'id', [
 					'id'			=> $user->id,
-					'password'		=> $password,
+					//'password'		=> $password,
 					'time_created'	=> date('Y-m-d H:i:s', time()),
 					'time_deleted'	=> NULL
 				]);

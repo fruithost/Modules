@@ -3,6 +3,7 @@
 	use fruithost\Auth;
 	use fruithost\Modal;
 	use fruithost\Button;
+	use fruithost\Encryption;
 	
 	class Database extends ModuleInterface {
 		private $databases	= [];
@@ -12,6 +13,18 @@
 			$this->databases = fruithost\Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'mysql_databases` WHERE `user_id`=:user ORDER BY `name` ASC', [
 				'user'	=> Auth::getID()
 			]);
+			
+			$this->addModal((new Modal('create_databases', 'Create Database', __DIR__ . '/views/database_create.php'))->addButton([
+				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
+				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
+			])->onSave([ $this, 'onSaveDatabase' ]));
+			
+			$this->addModal((new Modal('create_users', 'Create User', __DIR__ . '/views/user_create.php', [
+				'databases'	=> $this->databases
+			]))->addButton([
+				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
+				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
+			])->onSave([ $this, 'onSaveUser' ]));
 			
 			$this->users = fruithost\Database::fetch('SELECT
 				`' . DATABASE_PREFIX . 'mysql_users`.*,
@@ -29,19 +42,19 @@
 				'user'	=> Auth::getID()
 			]);
 			
-			$this->addModal((new Modal('create_databases', 'Create Database', __DIR__ . '/views/database_create.php'))->addButton([
-				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
-				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
-			])->onSave([ $this, 'onSaveDatabase' ]));
-			
-			$this->addModal((new Modal('create_users', 'Create User', __DIR__ . '/views/user_create.php', [
-				'databases'	=> $this->databases
-			]))->addButton([
-				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
-				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
-			])->onSave([ $this, 'onSaveUser' ]));
+			foreach($this->users AS $index => $user) {
+				$this->users[$index]->password = Encryption::decrypt($user->password, ENCRYPTION_SALT);
+			}
 			
 			$this->addFilter('DATABASE_MANAGEMENT', function($entries) {
+				$entries[] = (object) [
+					'name'		=> 'Databases',
+					'icon'		=> '<i class="material-icons">lock</i>',
+					'order'		=> 1,
+					'url'		=> '/module/database/databases',
+					'active'	=> $this->getCore()->getRouter()->is('/module/database/databases')
+				];
+				
 				$entries[] = (object) [
 					'name'		=> 'Users',
 					'icon'		=> '<i class="material-icons">group</i>',
@@ -70,17 +83,21 @@
 		}
 		
 		public function onSaveUser($data) {
-			if(empty($data['username']) || mb_strlen($data['username']) <= 0) {
+			if(!isset($data['mysql_user_username']) || mb_strlen($data['mysql_user_username']) <= 0) {
 				return 'Please enter a username for your database account!';
 			}
 			
-			if(empty($data['database']) || mb_strlen($data['database']) <= 0) {
+			if(!isset($data['mysql_user_password']) || mb_strlen($data['mysql_user_password']) <= 0) {
+				return 'Please enter a username for your database account!';
+			}
+			
+			if(!isset($data['mysql_user_database']) || mb_strlen($data['mysql_user_database']) <= 0) {
 				return 'Please select an existing database!';
 			}
 			
 			$connection	= NULL;
 			
-			switch($data['connection']) {
+			switch($data['mysql_user_connection']) {
 				case '%':
 					$connection = 'GLOBAL';
 				break;
@@ -95,9 +112,10 @@
 			$id = fruithost\Database::insert(DATABASE_PREFIX . 'mysql_users', [
 				'id'			=> null,
 				'user_id'		=> Auth::getID(),
-				'database'		=> $data['database'],
+				'database'		=> $data['mysql_user_database'],
 				'connection'	=> $connection,
-				'name'			=> $data['username'],
+				'name'			=> $data['mysql_user_username'],
+				'password'		=> Encryption::encrypt($data['mysql_user_password'], ENCRYPTION_SALT),
 				'time_created'	=> NULL,
 				'time_deleted'	=> NULL
 			]);
@@ -106,7 +124,7 @@
 		}
 		
 		public function onSaveDatabase($data) {
-			if(empty($data['name']) || mb_strlen($data['name']) <= 0) {
+			if(!isset($data['name']) || mb_strlen($data['name']) <= 0) {
 				return 'Please enter a name for your database!';
 			}
 			

@@ -1,6 +1,6 @@
 backup
 cronjob
-database
+mysql
 dns
 domains
 faq

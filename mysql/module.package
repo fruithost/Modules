@@ -1,5 +1,5 @@
 {
-	"name":			"Database",
+	"name":			"MySQL",
 	"version":		"1.0.0",
 	"description":	"Simple database and user management for MySQL Server.",
 	"author":		{

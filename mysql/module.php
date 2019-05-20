@@ -4,6 +4,7 @@
 	use fruithost\Modal;
 	use fruithost\Button;
 	use fruithost\Encryption;
+	use fruithost\Response;
 	
 	class Database extends ModuleInterface {
 		private $databases	= [];
@@ -51,16 +52,16 @@
 					'name'		=> 'Databases',
 					'icon'		=> '<i class="material-icons">lock</i>',
 					'order'		=> 1,
-					'url'		=> '/module/database/databases',
-					'active'	=> $this->getCore()->getRouter()->is('/module/database/databases')
+					'url'		=> '/module/mysql/databases',
+					'active'	=> $this->getCore()->getRouter()->is('/module/mysql/databases')
 				];
 				
 				$entries[] = (object) [
 					'name'		=> 'Users',
 					'icon'		=> '<i class="material-icons">group</i>',
 					'order'		=> 2,
-					'url'		=> '/module/database/users',
-					'active'	=> $this->getCore()->getRouter()->is('/module/database/users')
+					'url'		=> '/module/mysql/users',
+					'active'	=> $this->getCore()->getRouter()->is('/module/mysql/users')
 				];
 				
 				return $entries;
@@ -70,6 +71,21 @@
 		public function load($submodule = null) {
 			if(empty($submodule)) {
 				$submodule = 'databases';
+				Response::redirect('/module/mysql/' . $submodule);
+				return;
+			}
+			
+			switch($submodule) {
+				case 'databases':
+					$this->addFilter('SUBMODULE_NAME', function($title) {
+						return 'Databases';
+					});
+				break;
+				case 'users':
+					$this->addFilter('SUBMODULE_NAME', function($title) {
+						return 'Users';
+					});
+				break;
 			}
 			
 			if(empty($this->domains)) {

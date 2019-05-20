@@ -42,7 +42,7 @@
 							?>
 						</td>
 						<td class="text-right">
-							<button class="delete btn btn-sm btn-danger" type="submit" id="button" name="delete" id="delete_<?php print $user->id; ?>" value="<?php print $user->id; ?>">Delete</button>
+							<button class="delete btn btn-sm btn-danger" type="submit" name="delete" id="delete_<?php print $user->id; ?>" value="<?php print $user->id; ?>">Delete</button>
 						</td>
 					</tr>
 				<?php

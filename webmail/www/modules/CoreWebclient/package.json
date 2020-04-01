@@ -34,7 +34,7 @@
     "jquery-ui": "^1.12.1",
 	"jquery.easing": "^1.4.1",
     "json-loader": "^0.5.4",
-    "knockout": "~3.4.0",
+    "knockout": "~3.5.1",
     "less": "^2.7.1",
     "less-loader": "^2.2.3",
     "mkdirp": "^0.5.1",

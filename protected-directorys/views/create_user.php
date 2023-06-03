@@ -5,7 +5,7 @@
 	<div class="form-group row">
 		<label for="protected_directory_path" class="col-4 col-form-label col-form-label-sm">Directory:</label>
 		<div class="col-8">
-			<input type="text" readonly class="form-control-plaintext" name="protected_directory_path" id="protected_directory_path" value="<?php print $directory->path; ?>" />
+			<input type="text" readonly class="form-control-plaintext" name="protected_directory_path" id="protected_directory_path" value="<?php print (empty($directory->path) ? '' : $directory->path); ?>" />
 		</div>
 	</div>
 	<div class="form-group row">
@@ -20,5 +20,5 @@
 			<input type="protected_directory_password" class="form-control" name="protected_directory_password" id="protected_directory_password" />
 		</div>
 	</div>
-	<input type="hidden" name="protected_directory_id" value="<?php print $directory->id; ?>" />
+	<input type="hidden" name="protected_directory_id" value="<?php print (empty($directory->id) ? '' : $directory->id); ?>" />
 </div>

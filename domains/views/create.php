@@ -25,12 +25,14 @@
 			<select name="directory" class="form-control">
 				<option value="/">/ (root)</option>
 				<?php
-					foreach(new \DirectoryIterator(sprintf('%s%s', HOST_PATH, Auth::getUsername())) AS $info) {
-						if($info->isDot() || !$info->isDir()) {
-							continue;
+					if(is_readable(sprintf('%s%s', HOST_PATH, Auth::getUsername()))) {
+						foreach(new \DirectoryIterator(sprintf('%s%s', HOST_PATH, Auth::getUsername())) AS $info) {
+							if($info->isDot() || !$info->isDir()) {
+								continue;
+							}
+							
+							printf('<option value="/%1$s">/%1$s</option>', $info->getFilename());
 						}
-						
-						printf('<option value="/%1$s">/%1$s</option>', $info->getFilename());
 					}
 				?>
 			</select>

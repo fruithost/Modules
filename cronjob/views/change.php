@@ -260,12 +260,14 @@
 				<?php
 					$root		= sprintf('%s%s', HOST_PATH, Auth::getUsername());
 					
-					foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root), \RecursiveIteratorIterator::SELF_FIRST) AS $path => $info) {
-						if($info->isDir() || !preg_match('/\.php$/', $info->getFilename())) {
-							continue;
+					if(is_readable($root)) {
+						foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root), \RecursiveIteratorIterator::SELF_FIRST) AS $path => $info) {
+							if($info->isDir() || !preg_match('/\.php$/', $info->getFilename())) {
+								continue;
+							}
+							
+							printf('<option value="%1$s/%2$s">%1$s/%2$s</option>', str_replace($root, '', $info->getPath()), $info->getFilename());
 						}
-						
-						printf('<option value="%1$s/%2$s">%1$s/%2$s</option>', str_replace($root, '', $info->getPath()), $info->getFilename());
 					}
 				?>
 			</select>

@@ -88,15 +88,19 @@
 		}
 		
 		public function frame() {
-			if(Database::count('SHOW GRANTS FOR :username@:connection;', [
-				'username'		=> $_SESSION['PMA_single_signon_user'],
-				'connection'	=> Session::get('PMA_DESTINATION')
-			]) <= 0) {
+			try {
+				if(Database::count('SHOW GRANTS FOR :username@:connection;', [
+					'username'		=> $_SESSION['PMA_single_signon_user'],
+					'connection'	=> Session::get('PMA_DESTINATION')
+				]) <= 0) {
+					return null;
+				}
+				
+				if($this->getSettings('VIEW', 'IFRAME') === 'IFRAME') {
+					return $this->url('/app/phpmyadmin/www');
+				}
+			} catch(\PDOException $e) {
 				return null;
-			}
-			
-			if($this->getSettings('VIEW', 'IFRAME') === 'IFRAME') {
-				return $this->url('/app/phpmyadmin/www');
 			}
 			
 			return false;
@@ -147,6 +151,16 @@
 		}
 		
 		public function content() {
+			$empty = true;
+			try {
+				$empty = (Database::count('SHOW GRANTS FOR :username@:connection;', [
+					'username'		=> $_SESSION['PMA_single_signon_user'],
+					'connection'	=> Session::get('PMA_DESTINATION')
+				]) <= 0);
+			} catch(\PDOException $e) {
+				
+			}
+			
 			if($this->getSettings('LOGIN', 'USER') === 'SELECTION') {
 				?>
 					<div class="container">
@@ -198,10 +212,7 @@
 						<?php
 					}
 				}
-			} else if(Database::count('SHOW GRANTS FOR :username@:connection;', [
-				'username'		=> $_SESSION['PMA_single_signon_user'],
-				'connection'	=> Session::get('PMA_DESTINATION')
-			]) <= 0) {
+			} else if($empty) {
 				?>
 					<div class="jumbotron text-center bg-transparent text-muted">
 						<i class="material-icons">sentiment_very_dissatisfied</i>

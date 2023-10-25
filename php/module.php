@@ -10,7 +10,8 @@
 		private $tabs		= [
 			'extended'	=> 'Extended',
 			'security'	=> 'Security',
-			'error'		=> 'Error Handling'
+			'error'		=> 'Error Handling',
+			'display'	=> 'Display Configuration'
 		];
 		
 		public function init() {

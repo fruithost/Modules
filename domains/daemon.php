@@ -24,12 +24,16 @@
 			$logs = sprintf('%s%s/%s/', HOST_PATH, $username, 'logs');
 			$path = sprintf('%s%s/%s/', HOST_PATH, $username, $directory);
 			
+			chmod(HOST_PATH . $username, 0777);
+				
 			if(!file_exists($logs)) {
 				mkdir($logs);
+				chmod($logs, 0777);
 			}
 			
 			if(!file_exists($path)) {
 				mkdir($path);
+				chmod($path, 0777);
 			}
 			
 			return str_replace('//', '/', $path);

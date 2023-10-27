@@ -1,10 +1,113 @@
 <?php
-	$path	= '/var/fruithost/users/admin/domain1.omen/';
-	$tmp	= '.~fh.tmp.info.php';
-	file_put_contents(sprintf('%s%s', $path, $tmp), '<?php phpinfo(); ?>');
-	$result = shell_exec('DOCUMENT_ROOT=$1 \\' . PHP_EOL . 'SCRIPT_FILENAME=' . sprintf('%s%s', $path, $tmp) . ' \\' . PHP_EOL . 'REQUEST_METHOD=GET \\' . PHP_EOL . 'cgi-fcgi -bind -connect "/run/php/php8.2-fpm.sock" 2>&1');
-	@unlink(sprintf('%s%s', $path, $tmp));
-	preg_match_all('/^.*<body>(.*)<\/body>.*$/s', $result, $matches);
+	use fruithost\Auth;
+	use fruithost\PHP;
+
+	$php = new PHP();
 	
-	print $matches[1][0];
+	if(empty($this->domain)) {
+		$php->setPath(sprintf('%s%s/', HOST_PATH, Auth::getUsername()));
+	} else {
+		$php->setPath(sprintf('%s%s/%s/', HOST_PATH, Auth::getUsername(), $this->domain));
+	}
+	
+	$info = $php->getInfo();
+	
+	if($php->hasErrors()) {
+		?>
+			<div class="container">
+				<div class="container alert alert-danger" role="alert">
+					Domain "<strong><?php print $this->domain; ?></strong>" currently not accessible.
+				</div>
+			</div>
+		<?php
+	} else {
+		?>
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-10 offset-1">
+						<div class="container alert alert-primary" role="alert">
+							<div class="row">
+								<div class="col"><h5><?php print $info['info'][0]; ?></h5></div>
+								<div class="col text-right"><img src="data:image/png;base64,<?php print $info['logo']['PHP']; ?>" /></div>
+							</div>
+						</div>
+					
+						<div class="border border-primary my-2 rounded">
+							<table class="table table-sm">
+								<tbody>
+									<?php 
+										foreach($info['info'] AS $name => $value) {
+											if(is_int($name)) {
+												continue;
+											}
+											?>
+												<tr>
+													<th class="text-nowrap"><?php print $name; ?></th>
+													<td class="text-muted"><?php print (is_array($value) ? '<small class="text-danger">' . implode('</small><br /><small class="text-danger">', $value) . '</small>' : $value); ?></td>
+												</tr>
+											<?php
+										}
+									?>
+								</tbody>
+							</table>
+						</div>
+						<div class="row">
+							<small class="col text-break"><?php print $info['info'][1]; ?></small>
+							<div class="col text-right"><img src="data:image/png;base64,<?php print $info['logo']['Zend']; ?>" /></div>
+						</div>
+						<div class="text-center my-5">
+							<h2>Configuration</h2>
+						</div>
+						<?php
+							foreach($info AS $section => $content) {
+								if($section == 'info' || $section == 'logo') {
+									continue;
+								}
+								?>
+									<div class="border border-primary my-2 rounded">
+										<table class="table table-sm">
+											<thead class="text-center">
+												<tr>
+													<th colspan="4" class="border-top-0 border-bottom-0 alert alert-primary">
+														<h3><?php print strtoupper($section); ?></h3>
+													</th>
+												</tr>
+											</thead>
+											<tbody>
+												<?php 
+													foreach($content AS $name => $data) {
+														if(is_int($name)) {
+															continue;
+														}
+														?>
+															<tr>
+																<th scope="row" class="text-nowrap"><?php print $name; ?></th>
+																<?php
+																	if(is_array($data)) {
+																		print '<td class="text-muted text-break text-wrap">';
+																		
+																		foreach($data AS $index => $value) {
+																			printf('%s</td><td class="text-muted text-break text-wrap">', (is_array($value) ? '<small class="text-danger">' . implode('</small><br /><small class="text-danger">', $value) . '</small>' : $value));
+																		}
+																		
+																		print '</td>';
+																	} else {
+																		printf('<td colspan="2" class="text-muted text-break text-wrap">%s</td>', $data);
+																	}
+																?>
+															</tr>
+														<?php
+													}
+												?>
+											</tbody>
+										</table>
+									</div>
+								<?php
+							}
+						?>
+					</div>
+				</div>
+			</div>
+		<?php
+	}
 ?>

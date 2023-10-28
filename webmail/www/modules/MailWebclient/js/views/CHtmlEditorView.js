@@ -112,6 +112,7 @@ function CHtmlEditorView(bInsertImageAsBase64, oParent)
 	this.imageUploaderButton = ko.observable(null);
 	this.aUploadedImagesData = [];
 	this.imagePathFromWeb = ko.observable('');
+	this.visibleTemplatePopup = ko.observable(false);
 
 	this.visibleFontColorPopup = ko.observable(false);
 	this.oFontColorPickerView = new CColorPickerView(TextUtils.i18n('%MODULENAME%/LABEL_TEXT_COLOR'), this.setTextColorFromPopup, this);
@@ -124,6 +125,19 @@ function CHtmlEditorView(bInsertImageAsBase64, oParent)
 	this.disableEdit = ko.observable(false);
 	
 	this.textChanged = ko.observable(false);
+
+	this.actualTextСhanged = ko.observable(false);
+	
+	this.templates = ko.observableArray([]);
+	
+	if (Settings.AllowInsertTemplateOnCompose) {
+		App.subscribeEvent('%ModuleName%::ParseMessagesBodies::after', _.bind(function (oParameters) {
+			if (oParameters.AccountID === MailCache.currentAccountId() && oParameters.Folder === MailCache.getTemplateFolder())
+			{
+				this.fillTemplates();
+			}
+		}, this));
+	}
 }
 
 CHtmlEditorView.prototype.ViewTemplate = '%ModuleName%_HtmlEditorView';
@@ -169,7 +183,8 @@ CHtmlEditorView.prototype.removePlaceholder = function ()
 
 CHtmlEditorView.prototype.hasOpenedPopup = function ()
 {
-	return this.visibleInsertLinkPopup() || this.visibleLinkPopup() || this.visibleImagePopup() || this.visibleInsertImagePopup() || this.visibleFontColorPopup();
+	return this.visibleInsertLinkPopup() || this.visibleLinkPopup() || this.visibleImagePopup() 
+			|| this.visibleInsertImagePopup() || this.visibleFontColorPopup() || this.visibleTemplatePopup();
 };
 	
 CHtmlEditorView.prototype.setDisableEdit = function (bDisableEdit)
@@ -181,18 +196,18 @@ CHtmlEditorView.prototype.correctFontFromSettings = function ()
 {
 	var
 		sDefaultFont = this.sDefaultFont,
-		bFinded = false
+		bFound = false
 	;
 	
 	_.each(this.aFonts, function (sFont) {
 		if (sFont.toLowerCase() === sDefaultFont.toLowerCase())
 		{
 			sDefaultFont = sFont;
-			bFinded = true;
+			bFound = true;
 		}
 	});
 	
-	if (bFinded)
+	if (bFound)
 	{
 		this.sDefaultFont = sDefaultFont;
 	}
@@ -375,6 +390,8 @@ CHtmlEditorView.prototype.init = function (sText, bPlain, sTabIndex, sPlaceholde
 		if (this.oCrea.$container.children().length === 0)
 		{
 			this.oCrea.start(this.isEnable());
+			// this.editorUploader must be re-initialized because compose popup is destroyed after it is closed
+			this.initEditorUploader();
 		}
 	}
 	else
@@ -394,9 +411,16 @@ CHtmlEditorView.prototype.init = function (sText, bPlain, sTabIndex, sPlaceholde
 			'fontNameArray': this.aFonts,
 			'defaultFontName': this.sDefaultFont,
 			'defaultFontSize': this.iDefaultSize,
+			'alwaysTryUseImageWhilePasting': Settings.AlwaysTryUseImageWhilePasting,
 			'isRtl': UserSettings.IsRTL,
 			'enableDrop': false,
-			'onChange': _.bind(this.textChanged, this, true),
+			'onChange': _.bind(function () {
+				if (this.oCrea.bEditing)
+				{
+					this.textChanged(true);
+					this.actualTextСhanged.valueHasMutated();
+				}
+			}, this),
 			'onCursorMove': _.bind(this.setFontValuesFromText, this),
 			'onFocus': _.bind(this.onCreaFocus, this),
 			'onBlur': _.bind(this.onCreaBlur, this),
@@ -419,6 +443,65 @@ CHtmlEditorView.prototype.init = function (sText, bPlain, sTabIndex, sPlaceholde
 	this.aUploadedImagesData = [];
 	this.selectedFont(this.sDefaultFont);
 	this.selectedSize(this.iDefaultSize);
+		
+	if (Settings.AllowInsertTemplateOnCompose) {
+		this.fillTemplates();
+	}
+};
+
+/**
+ * Fills template list if there is template folder in account.
+ * Messages of template folder are requested in Prefetcher.
+ */
+CHtmlEditorView.prototype.fillTemplates = function ()
+{
+	var
+		oFolderList = MailCache.folderList(),
+		sTemplateFolder = MailCache.getTemplateFolder(),
+		oTemplateFolder = sTemplateFolder ? oFolderList.getFolderByFullName(sTemplateFolder) : null,
+		oUidList = oTemplateFolder ? oTemplateFolder.getUidList('', '', Settings.MessagesSortBy.DefaultSortBy, Settings.MessagesSortBy.DefaultSortOrder) : null,
+		aTemplates = []
+	;
+	
+	if (oUidList)
+	{
+		var aUids = oUidList.collection();
+		if (aUids.length > Settings.MaxTemplatesCountOnCompose)
+		{
+			aUids = aUids.splice(Settings.MaxTemplatesCountOnCompose);
+		}
+		_.each(aUids, function (sUid) {
+			var oMessage = oTemplateFolder.getMessageByUid(sUid);
+			if (oMessage.text() !== '')
+			{
+				aTemplates.push({
+					subject: oMessage.subject(),
+					text: oMessage.text()
+				});
+			}
+		});
+	}
+	this.templates(aTemplates);
+};
+
+CHtmlEditorView.prototype.toggleTemplatePopup = function (oViewModel, oEvent)
+{
+	if (this.visibleTemplatePopup())
+	{
+		this.visibleTemplatePopup(false);
+	}
+	else
+	{
+		oEvent.stopPropagation();
+		this.closeAllPopups();
+		this.visibleTemplatePopup(true);
+	}
+};
+
+CHtmlEditorView.prototype.insertTemplate = function (sHtml, oEvent)
+{
+	oEvent.stopPropagation();
+	this.insertHtml(sHtml);
 };
 
 CHtmlEditorView.prototype.isInitialized = function ()
@@ -440,7 +523,7 @@ CHtmlEditorView.prototype.setFocus = function ()
  */
 CHtmlEditorView.prototype.changeSignatureContent = function (sNewSignatureContent, sOldSignatureContent)
 {
-	if (this.oCrea)
+	if (this.oCrea && !this.disableEdit())
 	{
 		this.oCrea.changeSignatureContent(sNewSignatureContent, sOldSignatureContent);
 	}
@@ -491,13 +574,19 @@ CHtmlEditorView.prototype.getText = function (bRemoveSignatureAnchor)
 	return (this.sPlaceholderText !== '' && this.removeAllTags(sText) === this.sPlaceholderText) ? '' : sText;
 };
 
+
+CHtmlEditorView.prototype.getEditableArea = function ()
+{
+	return this.oCrea.$editableArea;
+};
+
 /**
  * @param {string} sText
  * @param {boolean} bPlain
  */
 CHtmlEditorView.prototype.setText = function (sText, bPlain)
 {
-	if (this.oCrea)
+	if (this.oCrea && !this.disableEdit())
 	{
 		if (bPlain)
 		{
@@ -583,6 +672,7 @@ CHtmlEditorView.prototype.closeAllPopups = function (bWithoutLinkPopup)
 	this.visibleImagePopup(false);
 	this.visibleInsertImagePopup(false);
 	this.visibleFontColorPopup(false);
+	this.visibleTemplatePopup(false);
 };
 
 /**
@@ -605,12 +695,14 @@ CHtmlEditorView.prototype.insertHtml = function (sHtml)
  * @param {Object} oViewModel
  * @param {Object} oEvent
  */
-
 CHtmlEditorView.prototype.insertLink = function (oViewModel, oEvent)
 {
 	if (!this.inactive() && !this.visibleInsertLinkPopup())
 	{
-		oEvent.stopPropagation();
+		if (oEvent && _.isFunction(oEvent.stopPropagation))
+		{
+			oEvent.stopPropagation();
+		}
 		this.linkForInsert(this.oCrea.getSelectedText());
 		this.closeAllPopups();
 		this.visibleInsertLinkPopup(true);
@@ -637,6 +729,8 @@ CHtmlEditorView.prototype.insertLinkFromPopup = function (oCurrentViewModel, eve
 	}
 	
 	this.closeInsertLinkPopup(oCurrentViewModel, event);
+	
+	return false;
 };
 
 /**
@@ -750,7 +844,8 @@ CHtmlEditorView.prototype.insertWebImageFromPopup = function (oCurrentViewModel,
 CHtmlEditorView.prototype.insertComputerImageFromPopup = function (sUid, oAttachmentData)
 {
 	var
-		oAttachment = new CAttachmentModel(),
+		iAccountId = _.isFunction(this.oParent && this.oParent.senderAccountId) ? this.oParent.senderAccountId() : MailCache.currentAccountId(),
+		oAttachment = new CAttachmentModel(iAccountId),
 		sViewLink = '',
 		bResult = false
 	;
@@ -799,7 +894,8 @@ CHtmlEditorView.prototype.closeInsertImagePopup = function (oCurrentViewModel, e
  */
 CHtmlEditorView.prototype.initUploader = function ()
 {
-	if (this.imageUploaderButton() && !this.oJua)
+	// this.oJua must be re-initialized because compose popup is destroyed after it is closed
+	if (this.imageUploaderButton())
 	{
 		this.oJua = new CJua({
 			'action': '?/Api/',
@@ -842,7 +938,8 @@ CHtmlEditorView.prototype.initUploader = function ()
  */
 CHtmlEditorView.prototype.initEditorUploader = function ()
 {
-	if (Settings.AllowInsertImage && this.uploaderAreaDom() && !this.editorUploader)
+	// this.editorUploader must be re-initialized because compose popup is destroyed after it is closed
+	if (Settings.AllowInsertImage && this.uploaderAreaDom())
 	{
 		var
 			fBodyDragEnter = null,

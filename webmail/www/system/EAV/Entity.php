@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,7 +10,7 @@ namespace Aurora\System\EAV;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Api
  */
@@ -19,10 +19,10 @@ class Entity
 	/**
 	 * @var int
 	 */
-	public $EntityId;
+	public $EntityId = 0;
 
 	/**
-	 * @var int
+	 * @var string
 	 */
 	public $UUID;
 
@@ -33,10 +33,16 @@ class Entity
 
 	/**
 	 *
-	 * @var string 
+	 * @var string
 	 */
 	public $ParentType = null;
-	
+
+	/**
+	 *
+	 * @var string
+	 */
+	public $ParentModuleName = null;
+
 	/**
 	 *
 	 * @var string
@@ -46,45 +52,57 @@ class Entity
 	/**
 	 * @var array
 	 */
-	protected $aAttributes;
-	
+	protected $aAttributes = [];
+
 	/**
 	 * @var array
+	 *
+	 * [
+	 * 	'AttributeName'	=> 	// name of attribute
+	 * 	[
+	 * 		'string', 		// type of attribute
+	 * 		'', 			// default value for attribute
+	 * 		false,			// is overrided attribute
+	 * 		false			// is restricted attribute
+	 * 	],
+	 * ]
+	 *
 	 */
-	protected $aStaticMap;
-	
+	protected $aStaticMap = [];
+
 	/**
 	 * @var array
 	 */
 	protected $aMap = null;
-	
+
 	/**
-	 * @var array
+	 * @var string[]
 	 */
-	protected static $aTypes = array(
-		'int', 
-		'string', 
-		'text', 
-		'bool', 
+	protected static $aTypes = [
+		'int',
+		'string',
+		'text',
+		'bool',
 		'datetime',
 		'mediumblob',
 		'double',
-		'bigint'
-	);
-	
+		'bigint',
+		'nodb'
+	];
+
 	/**
 	 * @var array
 	 */
-	public static $aSystemAttributes = array(
-		'entityid' => 'int', 
-		'uuid' => 'string',
-		'modulename' => 'string',
-		'parentuuid' => 'string',
-		'entitytype' => 'string'
-	);
-	
+	public static $aSystemAttributes = [
+		'entityid'		=> 'int',
+		'uuid' 			=> 'string',
+		'modulename'	=> 'string',
+		'parentuuid'	=> 'string',
+		'entitytype'	=> 'string'
+	];
+
 	/**
-	 * 
+	 *
 	 * @param string $sClassName
 	 * @param string $sModuleName
 	 * @return \Aurora\System\EAV\Entity
@@ -99,25 +117,32 @@ class Entity
 	 */
 	public function __construct($sModuleName = '')
 	{
-		$this->EntityId = 0;
-		$this->UUID = self::generateUUID();
 		$this->ModuleName = $sModuleName;
-		$this->aAttributes = array();
-		$this->setStaticMap();
+		$this->UUID = self::generateUUID();
+
 		$this->initDefaults();
 	}
-	
+
+	/**
+	 * Undocumented function
+	 *
+	 * @return void
+	 */
 	protected function initDefaults()
 	{
-		$aMap = $this->getMap();
-		foreach ($aMap as $sKey => $mValue)
+		foreach ($this->getMap() as $sKey => $aMap)
 		{
-			$this->{$sKey} = $mValue[1];
+			$oAttribute = $this->initAttribute($sKey, $aMap[1]);
+			if ($oAttribute)
+			{
+				$oAttribute->IsDefault = true;
+				$this->setAttribute($oAttribute);
+			}
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
      * @param string $sModuleName
 	 * @return string
 	 */
@@ -127,39 +152,51 @@ class Entity
 	}
 
 	/**
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getName()
 	{
 		return \get_class($this);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getModule()
 	{
 		return $this->ModuleName;
 	}
-	
+
 	public function isModuleDisabled($sModuleName)
 	{
+		$aDisabledModules = $this->getDisabledModules();
+
+		return in_array($sModuleName, $aDisabledModules);
+	}
+
+	public function getDisabledModules()
+	{
 		$sDisabledModules = isset($this->{'@DisabledModules'}) ? \trim($this->{'@DisabledModules'}) : '';
-		$aDisabledModules =  !empty($sDisabledModules) ? array($sDisabledModules) : array();
+		$aDisabledModules =  !empty($sDisabledModules) ? [$sDisabledModules] : [];
 		if (substr_count($sDisabledModules, "|") > 0)
 		{
 			$aDisabledModules = explode("|", $sDisabledModules);
 		}
-		
-		return in_array($sModuleName, $aDisabledModules);
+
+		return $aDisabledModules;
+	}
+
+	public function clearDisabledModules()
+	{
+		$this->{'@DisabledModules'} = '';
+		$this->saveAttribute('@DisabledModules');
 	}
 
 	public function disableModule($sModuleName)
 	{
-		$sDisabledModules = isset($this->{'@DisabledModules'}) ? \trim($this->{'@DisabledModules'}) : '';
-		$aDisabledModules = explode("|", $sDisabledModules);
+		$aDisabledModules = $this->getDisabledModules();
 		if (!in_array($sModuleName, $aDisabledModules))
 		{
 			$aDisabledModules[] = $sModuleName;
@@ -168,22 +205,56 @@ class Entity
 				return !empty($var);
 			});
 			$this->{'@DisabledModules'} = implode("|", $aDisabledModules);
+			$this->saveAttribute('@DisabledModules');
 		}
+	}
+
+	public function disableModules($aModules)
+	{
+		$aDisabledModules = $this->getDisabledModules();
+		foreach ($aModules as $sModuleName)
+		{
+			if (!in_array($sModuleName, $aDisabledModules))
+			{
+				$aDisabledModules[] = $sModuleName;
+				// clear array from empty values
+				$aDisabledModules = array_filter($aDisabledModules, function ($var) {
+					return !empty($var);
+				});
+				$this->{'@DisabledModules'} = implode("|", $aDisabledModules);
+			}
+		}
+		$this->saveAttribute('@DisabledModules');
 	}
 
 	public function enableModule($sModuleName)
 	{
-		$sDisabledModules = isset($this->{'@DisabledModules'}) ? \trim($this->{'@DisabledModules'}) : '';
-		$aDisabledModules = explode("|", $sDisabledModules);
-		
+		$aDisabledModules = $this->getDisabledModules();
+
 		if (($iKey = array_search($sModuleName, $aDisabledModules)) !== false)
 		{
 			unset($aDisabledModules[$iKey]);
 			$this->{'@DisabledModules'} = implode("|", $aDisabledModules);
+			$this->saveAttribute('@DisabledModules');
 		}
 	}
-	
-    /**
+
+	public function enableModules($aModules)
+	{
+		$aDisabledModules = $this->getDisabledModules();
+
+		foreach ($aModules as $sModuleName)
+		{
+			if (($iKey = array_search($sModuleName, $aDisabledModules)) !== false)
+			{
+				unset($aDisabledModules[$iKey]);
+				$this->{'@DisabledModules'} = implode("|", $aDisabledModules);
+			}
+		}
+		$this->saveAttribute('@DisabledModules');
+	}
+
+	/**
      * Returns a pseudo-random v4 UUID
      *
      * This function is based on a comment by Andrew Moore on php.net
@@ -191,7 +262,7 @@ class Entity
      * @see http://www.php.net/manual/en/function.uniqid.php#94959
      * @return string
      */
-    static public function generateUUID() 
+    static public function generateUUID()
 	{
         return sprintf(
 
@@ -223,14 +294,14 @@ class Entity
      * @param string $uuid
      * @return bool
      */
-    static public function validateUUID($uuid) 
+    static public function validateUUID($uuid)
 	{
         return preg_match(
             '/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i',
             $uuid
         ) == true;
-    }	
-	
+    }
+
 	/**
 	 * @return array
 	 */
@@ -249,7 +320,7 @@ class Entity
 		{
 			$this->{$sKey} = $mValue;
 		}
-	}	
+	}
 
 	/**
 	 * @param string $sPropertyName
@@ -258,21 +329,21 @@ class Entity
 	public function isStringAttribute($sPropertyName)
 	{
 		return in_array(
-			$this->getType($sPropertyName), 
-			array(
-				'string', 
-				'text', 
+			$this->getType($sPropertyName),
+			[
+				'string',
+				'text',
 				'datetime',
 				'mediumblob'
-			)
+			]
 		);
-	}		
-	
+	}
+
 	public function isSystemAttribute($sAttribute)
 	{
 		return in_array(strtolower($sAttribute), array_keys(self::$aSystemAttributes));
 	}
-	
+
 	/**
 	 * @param string $sPropertyName
 	 * @return array
@@ -281,12 +352,136 @@ class Entity
 	{
 		$bResult = false;
 		$aMapItem = $this->getMapItem($sPropertyName);
-		if ($aMapItem !== null && is_array($aMapItem)) {
+		if ($aMapItem !== null && is_array($aMapItem))
+		{
 			$bResult = ($aMapItem[0] === 'encrypted');
 		}
-		
+
 		return $bResult;
-	}		
+	}
+
+	/**
+	 * @param string $sPropertyName
+	 * @return bool
+	 */
+	public function isExtendedAttribute($sPropertyName)
+	{
+		$bResult = false;
+		$aMapItem = $this->getMapItem($sPropertyName);
+		if ($aMapItem !== null && is_array($aMapItem))
+		{
+			$bResult = (isset($aMapItem['@Extended']) && $aMapItem['@Extended'] === true) ;
+		}
+
+		return $bResult;
+	}
+
+	/**
+	 * @param string $sPropertyName
+	 * @return bool
+	 */
+	public function canInheridAttribute($sPropertyName)
+	{
+		$bResult = false;
+		$aMapItem = $this->getMapItem($sPropertyName);
+		if ($aMapItem !== null && is_array($aMapItem))
+		{
+			$bResult = (isset($aMapItem[3]) && $aMapItem[3] === true) ;
+		}
+
+		return $bResult;
+	}
+
+	/**
+	 * @param string $sAttribute
+	 * @param mixed $mValue
+	 * @return void
+	 */
+	public function setAttributeValue($sAttribute, $mValue)
+	{
+		$oAttribute = $this->initAttribute($sAttribute, $mValue);
+		$oAttribute->IsDefault = false;
+		$this->setAttribute($oAttribute);
+	}
+
+	/**
+	 * @param string $sName
+	 *
+	 * @throws Exception
+	 *
+	 * @return mixed
+	 */
+	public function getAttributeValue($sName)
+	{
+		$mValue = null;
+		$oAttribute = $this->getAttribute($sName);
+		if ($oAttribute instanceof Attribute)
+		{
+			$oAttribute->setType($oAttribute->Type);
+			if ($oAttribute->IsEncrypt)
+			{
+				$oAttribute->Decrypt();
+			}
+			$mValue = $oAttribute->Value;
+
+			if ($this->isDefaultValue($sName, $mValue) && isset($this->ParentType))
+			{
+				if (is_subclass_of($this->ParentType, \Aurora\System\EAV\Entity::class))
+				{
+					if (isset($this->ParentUUID))
+					{
+						$oEntity = \Aurora\System\Managers\Eav::getInstance()->getEntity($this->ParentUUID);
+						if (isset($oEntity) && $oEntity->canInheridAttribute($sName))
+						{
+							$mValue = $oEntity->{$sName};
+							$oAttribute->Inherited = true;
+						}
+					}
+				}
+				else if(is_subclass_of($this->ParentType, \Aurora\System\AbstractSettings::class))
+				{
+					if($this->ParentType === \Aurora\System\Settings::class)
+					{
+						$mValue = \Aurora\System\Api::GetSettings()->GetValue($sName);
+						$oAttribute->Inherited = true;
+					}
+					if($this->ParentType === \Aurora\System\Module\Settings::class)
+					{
+						if ($this->isExtendedAttribute($sName))
+						{
+							list($sModuleName, $sName) = \explode('::', $sName);
+						}
+						else
+						{
+							$sModuleName = $this->ModuleName;
+						}
+						$oModule = \Aurora\System\Api::GetModule($sModuleName);
+						if ($oModule instanceof \Aurora\System\Module\AbstractModule)
+						{
+							$mValue = $oModule->getConfig($sName, $mValue);
+							$oAttribute->Inherited = true;
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			$aMapItem = $this->getMapItem($sName);
+			if (isset($aMapItem))
+			{
+				$oAttribute = Attribute::createInstance($sName, $aMapItem[1], $aMapItem[0]);
+				if ($oAttribute->IsEncrypt)
+				{
+					$oAttribute->Decrypt();
+				}
+				$this->setAttribute($oAttribute);
+				$mValue = $oAttribute->Value;
+			}
+		}
+
+		return $mValue;
+	}
 
 	/**
 	 * @param string $sName
@@ -304,36 +499,7 @@ class Entity
 	 */
 	public function __set($sAttribute, $mValue)
 	{
-		if (!($mValue instanceof Attribute))
-		{
-			if ($this->issetAttribute($sAttribute))
-			{
-				$oAttribute = $this->getAttribute($sAttribute);
-				if ($oAttribute->Encrypted)
-				{
-					$oAttribute->Encrypted = false;
-				}
-				$oAttribute->Value = $mValue;
-				$oAttribute->setType($oAttribute->Type);
-				$mValue = $oAttribute;
-			}
-			else
-			{
-				$mValue = Attribute::createInstance(
-					$sAttribute, 
-					$mValue, 
-					$this->getType($sAttribute), 
-					$this->isEncryptedAttribute($sAttribute), 
-					$this->EntityId
-				);
-			}
-		}
-		if ($mValue->IsEncrypt)
-		{
-			$mValue->Encrypt();
-		}
-		$mValue->Inherited = false;
-		$this->setAttribute($mValue);
+		$this->setAttributeValue($sAttribute, $mValue);
 	}
 
 	/**
@@ -345,69 +511,11 @@ class Entity
 	 */
 	public function __get($sName)
 	{
-		$mValue = null;
-		$oAttribute = $this->getAttribute($sName);
-		if ($oAttribute instanceof Attribute)
-		{
-			$oAttribute->setType($oAttribute->Type);
-			if ($oAttribute->IsEncrypt)
-			{
-				$oAttribute->Decrypt();
-			}
-			$mValue = $oAttribute->Value;
-
-			if ($this->isDefaultValue($sName, $mValue) && isset($this->ParentType))
-			{
-				if (is_subclass_of($this->ParentType, 'Aurora\System\EAV\Entity'))
-				{
-					$oEntity = Entity::createInstance($this->ParentType, $this->ModuleName);
-					if (isset($this->ParentUUID))
-					{
-						$oEntity = (new \Aurora\System\Managers\Eav())->getEntity($this->ParentUUID);
-						$mValue = $oEntity->{$sName};
-						$oAttribute->Inherited = true;
-					}
-				}
-				else if(is_subclass_of($this->ParentType, 'Aurora\System\AbstractSettings'))
-				{
-					if($this->ParentType === 'Aurora\System\Settings')
-					{
-						$mValue = \Aurora\System\Api::GetSettings()->GetValue($sName);
-						$oAttribute->Inherited = true;
-					}
-					if($this->ParentType === 'Aurora\System\Module\Settings')
-					{
-						$oModule = \Aurora\System\Api::GetModule($this->ModuleName);
-						if ($oModule instanceof \Aurora\System\Module\AbstractModule)
-						{
-							$mValue = $oModule->GetSettings()->GetValue($sName);
-							$oAttribute->Inherited = true;
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			
-			$aMapItem = $this->getMapItem($sName);
-			if (isset($aMapItem))
-			{
-				$oAttribute = Attribute::createInstance($sName, $aMapItem[1], $aMapItem[0]);
-				if ($oAttribute->IsEncrypt)
-				{
-					$oAttribute->Decrypt();
-				}	
-				$this->setAttribute($oAttribute);
-				$mValue = $oAttribute->Value;
-			}
-		}
-
-		return $mValue;
+		return $this->getAttributeValue($sName);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param type $aProperties
 	 */
 	public function populate($aProperties)
@@ -417,27 +525,27 @@ class Entity
 		{
 			if (isset($aMap[$sKey]))
 			{
-				$this->{$sKey} = $mValue;
+				$this->setAttributeValue($sKey, $mValue);
 			}
 		}
 	}
-	
+
 	public function resetToDefaults()
 	{
 		foreach ($this->aAttributes as $oAttrinbute)
 		{
-			$this->{$oAttrinbute->Name} = $this->getDefaultValue($oAttrinbute->Name);
+			$this->setAttributeValue($oAttrinbute->Name, $this->getDefaultValue($oAttrinbute->Name));
 		}
 	}
-	
+
 	public function resetToDefault($sAttribute)
 	{
-		$mResult = (new \Aurora\System\Managers\Eav())->deleteAttribute(
+		$mResult = \Aurora\System\Managers\Eav::getInstance()->deleteAttribute(
 			$this->getType($sAttribute),
 			$this->EntityId,
 			$sAttribute
-		);	
-		
+		);
+
 		if ($mResult)
 		{
 			$this->{$sAttribute} = $this->getDefaultValue($sAttribute);
@@ -450,7 +558,7 @@ class Entity
 	public function getType($sAttribute)
 	{
 		$mType = 'string';
-		
+
 		if ($this->isSystemAttribute($sAttribute))
 		{
 			if (isset(self::$aSystemAttributes[\strtolower($sAttribute)]))
@@ -470,30 +578,24 @@ class Entity
 				}
 			}
 		}
-		
+
 		return $mType;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param type $sAttribute
 	 * @param type $mValue
 	 * @return type
 	 */
 	public function isDefaultValue($sAttribute, $mValue)
 	{
-		$bResult = false;
-		$aMap = $this->getMap();
-		if (isset($aMap[$sAttribute]))
-		{
-			$bResult = ($mValue === $aMap[$sAttribute][1]);
-		}
-		
-		return $bResult;
+		$oAttribute = $this->getAttribute($sAttribute);
+		return ($oAttribute && $oAttribute->IsDefault);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param type $sAttribute
 	 * @return type
 	 */
@@ -505,12 +607,12 @@ class Entity
 		{
 			$mResult = $aMap[$sAttribute][1];
 		}
-		
+
 		return $mResult;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param type $sAttribute
 	 * @return type
 	 */
@@ -524,7 +626,7 @@ class Entity
 		}
 		$aMap = $this->getMap();
 		return ((isset($aMap[$sAttribute]) && isset($aMap[$sAttribute][2]) && $aMap[$sAttribute][2] === true) || $bOverride);
-	}	
+	}
 
 	/**
 	 * @return bool
@@ -540,14 +642,15 @@ class Entity
 	public function getMap()
 	{
 		$aStaticMap = $this->getStaticMap();
-		$aExtendedObject = \Aurora\System\Api::GetModuleManager()->getExtendedObject($this->getName());
+		$aExtendedObject = \Aurora\System\ObjectExtender::getInstance()->getObject($this->getName());
 		$this->aMap = array_merge(
-			$aStaticMap, 
+			$aStaticMap,
 			$aExtendedObject
 		);
+
 		return $this->aMap;
 	}
-	
+
 	/**
 	 * @return array
 	 */
@@ -555,18 +658,60 @@ class Entity
 	{
 		$aMap = $this->getMap();
 		return isset($aMap[$sName]) ? $aMap[$sName] : null;
-	}	
-	
+	}
+
+	/**
+	 * @param string $sAttribute
+	 * @param mixed $mValue
+	 * @return Attribute
+	 */
+	public function initAttribute($sAttribute, $mValue)
+	{
+		if (!($mValue instanceof Attribute))
+		{
+			if ($this->issetAttribute($sAttribute))
+			{
+				$oAttribute = $this->getAttribute($sAttribute);
+				if ($oAttribute->Encrypted)
+				{
+					$oAttribute->Encrypted = false;
+				}
+				$oAttribute->Value = $mValue;
+				$oAttribute->setType($oAttribute->Type);
+				$mValue = $oAttribute;
+			}
+			else
+			{
+				$mValue = Attribute::createInstance(
+					$sAttribute,
+					$mValue,
+					$this->getType($sAttribute),
+					$this->isEncryptedAttribute($sAttribute),
+					$this->EntityId,
+					false,
+					$this->isExtendedAttribute($sAttribute)
+				);
+			}
+		}
+		if ($mValue->IsEncrypt)
+		{
+			$mValue->Encrypt();
+		}
+		$mValue->Inherited = false;
+
+		return $mValue;
+	}
+
 	/**
 	 * @return bool
 	 */
 	public function issetAttribute($sAttributeName)
 	{
 		return isset($this->aAttributes[$sAttributeName]);
-	}	
+	}
 
 	/**
-	 * 
+	 *
 	 * @param \Aurora\System\EAV\Attribute $oAttribute
 	 */
 	private function setAttribute(Attribute $oAttribute)
@@ -577,9 +722,9 @@ class Entity
 			$this->aAttributes[$oAttribute->Name] = $oAttribute;
 		}
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param array $aAttributes
 	 */
 	public function setOverridedAttributes($aAttributes)
@@ -593,17 +738,17 @@ class Entity
 			}
 		}
 	}
-	
+
 	/**
 	 * @return \Aurora\System\EAV\Attribute
 	 */
-	private function getAttribute($sAttributeName)
+	public function getAttribute($sAttributeName)
 	{
 		return isset($this->aAttributes[$sAttributeName]) ? $this->aAttributes[$sAttributeName] : false;
-	}	
-	
+	}
+
 	/**
-	 * @param bool 
+	 * @param bool
 	 * @return array
 	 */
 	public function getAttributes($bOnlyOverrided = false)
@@ -617,12 +762,17 @@ class Entity
 		{
 			$aAttributes = $this->aAttributes;
 		}
-		
+
 		return $aAttributes;
-	}	
-	
+	}
+
+	public function getAttributesType()
+	{
+		$this->getMap();
+	}
+
 	/**
-	 * @param bool 
+	 * @param bool
 	 * @return array
 	 */
 	public function getOverridedAttributes()
@@ -632,15 +782,16 @@ class Entity
 				return $self->isOverridedAttribute($oAttribute->Name);
 			}
 		);
-	}	
+	}
 
 	/**
 	 * @return array
 	 */
 	public function getAttributesKeys()
 	{
+		$this->aAttributes['@DisabledModules'] = '';
 		return array_keys($this->aAttributes);
-	}		
+	}
 
 	/**
 	 * @return int
@@ -648,16 +799,20 @@ class Entity
 	public function countAttributes()
 	{
 		return count($this->aAttributes);
-	}	
+	}
 
 	/**
-	 * @param array 
+	 * @param array
 	 */
 	public function setStaticMap()
 	{
 		foreach ($this->getMap() as $sKey => $aMap)
 		{
-			$this->{$sKey} = $aMap[1];
+			$oAttribute = $this->initAttribute($sKey, $aMap[1]);
+			if ($oAttribute)
+			{
+				$this->setAttribute($oAttribute);
+			}
 		}
 	}
 
@@ -666,33 +821,44 @@ class Entity
 	 */
 	public function getStaticMap()
 	{
-		return is_array($this->aStaticMap) ? $this->aStaticMap : array();
-	}	
-	
+		return is_array($this->aStaticMap) ? $this->aStaticMap : [];
+	}
+
 	/**
 	 * @return array
-	 */	
+	 */
 	public function toArray()
 	{
-		$aResult = array(
+		$aResult = [
 			'EntityId' => $this->EntityId,
 			'UUID' => $this->UUID,
 			'ParentUUID' => $this->ParentUUID,
 			'ModuleName' => $this->ModuleName
-		);
-		
+		];
+
 		foreach($this->aAttributes as $oAttribute)
 		{
-			$aResult[$oAttribute->Name] = $this->{$oAttribute->Name};
+			if (!$this->isRestrictedAttribute($oAttribute->Name))
+			{
+				if ($oAttribute->Encrypted && !empty($this->{$oAttribute->Name}))
+				{
+					// Dummy encrypted attribute could be passed to client side by toResponseArray method.
+					$aResult[$oAttribute->Name] = '*****';
+				}
+				else
+				{
+					$aResult[$oAttribute->Name] = $this->{$oAttribute->Name};
+				}
+			}
 		}
 		return $aResult;
 	}
-	
+
 	/**
 	 * alias to toArray
-	 * 
+	 *
 	 * @return array
-	 */	
+	 */
 	public function toResponseArray()
 	{
 		return $this->toArray();
@@ -700,6 +866,84 @@ class Entity
 
 	public static function extend($sModuleName, $aMap)
 	{
-		\Aurora\System\Api::GetModuleManager()->extendObject($sModuleName, static::class, $aMap);
+		\Aurora\System\ObjectExtender::getInstance()->extend($sModuleName, static::class, $aMap);
+	}
+
+	public function save()
+	{
+		return \Aurora\System\Managers\Eav::getInstance()->saveEntity($this);
+	}
+
+	public function delete()
+	{
+		return \Aurora\System\Managers\Eav::getInstance()->deleteEntity($this->EntityId);
+	}
+
+	public function saveAttribute($sName)
+	{
+		$bResult = false;
+
+		$oAttribute = $this->getAttribute($sName);
+		if ($oAttribute instanceof Attribute)
+		{
+			$bResult = $oAttribute->save($this);
+		}
+
+		return $bResult;
+	}
+
+	public function saveAttributes($aAttributes)
+	{
+		$bResult = false;
+
+		$aAttributeOjects = [];
+		foreach ($aAttributes as $sName)
+		{
+			$aAttributeOjects[$sName] = $this->getAttribute($sName);
+		}
+
+		if (count($aAttributeOjects) > 0)
+		{
+			$bResult = \Aurora\System\Managers\Eav::getInstance()->setAttributes($this, $aAttributeOjects);
+		}
+
+		return $bResult;
+	}
+
+	public function isNodbAttribute($sAttributeName)
+	{
+		return $this->getType($sAttributeName) === 'nodb';
+	}
+
+	public function isRestrictedAttribute($sAttributeName)
+	{
+		$aMap = $this->getMap();
+		return ((isset($aMap[$sAttributeName]) && isset($aMap[$sAttributeName][3]) && $aMap[$sAttributeName][3] === true));
+	}
+
+	public function populateFromDB($aEntity)
+	{
+		foreach ($aEntity as $sAttrKey => $mValue)
+		{
+			if (!$this->isSystemAttribute($sAttrKey))
+			{
+				$bIsEncrypted = $this->isEncryptedAttribute($sAttrKey);
+				$oAttribute = \Aurora\System\EAV\Attribute::createInstance(
+					$sAttrKey,
+					$mValue,
+					$this->getType($sAttrKey),
+					$bIsEncrypted,
+					$this->EntityId
+				);
+				$oAttribute->Encrypted = $bIsEncrypted;
+				$oAttribute->CanInherit = $this->canInheridAttribute($sAttrKey);
+				$this->{$sAttrKey} = $oAttribute;
+			}
+			else
+			{
+				settype($mValue, $this->getType($sAttrKey));
+				$this->{$sAttrKey} = $mValue;
+			}
+		}
 	}
 }

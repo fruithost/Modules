@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,23 +10,21 @@ namespace Aurora\System\Managers;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
- *
- * \Aurora\System\Managers\Filecache class summary
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Filecache
  */
 class Filecache extends \Aurora\System\Managers\AbstractManagerWithStorage
 {
 	/**
-	 * 
+	 *
 	 * @param string $sForcedStorage
 	 */
 	public function __construct()
 	{
 		parent::__construct(\Aurora\System\Api::GetModule('Core'), new Filecache\Storage($this));
-	}	
-	
+	}
+
 	/**
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account|CHelpdeskUser $oAccount
 	 * @param string $sKey
@@ -139,7 +137,7 @@ class Filecache extends \Aurora\System\Managers\AbstractManagerWithStorage
 		}
 		return $mResult;
 	}
-	
+
 	/**
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account|CHelpdeskUser $oAccount
 	 * @param string $sTempName
@@ -159,7 +157,7 @@ class Filecache extends \Aurora\System\Managers\AbstractManagerWithStorage
 			$this->setLastException($oException);
 		}
 		return $mResult;
-	}	
+	}
 
 	/**
 	 * @param string $sUUID

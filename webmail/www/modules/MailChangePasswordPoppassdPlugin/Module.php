@@ -8,6 +8,8 @@
 namespace Aurora\Modules\MailChangePasswordPoppassdPlugin;
 
 /**
+ * Allows users to change passwords on their email accounts using POPPASSD protocol.
+ * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
@@ -126,9 +128,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 				{
 					if ($this->oPopPassD->Login($oAccount->IncomingLogin, $oAccount->getPassword()))
 					{
-						if (!$this->oPopPassD->NewPass($sPassword))
+						$aNewPasswordResult = $this->oPopPassD->NewPass($sPassword);
+						if (!$aNewPasswordResult[0])
 						{
-							throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountNewPasswordRejected);
+							throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountNewPasswordRejected, null, $aNewPasswordResult[1]);
 						}
 						else
 						{

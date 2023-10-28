@@ -121,17 +121,17 @@ CFacebookSettingsFormView.prototype.connect = function (aScopes)
 	$.cookie('oauth-redirect', 'connect');
 	this.bRunCallback = false;
 	var
-		oWin = WindowOpener.open(UrlUtils.getAppPath() + '?oauth=facebook', 'Facebook'),
+		oWin = WindowOpener.open(UrlUtils.getAppPath() + '?oauth=facebook-connect', 'Facebook'),
 		iIntervalId = setInterval(_.bind(function() {
 			if (oWin.closed)
 			{
+				clearInterval(iIntervalId);
 				if (!this.bRunCallback)
 				{
 					window.location.reload();
 				}
 				else
 				{
-					clearInterval(iIntervalId);
 					App.broadcastEvent('OAuthAccountChange::after');
 					this.updateSavedState();
 					Settings.updateScopes(this.connected(), this.scopes());

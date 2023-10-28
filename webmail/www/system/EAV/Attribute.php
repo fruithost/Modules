@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,59 +10,65 @@ namespace Aurora\System\EAV;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package EAV
  * @subpackage Classes
  */
 class Attribute
 {
-	/*
+	/**
 	 * @var int $Id
 	 */
 	public $Id;
 
-	/*
+	/**
 	 * @var int $EntityId
 	 */
 	public $EntityId;
 
-	/*
+	/**
 	 * @var string $Name
 	 */
 	public $Name;
 
-	/*
+	/**
 	 * @var mixed $Value
 	 */
 	public $Value;
 
-	/*
+	/**
 	 * @var string $Type
 	 */
 	public $Type;
 
-	/*
+	/**
 	 * @var bool $IsEncrypt
 	 */
 	public $IsEncrypt;
-	
-	/*
+
+	/**
 	 * @var bool $Encrypted
 	 */
-	public $Encrypted;	
-	
-	/*
+	public $Encrypted;
+
+	/**
 	 * @var bool $ReadOnly
 	 */
-	public $ReadOnly;	
-	
+	public $ReadOnly;
+
 	/**
 	 *
 	 * @var bool $Override
 	 */
 	public $Override;
-	
+
+	/**
+	 *
+	 * @var bool $CanInherit
+	 */
+	public $CanInherit;
+
 	/**
 	 *
 	 * @var bool $Inherited
@@ -77,7 +83,7 @@ class Attribute
 	 * @param int $iEntityId
 	 * @param bool $bReadOnly
 	 */
-	public function __construct($sName, $mValue = null, $sType = 'string', $bIsEncrypt = false, $iEntityId = 0, $bReadOnly = false)
+	public function __construct($sName, $mValue = null, $sType = 'string', $bIsEncrypt = false, $iEntityId = 0, $bReadOnly = false, $bExtended = false)
 	{
 		$this->Id = 0;
 		$this->EntityId = $iEntityId;
@@ -88,10 +94,13 @@ class Attribute
 		$this->ReadOnly = $bReadOnly;
 		$this->Override = false;
 		$this->Inherited = false;
+		$this->CanInherit = false;
+		$this->IsDefault = false;
+		$this->bExtended = $bExtended;
 
 		$this->setType($sType);
 	}
-	
+
 	/**
 	 * @param string $sName
 	 * @param mixed $sValue
@@ -99,12 +108,12 @@ class Attribute
 	 * @param bool $bEncrypt
 	 * @param int $iEntityId
 	 * @param bool $bReadOnly
-	 * 
+	 *
 	 * @return \Aurora\System\EAV\Attribute
 	 */
-	public static function createInstance($sName, $sValue = null, $sType = null, $bEncrypt = false, $iEntityId = 0, $bReadOnly = false)
+	public static function createInstance($sName, $sValue = null, $sType = null, $bEncrypt = false, $iEntityId = 0, $bReadOnly = false, $bExtended = false)
 	{
-		return new self($sName, $sValue, $sType, $bEncrypt, $iEntityId, $bReadOnly);
+		return new self($sName, $sValue, $sType, $bEncrypt, $iEntityId, $bReadOnly, $bExtended);
 	}
 
 	/**
@@ -116,38 +125,33 @@ class Attribute
 	{
 		return true;
 	}
-	
+
 	/**
 	 * @return bool
 	 */
 	public function needToEscape()
 	{
 		$bResult = false;
-		switch ($this->Type)
+		if (!is_null($this->Value))
 		{
-			case "mediumblob":
-			case "string" :
-				$bResult = true;
-				break;
-			case "text" :
-				$bResult = true;
-				break;
-			case "datetime" :
-				if (!empty($this->Value))
-				{
+			switch ($this->Type)
+			{
+				case "mediumblob":
+				case "string" :
 					$bResult = true;
-				}
-				else
-				{
-					$bResult = false;
-				}
-				break;
-		}	
-		
+					break;
+				case "text" :
+					$bResult = true;
+					break;
+				case "datetime" :
+					$bResult = !empty($this->Value);
+					break;
+			}
+		}
+
 		return $bResult;
 	}
-	
-	
+
 	/**
 	 * @param string $sType
 	 */
@@ -158,9 +162,9 @@ class Attribute
 			$sType = gettype($this->Value);
 		}
 		$this->Type = $sType;
-		
+
 		$sType = strtolower($sType);
-		if (in_array($sType, array('string', 'int', 'array', 'double', 'bool')))
+		if (in_array($sType, ['string', 'int', 'array', 'double', 'bool']))
 		{
 			settype($this->Value, $sType);
 		}
@@ -168,7 +172,7 @@ class Attribute
 		{
 			settype($this->Value, 'int');
 		}
-		else if (in_array($sType, array('encoded', 'datetime', 'mediumblob')) && !is_null($this->Value))
+		else if (in_array($sType, ['encoded', 'datetime', 'mediumblob']) && !is_null($this->Value))
 		{
 			settype($this->Value, 'string');
 		}
@@ -184,8 +188,8 @@ class Attribute
 				}
 			}
 		}
-	}	
-	
+	}
+
 	/**
 	 * @return bool
 	 */
@@ -200,11 +204,11 @@ class Attribute
 			case "bool" :
 				$sResult = '%d';
 				break;
-		}	
-		
-		return $sResult;	
+		}
+
+		return $sResult;
 	}
-	
+
 	public function Encrypt()
 	{
 		if (!empty($this->Value) && !$this->Encrypted)
@@ -213,7 +217,7 @@ class Attribute
 			$this->Encrypted = true;
 		}
 	}
-	
+
 	public function Decrypt()
 	{
 		if ($this->Encrypted)
@@ -221,6 +225,10 @@ class Attribute
 			$this->Value = \Aurora\System\Utils::DecryptValue($this->Value);
 			$this->Encrypted = false;
 		}
-	}	
-}
+	}
 
+	public function save($oEntity)
+	{
+		return \Aurora\System\Managers\Eav::getInstance()->setAttribute($oEntity, $this);
+	}
+}

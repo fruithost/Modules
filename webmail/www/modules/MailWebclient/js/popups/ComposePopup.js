@@ -147,13 +147,19 @@ CComposePopup.prototype.onOpen = function (aParams)
 CComposePopup.prototype.minimize = function ()
 {
 	this.minimized(true);
-	this.$popupDom.addClass('minimized');
+	if (this.$popupDom)
+	{
+		this.$popupDom.addClass('minimized');
+	}
 };
 
 CComposePopup.prototype.maximize = function ()
 {
 	this.minimized(false);
-	this.$popupDom.removeClass('minimized');
+	if (this.$popupDom)
+	{
+		this.$popupDom.removeClass('minimized');
+	}
 };
 
 CComposePopup.prototype.saveAndClose = function ()
@@ -163,7 +169,9 @@ CComposePopup.prototype.saveAndClose = function ()
 		this.saveCommand();
 	}
 
-	this.closePopup();
+	// closePopup method will remove the entire popup so click event for span.item.save_and_close won't be fired and tooltip won't be hidden.
+	// So we postpone it for a bit.
+	setTimeout(this.closePopup.bind(this), 0);
 };
 
 CComposePopup.prototype.cancelPopup = function ()

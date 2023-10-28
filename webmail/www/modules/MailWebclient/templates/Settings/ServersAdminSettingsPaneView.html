@@ -6,21 +6,32 @@
 </div>
 
 <div class="panel_center">
-	<div class="fields" data-bind="visible: servers().length === 0 && !createMode() && serversRetrieved()">
-		<div class="fieldset">
-			<div class="hint" style="margin: 0;" data-bind="i18n: {'key': '%MODULENAME%/INFO_NO_SERVERS'}"></div>
-		</div>
-	</div>
-	<div data-bind="visible: createMode() || servers().length > 0">
-		<div class="items_list account_list" data-bind="visible: !createMode()">
+		<div class="items_list simple_list" data-bind="visible: !createMode() && servers().length > 0">
 			<div data-bind="foreach: servers">
 				<div class="item account" data-bind="css: {'selected': iId === $parent.editedServerId()},  click: function () { $parent.routeEditServer(iId); }">
 					<span class="title" data-bind="text: sName + sTenantHint"></span>
-					<span class="link fetcher" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_DELETE'}, 
+					<span class="link fetcher" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_DELETE'},
 							click: function (oModel, oEv) { oEv.stopPropagation(); $parent.deleteServer(iId); },
 							visible: bAllowToDelete"></span>
 				</div>
 			</div>
+		</div>
+		<div class="fields" data-bind="visible: servers().length === 0 && !createMode() && serversRetrieved()" style="margin-bottom: 40px;">
+			<div class="fieldset">
+				<div class="hint" style="margin: 0;" data-bind="i18n: {'key': '%MODULENAME%/INFO_NO_SERVERS'}, visible: searchValue() === ''"></div>
+				<div class="hint" style="margin: 0;" data-bind="i18n: {'key': '%MODULENAME%/INFO_NO_SERVERS_FOUND'}, visible: searchValue() !== ''"></div>
+			</div>
+		</div>
+		<div data-bind="visible: !createMode() && (visibleSearch() || searchValue() !== '')" class="mail-servers-pagination">
+			<span class="search_block">
+				<span class="input" data-bind="css: {'focus': isSearchFocused}">
+					<span class="icon search" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SEARCH'}, click: routeSearch"></span>
+					<input class="field" spellcheck="false" type="text" data-bind="hasfocus: isSearchFocused, value: newSearchValue, onEnter: routeSearch, valueUpdate: 'afterkeydown'" />
+				</span>
+			</span>
+			<span data-bind="visible: oPageSwitcher.pages().length > 0">
+				<!-- ko template: {name: oPageSwitcher.ViewTemplate, data: oPageSwitcher} --><!-- /ko -->
+			</span>
 		</div>
 		<div class="tabs" data-bind="visible: createMode() || editedServerId() !== 0">
 			<div class="tabs_container">
@@ -37,7 +48,7 @@
 										<input type="checkbox" id="setExternalAccessServers" data-bind="checked: setExternalAccessServers" />
 									</label>
 									<label for="setExternalAccessServers" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ADMIN_EXTERNAL_ACCESS_SERVERS'}"></label>
-								</div>	
+								</div>
 							</div>
 							<div class="row hint" data-bind="visible: bAdminEdit">
 								<span class="value" data-bind="i18n: {'key': '%MODULENAME%/LABEL_HINT_ADMIN_EXTERNAL_ACCESS_SERVERS', type: 'html'}"></span>
@@ -45,26 +56,70 @@
 							<div class="row" data-bind="visible: bAdminEdit">
 								<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_IMAP_SERVER'}, css: {'disabled': !setExternalAccessServers()}"></span>
 								<input class="value input server" spellcheck="false" type="text" maxlength="255"
-										data-bind="enable: setExternalAccessServers, value: externalAccessImapServer, valueUpdate: 'afterkeydown', 
+										data-bind="enable: setExternalAccessServers, value: externalAccessImapServer, valueUpdate: 'afterkeydown',
 											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
-
-								<span class="label" style="width: auto; margin-left: 10px;" 
+								<span class="label" style="width: auto; margin-left: 10px;"
 										data-bind="i18n: {'key': '%MODULENAME%/LABEL_PORT'}, css: {'disabled': !setExternalAccessServers()}"></span>
-								<input class="value input port" spellcheck="false" type="text" maxlength="5" 
-										data-bind="enable: setExternalAccessServers, value: externalAccessImapPort, valueUpdate: 'afterkeydown', 
+								<input class="value input port" spellcheck="false" type="text" maxlength="5"
+										data-bind="enable: setExternalAccessServers, value: externalAccessImapPort, valueUpdate: 'afterkeydown',
+											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+								<span class="label" style="width: auto; margin-left: 10px;"
+								      data-bind="i18n: {'key': '%MODULENAME%/LABEL_ALTERNATIVE_PORT'}, css: {'disabled': !setExternalAccessServers()}"></span>
+								<input class="value input port" spellcheck="false" type="text" maxlength="5"
+								       data-bind="enable: setExternalAccessServers, value: externalAccessImapAlterPort, valueUpdate: 'afterkeydown',
+											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+							</div>
+							<div class="row" data-bind="visible: bAdminEdit">
+								<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_POP3_SERVER'}, css: {'disabled': !setExternalAccessServers()}"></span>
+								<input class="value input server" spellcheck="false" type="text" maxlength="255"
+								       data-bind="enable: setExternalAccessServers, value: externalAccessPop3Server, valueUpdate: 'afterkeydown',
+											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+								<span class="label" style="width: auto; margin-left: 10px;"
+								      data-bind="i18n: {'key': '%MODULENAME%/LABEL_PORT'}, css: {'disabled': !setExternalAccessServers()}"></span>
+								<input class="value input port" spellcheck="false" type="text" maxlength="5"
+								       data-bind="enable: setExternalAccessServers, value: externalAccessPop3Port, valueUpdate: 'afterkeydown',
+											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+								<span class="label" style="width: auto; margin-left: 10px;"
+								      data-bind="i18n: {'key': '%MODULENAME%/LABEL_ALTERNATIVE_PORT'}, css: {'disabled': !setExternalAccessServers()}"></span>
+								<input class="value input port" spellcheck="false" type="text" maxlength="5"
+								       data-bind="enable: setExternalAccessServers, value: externalAccessPop3AlterPort, valueUpdate: 'afterkeydown',
 											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
 							</div>
 							<div class="row" data-bind="visible: bAdminEdit">
 								<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SMTP_SERVER'}, css: {'disabled': !setExternalAccessServers()}"></span>
 								<input class="value input server" spellcheck="false" type="text" maxlength="255"
-										data-bind="enable: setExternalAccessServers, value: externalAccessSmtpServer, valueUpdate: 'afterkeydown', 
+										data-bind="enable: setExternalAccessServers, value: externalAccessSmtpServer, valueUpdate: 'afterkeydown',
 											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
-
-								<span class="label" style="width: auto; margin-left: 10px;" 
+								<span class="label" style="width: auto; margin-left: 10px;"
 										data-bind="i18n: {'key': '%MODULENAME%/LABEL_PORT'}, css: {'disabled': !setExternalAccessServers()}"></span>
-								<input class="value input port" spellcheck="false" type="text" maxlength="5" 
-										data-bind="enable: setExternalAccessServers, value: externalAccessSmtpPort, valueUpdate: 'afterkeydown', 
+								<input class="value input port" spellcheck="false" type="text" maxlength="5"
+										data-bind="enable: setExternalAccessServers, value: externalAccessSmtpPort, valueUpdate: 'afterkeydown',
 											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+								<span class="label" style="width: auto; margin-left: 10px;"
+								      data-bind="i18n: {'key': '%MODULENAME%/LABEL_ALTERNATIVE_PORT'}, css: {'disabled': !setExternalAccessServers()}"></span>
+								<input class="value input port" spellcheck="false" type="text" maxlength="5"
+								       data-bind="enable: setExternalAccessServers, value: externalAccessSmtpAlterPort, valueUpdate: 'afterkeydown',
+											onEnter: save, css: {'disabled': !setExternalAccessServers()}"/>
+							</div>
+						</div>
+
+						<div class="fieldset" data-bind="visible: oServerPairPropertiesView.bVisibleOauthSettings, with: oServerPairPropertiesView">
+							<div class="row">
+								<span class="label" style="width: auto" data-bind="i18n: {'key': '%MODULENAME%/INFO_ADMIN_OAUTH'}"></span>
+							</div>
+							<div class="row">
+								<label class="custom_radio" data-bind="css: {'checked': '' === oauthSelectedConnector()}">
+									<span class="icon"></span>
+									<input type="radio" value="" id="oauthSelectedConnector_none" data-bind="checked: oauthSelectedConnector" />
+								</label>
+								<label for="oauthSelectedConnector_none" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ADMIN_OAUTH_NOTHING_SELECTED'}"></label>
+							</div>
+							<div class="row" data-bind="foreach: aOauthConnectorsData">
+								<label class="custom_radio" data-bind="css: {'checked': Type === $parent.oauthSelectedConnector()}">
+									<span class="icon"></span>
+									<input type="radio" data-bind="checked: $parent.oauthSelectedConnector, attr: { 'value': Type, 'id': 'oauthSelectedConnector_' + Type }" />
+								</label>
+								<label data-bind="text: Name, attr: { 'for': 'oauthSelectedConnector_' + Type }"></label>
 							</div>
 						</div>
 
@@ -79,5 +134,4 @@
 				</div>
 			</div>
 		</div>
-	</div>
 </div>

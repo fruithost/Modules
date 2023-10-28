@@ -1,0 +1,140 @@
+.block_security_key_inprogress {
+	background: url("../../images/wait.gif") no-repeat center;
+	height: 20px;
+	text-align: center;
+}
+	
+.popup_panel.popup_verify_second_factor {
+	max-width: 610px;
+	
+	.link_other_options {
+		text-align: right;
+		margin-top: 15px;
+	}
+	
+	.button_other_option {
+		display: block;
+	}
+}
+
+.popup_panel.popup_configure_authenticator_app {
+	max-width: 610px;
+	
+	.authenticator_app_qr_code {
+		display: inline-block;
+		height: 200px;
+		
+		.authenticator_app_qr_code_inprogress {
+			background: url("../../images/wait.gif") no-repeat center;
+			height: 200px;
+			position: absolute;
+			width: 200px;
+		}
+	}
+	
+	.authenticator_app_secret {
+		height: 14px;
+	}
+}
+
+.popup_panel.popup_show_backup_codes {
+	.hint {
+		min-height: 14px;
+	}
+	
+	.big_single_button {
+		text-align: center;
+	}
+}
+
+.panels.settings {
+	.panel.navigation_panel {
+		.item.two-factor-auth .icon:before {
+			content: "\e915";
+		}
+	}
+}
+
+.backup-codes-container {
+	height: 170px;
+	margin: 10px;
+	width: 300px;
+	div {
+		display: inline-block;
+		font-family: Consolas;
+		padding: 10px 0;
+		width: 49%;
+	}
+}
+
+.panels.settings .security .panel_security_two_factor,
+.panels.settings .two-factor-auth {
+	.row.hint:first-child {
+		margin: 0 -6px 12px;
+	}
+	
+	.row.hint:last-child {
+		margin-bottom: 0 !important;
+	}
+	
+	.buttons {
+		text-align: left;
+		margin: 0 !important;
+		
+		.button {
+			margin-right: 10px;
+		}
+	}
+	
+	h3:first-child {
+		margin-top: 0;
+	}
+	
+	h3:last-child {
+		margin-bottom: 0;
+	}
+	
+	.back-to-security-icon {
+		.init-icon-font();
+
+		cursor: pointer;
+		display: block;
+		float: left;
+		font-size: 1.5em;
+		margin-top: -4px;
+
+		&:before {
+			content: "\e671";
+		}
+	}
+	
+	.custom_checkbox.round {
+		border-radius: 50%;
+		margin-left: 2px;
+		padding: 3px;
+		vertical-align: middle;
+		
+        .icon {
+			background: #96c671;
+            border-radius: 50%;
+			color: white;
+            margin-left: -1px;
+            margin-top: -1px;
+
+            &:before {
+                font-size: 7pt;
+                margin-top: 1px;
+            }
+        }
+	}
+}
+
+.settings .folders .controls .button {
+	&.logout:before {
+	    content: "\e91f";
+	}
+	
+	&.delete_device:before {
+		content: "\e606";
+	}
+}

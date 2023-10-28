@@ -321,10 +321,45 @@
 					</div>
 				</div>
 
+				<div class="fieldset" data-bind="css: {'collapsed': pgpSettingsCollapsed}, if: isOpenPgpEnabled">
+
+					<h2 class="subheading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_PGP_SETTINGS'}, click: function () { pgpSettingsCollapsed(!pgpSettingsCollapsed()); }"></h2>
+
+					<div class="row">
+						<span class="label">
+							<span class="text" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PUBLIC_PGP_KEY'}"></span>:
+						</span>
+						<textarea class="value input" data-bind="value: publicPgpKey, valueUpdate: 'afterkeydown', onEnter: function () { $root.saveCommand($data); }"></textarea>
+					</div>
+					<div class="row hint" data-bind="visible: publicPgpKeyView">
+						<span data-bind="text: publicPgpKeyView"></span>
+					</div>
+					<div class="row" data-bind="visible: publicPgpKeyView">
+						<span data-bind="i18n: {'key': '%MODULENAME%/INFO_ENCRYPT_SIGN_MESSAGES'}"></span>
+					</div>
+					<div class="row" data-bind="visible: publicPgpKeyView">
+						<span class="label">
+							<label class="custom_checkbox" data-bind="css: {'checked': pgpEncryptMessages}">
+								<span class="icon"></span>
+								<input type="checkbox" id="pgpEncryptMessages" data-bind="checked: pgpEncryptMessages" />
+							</label>
+							<label for="pgpEncryptMessages" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ENCRYPT_MESSAGES'}"></label>
+						</span>
+					</div>
+					<div class="row" data-bind="visible: publicPgpKeyView">
+						<span class="label">
+							<label class="custom_checkbox" data-bind="css: {'checked': pgpSignMessages}">
+								<span class="icon"></span>
+								<input type="checkbox" id="pgpSignMessages" data-bind="checked: pgpSignMessages" />
+							</label>
+							<label for="pgpSignMessages" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SIGN_MESSAGES'}"></label>
+						</span>
+					</div>
+				</div>
+
 				<div class="fieldset" data-bind="visible: !team() && $root.groupFullCollection().length, css: {'collapsed': groupsCollapsed}">
 
-					<h2 class="subheading" data-bind="click: function () { groupsCollapsed(!groupsCollapsed()); }"
-						data-bind="i18n: {'key': '%MODULENAME%/HEADING_GROUPS'}"></h2>
+					<h2 class="subheading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_GROUPS'}, click: function () { groupsCollapsed(!groupsCollapsed()); }"></h2>
 
 					<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_CONTACT_GROUPS_MARKED'}"></div>
 					<div class="row">

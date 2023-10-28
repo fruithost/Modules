@@ -13,8 +13,11 @@
 	<div class="panel_center" data-bind="customScrollbar: {x: false}">
 		<div class="scroll-inner">
 			<div class="items_list collapsible">
+				<div class="folders" style="margin-bottom: 10px;" data-bind="visible: unifiedInboxAllowed">
+					<!-- ko template: {name: '%ModuleName%_FolderView', data: oUnifiedInbox} --><!-- /ko -->
+				</div>
 				<div class="folders">
-				<!-- ko template: {name: '%ModuleName%_FolderView', foreach: folderList().collection} --><!-- /ko -->
+					<!-- ko template: {name: '%ModuleName%_FolderView', foreach: folderList().collection} --><!-- /ko -->
 				</div>
 			</div>
 		</div>

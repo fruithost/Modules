@@ -15,7 +15,7 @@ var
 	WindowOpener = require('%PathToCoreWebclientModule%/js/WindowOpener.js'),
 	
 	aViewMimeTypes = [
-		'image/jpeg', 'image/png', 'image/gif',
+		'image/jpeg', 'image/jpg', 'image/png', 'image/gif',
 		'text/html', 'text/plain', 'text/css',
 		'text/rfc822-headers', 'message/delivery-status',
 		'application/x-httpd-php', 'application/javascript'
@@ -125,11 +125,11 @@ function CAbstractFileModel()
 	this.oActionsData = {
 		'view': {
 			'Text': TextUtils.i18n('COREWEBCLIENT/ACTION_VIEW_FILE'),
-			'Handler': _.bind(function () { this.viewFile(); }, this)
+			'HandlerName': 'viewFile'
 		},
 		'download': {
 			'Text': TextUtils.i18n('COREWEBCLIENT/ACTION_DOWNLOAD_FILE'),
-			'Handler': _.bind(function () { this.downloadFile(); }, this),
+			'HandlerName': 'downloadFile',
 			'Tooltip': ko.computed(function () {
 				var sTitle = TextUtils.i18n('%MODULENAME%/INFO_CLICK_TO_DOWNLOAD_FILE', {
 					'FILENAME': this.fileName(),
@@ -178,6 +178,9 @@ function CAbstractFileModel()
 	
 	this.subFiles = ko.observableArray([]);
 	this.subFilesExpanded = ko.observable(false);
+	
+	this.sUploadSubFolder = '';
+	this.bIsHidden = false;
 }
 
 CAbstractFileModel.prototype.addAction = function (sAction, bMain, oActionData)
@@ -237,9 +240,16 @@ CAbstractFileModel.prototype.getActionUrl = function (sAction)
  */
 CAbstractFileModel.prototype.executeAction = function (sAction)
 {
-	if (this.hasAction(sAction) && this.oActionsData[sAction] && _.isFunction(this.oActionsData[sAction].Handler))
+	var oData = this.hasAction(sAction) && this.oActionsData[sAction];
+	if (oData)
 	{
-		this.oActionsData[sAction].Handler();
+		if (_.isFunction(oData.Handler)) {
+			oData.Handler();
+		}
+		else if (typeof oData.HandlerName === 'string' && _.isFunction(this[oData.HandlerName]))
+		{
+			this[oData.HandlerName]();
+		}
 	}
 };
 
@@ -367,7 +377,7 @@ CAbstractFileModel.prototype.getInThumbQueue = function ()
 /**
  * Starts downloading attachment on click.
  */
-CAbstractFileModel.prototype.downloadFile = function ()
+CAbstractFileModel.prototype.downloadFile = function (bNotBroadcastEvent)
 {
 	//todo: UrlUtils.downloadByUrl in nessesary context in new window
 	var 
@@ -379,7 +389,10 @@ CAbstractFileModel.prototype.downloadFile = function ()
 	;
 	if (sDownloadLink.length > 0 && sDownloadLink !== '#')
 	{
-		App.broadcastEvent('AbstractFileModel::FileDownload::before', oParams);
+		if (!bNotBroadcastEvent)
+		{
+			App.broadcastEvent('AbstractFileModel::FileDownload::before', oParams);
+		}
 		if (!oParams.CancelDownload)
 		{
 			if (_.isFunction(oParams.CustomDownloadHandler))
@@ -388,7 +401,7 @@ CAbstractFileModel.prototype.downloadFile = function ()
 			}
 			else
 			{
-				UrlUtils.downloadByUrl(sDownloadLink);
+				UrlUtils.downloadByUrl(sDownloadLink, this.extension() === 'eml');
 			}
 		}
 	}
@@ -491,6 +504,10 @@ CAbstractFileModel.prototype.onUploadSelect = function (sFileUid, oFileData, bOn
 	this.statusText('');
 	this.progressPercent(0);
 	this.visibleProgress(false);
+	
+	// if uploading file is from uploading folder it should be hidden in files list.
+	this.sUploadSubFolder = Types.pString(oFileData.Folder);
+	this.bIsHidden = this.sUploadSubFolder !== '';
 };
 
 /**

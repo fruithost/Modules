@@ -34,8 +34,6 @@ function CEncryptPopup()
 	this.okCallback = null;
 	this.cancelCallback = null;
 	this.sign = ko.observable(true);
-	this.password = ko.observable('');
-	this.passwordFocused = ko.observable(false);
 	this.encrypt = ko.observable(true);
 	this.signEncryptButtonText = ko.computed(function () {
 		var sText = TextUtils.i18n('%MODULENAME%/ACTION_SIGN_ENCRYPT');
@@ -76,7 +74,6 @@ CEncryptPopup.prototype.onOpen = function (sData, sFromEmail, aEmails, bSignAndS
 	this.okCallback = fOkCallback;
 	this.cancelCallback = fCancelCallback;
 	this.sign(true);
-	this.password('');
 	this.encrypt(!bSignAndSend);
 	this.signAndSend(bSignAndSend);
 };
@@ -87,7 +84,6 @@ CEncryptPopup.prototype.executeSignEncrypt = function ()
 		sData = this.data(),
 		sPrivateEmail = this.sign() ? this.fromEmail() : '',
 		aPrincipalsEmail = this.emails(),
-		sPrivateKeyPassword = this.sign() ? $.trim(this.password()) : '',
 		sOkReport = '',
 		sPgpAction = '',
 		fOkHandler = _.bind(function (oRes) {
@@ -96,14 +92,16 @@ CEncryptPopup.prototype.executeSignEncrypt = function ()
 			{
 				if (!this.signAndSend())
 				{
-					Utils.log('CEncryptPopup', sOkReport);
 					Screens.showReport(sOkReport);
 				}
 				this.okCallback(oRes.result, this.encrypt());
 			}
 		}, this),
 		fErrorHandler = function (oRes) {
-			ErrorsUtils.showPgpErrorByCode(oRes, sPgpAction);
+			if (!oRes || !oRes.userCanceled)
+			{
+				ErrorsUtils.showPgpErrorByCode(oRes, sPgpAction);
+			}
 		}
 	;
 	
@@ -123,7 +121,7 @@ CEncryptPopup.prototype.executeSignEncrypt = function ()
 			{
 				sPgpAction = Enums.PgpAction.EncryptSign;
 				sOkReport = TextUtils.i18n('%MODULENAME%/REPORT_MESSAGE_SIGNED_ENCRYPTED_SUCCSESSFULLY');
-				OpenPgp.signAndEncrypt(sData, sPrivateEmail, aEmailForEncrypt, sPrivateKeyPassword, fOkHandler, fErrorHandler);
+				OpenPgp.signAndEncrypt(sData, sPrivateEmail, aEmailForEncrypt, '', fOkHandler, fErrorHandler);
 			}
 			else
 			{
@@ -137,7 +135,7 @@ CEncryptPopup.prototype.executeSignEncrypt = function ()
 	{
 		sPgpAction = Enums.PgpAction.Sign;
 		sOkReport = TextUtils.i18n('%MODULENAME%/REPORT_MESSAGE_SIGNED_SUCCSESSFULLY');
-		OpenPgp.sign(sData, sPrivateEmail, sPrivateKeyPassword, fOkHandler, fErrorHandler);
+		OpenPgp.sign(sData, sPrivateEmail, fOkHandler, fErrorHandler, '');
 	}
 };
 

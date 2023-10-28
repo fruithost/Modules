@@ -10,7 +10,7 @@
 			</div>
 
 			<div class="buttons">
-				<span class="button" data-bind="click: function () { $root.deleteCurrentEntity(); }">
+				<span class="button" data-bind="visible: allowDelete(), click: function () { $root.deleteCurrentEntity(); }">
 					<span data-bind="text: entityData().ActionDeleteText"></span>
 				</span>
 				<span class="button" data-bind="click: function () { save($root); }, visible: allowSave() && !isSaving()">

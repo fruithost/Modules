@@ -15,7 +15,7 @@ use Aurora\System\Exceptions;
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
- * 
+ *
  * @package Mail
  */
 class Manager extends \Aurora\System\Managers\AbstractManager
@@ -24,18 +24,18 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 * @var array List of ImapClient objects.
 	 */
 	protected $aImapClientCache;
-	
+
 	/**
 	 * @var \Aurora\System\Managers\Eav
 	 */
 	private $oEavManager = null;
-	
+
 
 	/**
 	 * Initializes manager property.
-	 * 
+	 *
 	 * @param \Aurora\System\Module\AbstractModule $oModule
-	 * 
+	 *
 	 * @return void
 	 */
 	public function __construct(\Aurora\System\Module\AbstractModule $oModule = null)
@@ -43,7 +43,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		parent::__construct($oModule);
 
 		$this->aImapClientCache = array();
-		
+
 		if ($oModule instanceof \Aurora\System\Module\AbstractModule)
 		{
 			$this->oEavManager = \Aurora\System\Managers\Eav::getInstance();
@@ -52,7 +52,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Returns ImapClient object from cache.
-	 * 
+	 *
 	 * @param Aurora\Modules\Mail\Classes\Account $oAccount Account object.
 	 * @param int $iForceConnectTimeOut = 0. The value overrides connection timeout value.
 	 * @param int $iForceSocketTimeOut = 0. The value overrides socket timeout value.
@@ -76,7 +76,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				{
 					$iConnectTimeOut = $iForceConnectTimeOut;
 				}
-				
+
 				if (0 < $iForceSocketTimeOut)
 				{
 					$iSocketTimeOut = $iForceSocketTimeOut;
@@ -93,7 +93,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				$oServer = $oAccount->getServer();
 				if ($oServer instanceof \Aurora\Modules\Mail\Classes\Server)
 				{
-					try 
+					try
 					{
 						//disable STARTTLS for localhost
 						if ($this->GetModule()->getConfig('DisableStarttlsForLocalhost', false) &&
@@ -105,10 +105,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 								? \MailSo\Net\Enumerations\ConnectionSecurityType::SSL
 								: \MailSo\Net\Enumerations\ConnectionSecurityType::NONE, $bVerifySsl);
 					}
-					catch (\Exception $oException) 
+					catch (\Exception $oException)
 					{
 						throw new \Aurora\Modules\Mail\Exceptions\Exception(
-							\Aurora\Modules\Mail\Enums\ErrorCodes::CannotConnectToMailServer, 
+							\Aurora\Modules\Mail\Enums\ErrorCodes::CannotConnectToMailServer,
 							$oException,
 							$oException->getMessage()
 						);
@@ -121,17 +121,18 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 //				$sProxyAuthUser = !empty($oAccount->CustomFields['ProxyAuthUser'])
 //					? $oAccount->CustomFields['ProxyAuthUser'] : '';
 
-				try 
+				if (!empty($oAccount->XOAuth))
+				{
+					$sToken = \Aurora\Modules\OAuthIntegratorWebclient\Module::Decorator()->GetAccessToken($oAccount->XOAuth, $oAccount->Email);
+					if ($sToken)
+					{
+						$sXOAuthKey = \MailSo\Imap\ImapClient::GetXOAuthKeyStatic($oAccount->Email, $sToken);
+						$oResult->LoginWithXOAuth2($sXOAuthKey);
+					}
+				}
+				else
 				{
 					$oResult->Login($oAccount->IncomingLogin, $oAccount->getPassword(), '');
-				}
-				catch (\MailSo\Imap\Exceptions\LoginBadCredentialsException $oException) 
-				{
-					throw new \Aurora\Modules\Mail\Exceptions\Exception(
-						\Aurora\Modules\Mail\Enums\ErrorCodes::CannotLoginCredentialsIncorrect,
-						$oException,
-						$oException->getMessage()
-					);
 				}
 			}
 		}
@@ -141,12 +142,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Creates a new instance of ImapClient class.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param type $iForceConnectTimeOut = 0. The value overrides connection timeout value.
 	 * @param type $iForceSocketTimeOut = 0. The value overrides socket timeout value.
 	 *
-	 * @return \MailSo\Imap\ImapClient|null 
+	 * @return \MailSo\Imap\ImapClient|null
 	 */
 	public function &getImapClient(\Aurora\Modules\StandardAuth\Classes\Account $oAccount, $iForceConnectTimeOut = 0, $iForceSocketTimeOut = 0)
 	{
@@ -164,10 +165,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Checks if user of the account can successfully connect to mail server.
-	 * 
+	 *
 	 * @param Aurora\Modules\Mail\Classes\Account $oAccount Account object.
 	 * @param boolean $bThrowException = true
-	 * 
+	 *
 	 * @return void
 	 *
 	 * @throws \Aurora\System\Exceptions\ManagerException
@@ -175,7 +176,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	public function validateAccountConnection($oAccount, $bThrowException = true)
 	{
 		$oResException = null;
-		
+
 		try
 		{
 			$this->_getImapClient($oAccount);
@@ -184,12 +185,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			$oResException = $oException;
 		}
-		
+
 		if ($bThrowException && $oResException !== null)
 		{
 			throw $oResException;
 		}
-		
+
 		return $oResException;
 	}
 
@@ -212,7 +213,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			$oRefreshFolder = $aEntities[0];
 		}
-		else 
+		else
 		{
 			$oRefreshFolder = new \Aurora\Modules\Mail\Classes\RefreshFolder(\Aurora\Modules\Mail\Module::GetName());
 			$oRefreshFolder->FolderFullName = $sFolderFullName;
@@ -256,7 +257,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Updates information on system folders use.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param array $aSystemNames Array containing mapping of folder types and their actual IMAP names.
 	 *
@@ -281,7 +282,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			{
 				$oSystemFolder = $aEntities[0];
 			}
-			else 
+			else
 			{
 				$oSystemFolder = new \Aurora\Modules\Mail\Classes\SystemFolder(\Aurora\Modules\Mail\Module::GetName());
 				$oSystemFolder->Type = $iTypeValue;
@@ -290,14 +291,14 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			$oSystemFolder->FolderFullName = $sFolderFullName;
 			$this->oEavManager->saveEntity($oSystemFolder);
 		}
-		
+
 		return true;
 	}
 
 	public function setSystemFolder($oAccount, $sFolderFullName, $iTypeValue, $bSet)
 	{
 		$bResult = true;
-		
+
 		$aEntities = $this->oEavManager->getEntities(
 			\Aurora\Modules\Mail\Classes\SystemFolder::class,
 			array(),
@@ -326,20 +327,20 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				$bResult = $this->oEavManager->saveEntity($oSystemFolder);
 			}
 		}
-		else 
+		else
 		{
 			if ($oSystemFolder !== null)
 			{
-				$bResult = $this->oEavManager->deleteEntity($oSystemFolder->EntityId);					
+				$bResult = $this->oEavManager->deleteEntity($oSystemFolder->EntityId, \Aurora\Modules\Mail\Classes\SystemFolder::class);
 			}
 		}
-		
+
 		return $bResult;
 	}
 
 	/**
 	 * Gets information about system folders of the account.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 *
 	 * @return array|bool
@@ -347,13 +348,13 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	public function getSystemFolderNames($oAccount)
 	{
 		$aFolders = array();
-		
+
 		$aEntities = $this->_getSystemFolderEntities($oAccount);
 		foreach ($aEntities as $oEntity)
 		{
 			$aFolders[$oEntity->FolderFullName] = $oEntity->Type;
 		}
-		
+
 		return $aFolders;
 	}
 
@@ -379,7 +380,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	public function deleteSystemFolderNames($iAccountId)
 	{
 		$bResult = true;
-		
+
 		$iOffset = 0;
 		$iLimit = 0;
 		$aFilters = array('IdAccount' => array($iAccountId, '='));
@@ -388,10 +389,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			foreach ($aSystemFolders as $oSystemFolder)
 			{
-				$bResult = $bResult && $this->oEavManager->deleteEntity($oSystemFolder->EntityId);
+				$bResult = $bResult && $this->oEavManager->deleteEntity($oSystemFolder->EntityId, \Aurora\Modules\Mail\Classes\SystemFolder::class);
 			}
 		}
-		
+
 		return $bResult;
 	}
 
@@ -399,7 +400,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 * Obtains information about system folders from database.
 	 * Sets system type for existent folders, excludes information about them from $aFoldersMap.
 	 * Deletes information from database for nonexistent folders.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param \Aurora\Modules\Mail\Classes\FolderCollection $oFolderCollection Collection of folders.
 	 * @param array $aFoldersMap Describes information about system folders that weren't initialized yet.
@@ -430,16 +431,16 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				}
 				else
 				{
-					$this->oEavManager->deleteEntity($oSystemFolder->EntityId);
+					$this->oEavManager->deleteEntity($oSystemFolder->EntityId, \Aurora\Modules\Mail\Classes\SystemFolder::class);
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Obtains information about system folders from IMAP.
 	 * Sets system type for obtained folders, excludes information about them from $aFoldersMap.
-	 * 
+	 *
 	 * @param \Aurora\Modules\Mail\Classes\FolderCollection $oFolderCollection Collection of folders.
 	 * @param array $aFoldersMap Describes information about system folders that weren't initialized yet.
 	 */
@@ -456,10 +457,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			}
 		);
 	}
-	
+
 	/**
 	 * Sets system type for existent folders from folders map, excludes information about them from $aFoldersMap.
-	 * 
+	 *
 	 * @param \Aurora\Modules\Mail\Classes\FolderCollection $oFolderCollection Collection of folders.
 	 * @param array $aFoldersMap Describes information about system folders that weren't initialized yet.
 	 */
@@ -481,10 +482,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			}
 		);
 	}
-	
+
 	/**
 	 * Creates system folders that weren't initialized earlier because they don't exist.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param \Aurora\Modules\Mail\Classes\FolderCollection $oFolderCollection Collection of folders.
 	 * @param array $aFoldersMap Describes information about system folders that weren't initialized yet.
@@ -492,7 +493,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	private function _createNonexistentSystemFolders($oAccount, $oFolderCollection, $aFoldersMap)
 	{
 		$bSystemFolderIsCreated = false;
-		
+
 		if (is_array($aFoldersMap))
 		{
 			$sNamespace = $oFolderCollection->getNamespace();
@@ -509,13 +510,13 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				}
 			}
 		}
-		
+
 		return $bSystemFolderIsCreated;
 	}
-	
+
 	/**
 	 * Initializes system folders.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param \Aurora\Modules\Mail\Classes\FolderCollection $oFolderCollection Collection of folders.
 	 * @param bool $bCreateNonexistentSystemFolders Create nonexistent system folders.
@@ -525,7 +526,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	private function _initSystemFolders($oAccount, &$oFolderCollection, $bCreateNonexistentSystemFolders)
 	{
 		$bSystemFolderIsCreated = false;
-		
+
 		try
 		{
 			$aFoldersMap = array(
@@ -539,16 +540,16 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 			$oInbox = $oFolderCollection->getFolder('INBOX');
 			$oInbox->setType(\Aurora\Modules\Mail\Enums\FolderType::Inbox);
-			
+
 			// Tries to set system folders from database data.
 			$this->_initSystemFoldersFromDb($oAccount, $oFolderCollection, $aFoldersMap);
-			
+
 			// Tries to set system folders from imap flags for those folders that weren't set from database data.
 			$this->_initSystemFoldersFromImapFlags($oFolderCollection, $aFoldersMap);
-			
+
 			// Tries to set system folders from folders map for those folders that weren't set from database data or IMAP flags.
 			$this->_initSystemFoldersFromFoldersMap($oFolderCollection, $aFoldersMap);
-			
+
 			if ($bCreateNonexistentSystemFolders)
 			{
 				$bSystemFolderIsCreated = $this->_createNonexistentSystemFolders($oAccount, $oFolderCollection, $aFoldersMap);
@@ -562,13 +563,13 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		return $bSystemFolderIsCreated;
 	}
-	
+
 	public function isSafetySender($iIdUser, $sEmail)
 	{
 		$bResult = false;
 		$aEntities = $this->oEavManager->getEntities(
 			\Aurora\Modules\Mail\Classes\Sender::class,
-			array(),
+			array('Email'),
 			0,
 			1,
 			array(
@@ -580,7 +581,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			$bResult = true;
 		}
-		
+
 		return $bResult;
 	}
 
@@ -590,7 +591,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		if (!$this->isSafetySender($iIdUser, $sEmail))
 		{
 			$oEntity = new \Aurora\Modules\Mail\Classes\Sender(\Aurora\Modules\Mail\Module::GetName());
-			
+
 			$oEntity->IdUser = $iIdUser;
 			$oEntity->Email = $sEmail;
 			$bResult = $this->oEavManager->saveEntity($oEntity);
@@ -598,17 +599,17 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		return $bResult;
 	}
-	
+
 	public function getFoldersNamespace($oAccount)
 	{
 		$oImapClient =& $this->_getImapClient($oAccount);
 
 		return $oImapClient->GetNamespace();
 	}
-	
+
 	/**
 	 * Obtains the list of IMAP folders.
-	 * 
+	 *
 	 * @param Aurora\Modules\Mail\Classes\Account $oAccount Account object.
 	 * @param bool $bCreateUnExistenSystemFolders = true. Creating folders is required for WebMail work, usually it is done on first login to the account.
 	 *
@@ -740,7 +741,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Obtains folders order.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 *
 	 * @return array
@@ -748,20 +749,20 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	public function getFoldersOrder($oAccount)
 	{
 		$aList = array();
-		
+
 		$aOrder = @json_decode($oAccount->FoldersOrder, 3);
 		if (is_array($aOrder) && 0 < count($aOrder))
 		{
 			$aList = $aOrder;
 		}
 
-		
+
 		return $aList;
 	}
 
 	/**
 	 * Updates folders order.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param array $aOrder New folders order.
 	 *
@@ -774,12 +775,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * Creates a new folder using its full name in IMAP folders tree. 
-	 * 
+	 * Creates a new folder using its full name in IMAP folders tree.
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 * @param bool $bSubscribeOnCreation = true. If **true** the folder will be subscribed and thus made visible in the interface.
-	 * 
+	 *
 	 * @return void
 	 *
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
@@ -803,7 +804,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Obtains folders information - total messages count, unread messages count, uidNext.
-	 * 
+	 *
 	 * @param type $oImapClient ImapClient object.
 	 * @param type $sFolderFullNameRaw Raw full name of the folder.
 	 *
@@ -848,7 +849,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Checks if particular extension is supported.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sExtensionName Extension name.
 	 *
@@ -867,7 +868,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Obtains information about particular folder.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 *
@@ -875,7 +876,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			- total number of messages;
 			- number of unread messages;
 			- UIDNEXT value for the folder;
-			- hash string which changes its value if any of the other 3 values were changed. 
+			- hash string which changes its value if any of the other 3 values were changed.
 	 */
 	public function getFolderInformation($oAccount, $sFolderFullNameRaw)
 	{
@@ -890,8 +891,8 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * Retrieves information about new message, primarily used for Inbox folder. 
-	 * 
+	 * Retrieves information about new message, primarily used for Inbox folder.
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 * @param string $sUidnext UIDNEXT value used for this operation.
@@ -904,7 +905,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			$sNewInboxUidnext = '*';
 		}
-		
+
 		if (0 === strlen($sFolderFullNameRaw) || 0 === strlen($sFolderFullNameRaw))
 		{
 			throw new \Aurora\System\Exceptions\InvalidArgumentException();
@@ -955,7 +956,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 					{
 						$oHeaders->SetParentCharset($sCharset);
 					}
-					
+
 					if ($sUid !== $sNewInboxUidnext)
 					{
 						$aResult[] = array(
@@ -971,15 +972,53 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		return $aResult;
 	}
-	
+
+	public function getMessageUIDByMessageID($oAccount, $sFolderFullNameRaw, $sUidnext, $MessageID)
+	{
+		if (0 === strlen($sFolderFullNameRaw) || 0 === strlen($sFolderFullNameRaw))
+		{
+			throw new \Aurora\System\Exceptions\InvalidArgumentException();
+		}
+
+		$oImapClient =& $this->_getImapClient($oAccount);
+
+		$oImapClient->FolderExamine($sFolderFullNameRaw);
+
+		$mResult = false;
+		$aFetchResponse = $oImapClient->Fetch(array(
+				\MailSo\Imap\Enumerations\FetchType::UID,
+				\MailSo\Imap\Enumerations\FetchType::BuildBodyCustomHeaderRequest(array(
+					\MailSo\Mime\Enumerations\Header::MESSAGE_ID
+				))
+			), $sUidnext.':*', true);
+
+		if (\is_array($aFetchResponse) && 0 < \count($aFetchResponse))
+		{
+			foreach ($aFetchResponse as /* @var $oFetchResponse \MailSo\Imap\FetchResponse */ $oFetchResponse)
+			{
+				$sUid = $oFetchResponse->GetFetchValue(\MailSo\Imap\Enumerations\FetchType::UID);
+				$sHeaders = $oFetchResponse->GetHeaderFieldsValue();
+
+				$oHeaders = \MailSo\Mime\HeaderCollection::NewInstance()->Parse($sHeaders);
+				$sMessageId = $oHeaders->ValueByName(\MailSo\Mime\Enumerations\Header::MESSAGE_ID);
+				if ($MessageID === $sMessageId)
+				{
+					$mResult = $sUid;
+				}
+			}
+		}
+
+		return $mResult;
+	}
+
 	/**
 	 * Obtains information about particular folders.
-	 * 
+	 *
 	 * @param Aurora\Modules\Mail\Classes\Account $oAccount Account object.
 	 * @param array $aFolderFullNamesRaw Array containing a list of folder names to obtain information for.
 	 * @param boolean $bUseListStatusIfPossible Indicates if LIST-STATUS command should be used if it's supported by IMAP server.
 	 *
-	 * @return array Array containing elements like those returned by **getFolderInformation** method. 
+	 * @return array Array containing elements like those returned by **getFolderInformation** method.
 	 */
 	public function getFolderListInformation($oAccount, $aFolderFullNamesRaw, $bUseListStatusIfPossible)
 	{
@@ -1038,7 +1077,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Creates a new folder.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderNameInUtf8 Folder name in utf8.
 	 * @param string $sDelimiter IMAP delimiter value.
@@ -1047,7 +1086,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
 	 * @throws \Aurora\System\Exceptions\BaseException
-	 * 
+	 *
 	 * @return void
 	 */
 	public function createFolder($oAccount, $sFolderNameInUtf8, $sDelimiter, $sFolderParentFullNameRaw = '', $bSubscribeOnCreation = true)
@@ -1079,7 +1118,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Deletes folder.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 * @param bool $bUnsubscribeOnDeletion = true. If **true** the folder will be unsubscribed along with its deletion.
@@ -1105,7 +1144,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Changes folder's name.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sPrevFolderFullNameRaw Raw full name of the folder.
 	 * @param string $sNewTopFolderNameInUtf8 = ''. New name for the folder in utf8.
@@ -1191,9 +1230,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Subscribes to IMAP folder or unsubscribes from it.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
-	 * @param string $sFolderFullNameRaw Raw full name of the folder. 
+	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 * @param bool $bSubscribeAction = true. If **true** the folder will be subscribed, otherwise unsubscribed.
 	 *
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
@@ -1219,12 +1258,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Purges all the content of a particular folder.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 *
 	 * @return void
-	 * 
+	 *
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
 	 */
 	public function clearFolder($oAccount, $sFolderFullNameRaw)
@@ -1252,11 +1291,11 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Deletes one or several messages from IMAP.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Folder the messages are to be deleted from.
 	 * @param array $aUids List of message UIDs.
-	 * 
+	 *
 	 * @return void
 	 *
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
@@ -1284,14 +1323,14 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Moves message from one folder to another.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFromFolderFullNameRaw Raw full name of the source folder.
 	 * @param string $sToFolderFullNameRaw Raw full name of the destination folder.
 	 * @param array $aUids List of message UIDs.
 	 *
 	 * @return void
-	 * 
+	 *
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
 	 */
 	public function moveMessage($oAccount, $sFromFolderFullNameRaw, $sToFolderFullNameRaw, $aUids)
@@ -1316,17 +1355,17 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			$this->deleteMessage($oAccount, $sFromFolderFullNameRaw, $aUids);
 		}
 	}
-	
+
 	/**
 	 * Copies one or several message from one folder to another.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFromFolderFullNameRaw Raw full name of source folder.
 	 * @param string $sToFolderFullNameRaw Raw full name of destination folder.
 	 * @param array $aUids List of message UIDs.
-	 * 
+	 *
 	 * @return void
-	 * 
+	 *
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
 	 */
 	public function copyMessage($oAccount, $sFromFolderFullNameRaw, $sToFolderFullNameRaw, $aUids)
@@ -1346,29 +1385,30 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Sends message out.
-	 * 
-	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
+	 *
+	 * @param \Aurora\Modules\Mail\Classes\Account $oAccount Account object.
 	 * @param \MailSo\Mime\Message $oMessage Message to be sent out.
 	 * @param \Aurora\Modules\Mail\Classes\Fetcher $oFetcher = null. Fetcher object which may override sending settings.
 	 * @param string $sSentFolder = ''. Name of Sent folder.
 	 * @param string $sDraftFolder = ''. Name of Sent folder.
 	 * @param string $sDraftUid = ''. Last UID value of the message saved in Drafts folder.
+	 * @param array $aRecipients Recipients that will be used to send messages through the SMTP. Use this parameter if you want real recipients to differ from those specified in the message body (To, CC, BCC).
 	 *
 	 * @return array|bool
 	 *
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
 	 */
-	public function sendMessage($oAccount, $oMessage, $oFetcher = null, $sSentFolder = '', $sDraftFolder = '', $sDraftUid = '')
+	public function sendMessage($oAccount, $oMessage, $oFetcher = null, $sSentFolder = '', $sDraftFolder = '', $sDraftUid = '', $aRecipients = array())
 	{
 		if (!$oAccount || !$oMessage)
 		{
 			throw new \Aurora\System\Exceptions\InvalidArgumentException();
 		}
-		
+
 		$oImapClient =& $this->_getImapClient($oAccount);
 
 		$rMessageStream = \MailSo\Base\ResourceRegistry::CreateMemoryResource();
-		
+
 		$iMessageStreamSize = \MailSo\Base\Utils::MultipleStreamWriter(
 			$oMessage->ToStream(true), array($rMessageStream), 8192, true, true, true);
 
@@ -1376,6 +1416,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		if (false !== $iMessageStreamSize && is_resource($rMessageStream))
 		{
 			$oRcpt = $oMessage->GetRcpt();
+			if (count($aRecipients) > 0)
+			{
+				$oRcpt = \MailSo\Mime\EmailCollection::NewInstance(implode(',', $aRecipients));
+			}
 			if ($oRcpt && 0 < $oRcpt->Count())
 			{
 				$oServer = null;
@@ -1416,14 +1460,26 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 					{
 						$oSmtpClient->Connect($oServer->OutgoingServer, $oServer->OutgoingPort, $sEhlo, $iSecure, $bVerifySsl);
 					}
-					
+
 					if ($oFetcher && $oFetcher->OutgoingUseAuth)
 					{
 						$oSmtpClient->Login($oFetcher->IncomingLogin, $oFetcher->IncomingPassword);
 					}
 					else if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseUserCredentials)
 					{
-						$oSmtpClient->Login($oAccount->IncomingLogin, $oAccount->getPassword());
+						if (!empty($oAccount->XOAuth))
+						{
+							$sToken = \Aurora\Modules\OAuthIntegratorWebclient\Module::Decorator()->GetAccessToken($oAccount->XOAuth, $oAccount->Email);
+							if ($sToken)
+							{
+								$sXOAuthKey = \MailSo\Imap\ImapClient::GetXOAuthKeyStatic($oAccount->Email, $sToken);
+								$oSmtpClient->LoginWithXOAuth2($sXOAuthKey);
+							}
+						}
+						else
+						{
+							$oSmtpClient->Login($oAccount->IncomingLogin, $oAccount->getPassword(), '');
+						}
 					}
 					else if ($oServer->SmtpAuthType === \Aurora\Modules\Mail\Enums\SmtpAuthType::UseSpecifiedCredentials)
 					{
@@ -1447,7 +1503,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				catch (\MailSo\Net\Exceptions\ConnectionException $oException)
 				{
 					throw new \Aurora\Modules\Mail\Exceptions\Exception(
-						\Aurora\Modules\Mail\Enums\ErrorCodes::CannotConnectToMailServer, 
+						\Aurora\Modules\Mail\Enums\ErrorCodes::CannotConnectToMailServer,
 						$oException,
 						$oException->getMessage()
 					);
@@ -1455,7 +1511,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				catch (\MailSo\Smtp\Exceptions\LoginException $oException)
 				{
 					throw new \Aurora\Modules\Mail\Exceptions\Exception(
-						\Aurora\Modules\Mail\Enums\ErrorCodes::CannotLoginCredentialsIncorrect, 
+						\Aurora\Modules\Mail\Enums\ErrorCodes::CannotLoginCredentialsIncorrect,
 						$oException,
 						$oException->getMessage()
 					);
@@ -1463,7 +1519,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				catch (\MailSo\Smtp\Exceptions\NegativeResponseException $oException)
 				{
 					throw new \Aurora\Modules\Mail\Exceptions\Exception(
-						\Aurora\Modules\Mail\Enums\ErrorCodes::CannotSendMessage, 
+						\Aurora\Modules\Mail\Enums\ErrorCodes::CannotSendMessage,
 						$oException,
 						$oException->getMessage()
 					);
@@ -1500,12 +1556,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 						{
 							$rAppendMessageStream = \MailSo\Base\ResourceRegistry::CreateMemoryResource();
 
-							if (is_resource($rMessageStream))
-							{
-								rewind($rMessageStream);
-							}
+							// if (is_resource($rMessageStream))
+							// {
+							// 	rewind($rMessageStream);
+							// }
 							$iAppendMessageStreamSize = \MailSo\Base\Utils::MultipleStreamWriter(
-								$rMessageStream, array($rAppendMessageStream), 8192, true, true, true);
+								$oMessage->ToStream()/*$rMessageStream*/, array($rAppendMessageStream), 8192, true, true, true);
 
 							$oImapClient->MessageAppendStream(
 								$sSentFolder, $rAppendMessageStream, $iAppendMessageStreamSize, array(
@@ -1521,7 +1577,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 					catch (\Exception $oException)
 					{
 						throw new \Aurora\Modules\Mail\Exceptions\Exception(
-							\Aurora\Modules\Mail\Enums\ErrorCodes::CannotSaveMessageToSentItems, 
+							\Aurora\Modules\Mail\Enums\ErrorCodes::CannotSaveMessageToSentItems,
 							$oException,
 							$oException->getMessage()
 						);
@@ -1532,7 +1588,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 						@fclose($rMessageStream);
 					}
 				}
-				
+
 				if (0 < strlen($sDraftFolder) && 0 < strlen($sDraftUid))
 				{
 					try
@@ -1555,7 +1611,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Saves message to a specific folder. The method is primarily used for saving drafts.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param \MailSo\Mime\Message $oMessage Object representing message to be saved.
 	 * @param string $sDraftFolder Folder the message is saved to.
@@ -1618,10 +1674,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		return $mResult;
 	}
-	
+
 	/**
 	 * Appends message from file to a specific folder.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sMessageFileName Path to .eml file.
 	 * @param string $sFolderToAppend Folder the message is appended to.
@@ -1632,11 +1688,11 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	{
 		$oImapClient =& $this->_getImapClient($oAccount);
 		$oImapClient->MessageAppendFile($sMessageFileName, $sFolderToAppend);
-	}	
+	}
 
 	/**
 	 * Appends message from stream to a specific folder.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param resource $rMessage Resource the message is appended from.
 	 * @param string $sFolder Folder the message is appended to.
@@ -1649,11 +1705,11 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	{
 		$oImapClient =& $this->_getImapClient($oAccount);
 		$oImapClient->MessageAppendStream($sFolder, $rMessage, $iStreamSize, null, $iUid);
-	}	
+	}
 
 	/**
 	 * Sets, removes or toggles flags of one or several messages.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 * @param array $aUids List of message UIDs .
@@ -1741,7 +1797,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Searches for a message with a specific Message-ID value and returns it's uid.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderName Name of the folder to look for message in.
 	 * @param string $sMessageId Message-ID value of the message.
@@ -1764,7 +1820,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		return is_array($aUids) && 1 === count($aUids) && is_numeric($aUids[0]) ? (int) $aUids[0] : null;
 	}
 
-	public function getMessagesInfo($oAccount, $sFolderName, $Search)
+	public function getUnifiedMailboxMessagesInfo($oAccount, $sFolderName, $sSearch = '', $aFilters = [], $bUseThreading = false, $Limit = 20, $sSortBy = 'ARRIVAL', $sSortOrder = 'REVERSE')
 	{
 		if (0 === strlen($sFolderName))
 		{
@@ -1774,58 +1830,417 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		$oImapClient =& $this->_getImapClient($oAccount);
 		$oImapClient->FolderExamine($sFolderName);
 
-		$sFilter = 'ALL';
-		if ($Search !== null)
-		{
-			$sFilter = $this->_prepareImapSearchString($oImapClient, $Search);
-		}
-
-		$aUids = $oImapClient->MessageSimpleSearch($sFilter);
-
+		$oCurrentFolderInformation = $oImapClient->FolderCurrentInformation();
+		$iMessageCount = $oCurrentFolderInformation->Exists;
 		$mResult = array();
-		$aFetchResponse = $oImapClient->Fetch(array(
-			\MailSo\Imap\Enumerations\FetchType::INDEX,
-			\MailSo\Imap\Enumerations\FetchType::UID,
-			\MailSo\Imap\Enumerations\FetchType::FLAGS
-		), implode(',', $aUids), true);
 
-		if (is_array($aFetchResponse) && 0 < count($aFetchResponse))
+		$aThreads = array();
+		$oServer = $oAccount->getServer();
+		$bUseThreadingIfSupported = $oServer->EnableThreading && $oAccount->UseThreading;
+		if ($bUseThreadingIfSupported)
 		{
-			$oFetchResponseItem = null;
-			foreach ($aFetchResponse as /* @var $oFetchResponseItem \MailSo\Imap\FetchResponse */ &$oFetchResponseItem)
+			$bUseThreadingIfSupported = $bUseThreading;
+		}
+		if ($bUseThreadingIfSupported)
+		{
+			$bUseThreadingIfSupported = $oImapClient->IsSupported('THREAD=REFS') || $oImapClient->IsSupported('THREAD=REFERENCES') || $oImapClient->IsSupported('THREAD=ORDEREDSUBJECT');
+		}
+		$iMessageResultCount = 0;
+		if ($iMessageCount > 0)
+		{
+			$bIndexAsUid = true;
+
+			$bUseSortIfSupported = $oImapClient->IsSupported('SORT') && !empty($sSortBy);
+
+			if (0 < strlen($sSearch) || 0 < count($aFilters))
 			{
-				$sUid = $oFetchResponseItem->GetFetchValue(\MailSo\Imap\Enumerations\FetchType::UID);
-				$aFlags = $oFetchResponseItem->GetFetchValue(\MailSo\Imap\Enumerations\FetchType::FLAGS);
-				if (is_array($aFlags))
+				$sCutedSearch = $sSearch;
+
+				$sCutedSearch = \preg_replace('/[\s]+/', ' ', $sCutedSearch);
+				$sCutedSearch = \preg_replace('/attach[ ]?:[ ]?/i', 'attach:', $sCutedSearch);
+
+				$bSearchAttachments = false;
+				$fAttachmentSearchCallback = null;
+				$aMatch = array();
+
+				$oMailModule = \Aurora\System\Api::GetModule('Mail');
+				$bUseBodyStructuresForHasAttachmentsSearch = $oMailModule->getConfig('UseBodyStructuresForHasAttachmentsSearch', false);
+				if (($bUseBodyStructuresForHasAttachmentsSearch && \preg_match('/has[ ]?:[ ]?attachments/i', $sSearch)) ||
+					\preg_match('/attach:([^\s]+)/i', $sSearch, $aMatch))
 				{
-					$mResult[] = [
+					$bSearchAttachments = true;
+					$sAttachmentName = isset($aMatch[1]) ? trim($aMatch[1]) : '';
+					$sAttachmentRegs = !empty($sAttachmentName) && '*' !== $sAttachmentName ?
+						'/[^>]*'.str_replace('\\*', '[^>]*', preg_quote(trim($sAttachmentName, '*'), '/')).'[^>]*/ui' : '';
+
+					if ($bUseBodyStructuresForHasAttachmentsSearch)
+					{
+						$sCutedSearch = trim(preg_replace('/has[ ]?:[ ]?attachments/i', '', $sCutedSearch));
+					}
+
+					$sCutedSearch = trim(preg_replace('/attach:([^\s]+)/', '', $sCutedSearch));
+
+					$fAttachmentSearchCallback = function ($oBodyStructure, $sSize, $sInternalDate, $aFlagsLower, $sUid) use ($sFolderFullNameRaw, $sAttachmentRegs) {
+
+						$bResult = false;
+						if ($oBodyStructure)
+						{
+							$aAttachmentsParts = $oBodyStructure->SearchAttachmentsParts();
+							if ($aAttachmentsParts && 0 < count($aAttachmentsParts))
+							{
+								$oAttachments = \Aurora\Modules\Mail\Classes\AttachmentCollection::createInstance();
+								foreach ($aAttachmentsParts as /* @var $oAttachmentItem \MailSo\Imap\BodyStructure */ $oAttachmentItem)
+								{
+									$oAttachments->Add(
+										\Aurora\Modules\Mail\Classes\Attachment::createInstance($sFolderFullNameRaw, $sUid, $oAttachmentItem)
+									);
+								}
+
+								$bResult = $oAttachments->hasNotInlineAttachments();
+								if ($bResult && !empty($sAttachmentRegs))
+								{
+									$aList = $oAttachments->FilterList(function ($oAttachment) use ($sAttachmentRegs) {
+										if ($oAttachment && !$oAttachment->isInline() && !$oAttachment->getCid())
+										{
+											return !!preg_match($sAttachmentRegs, $oAttachment->getFileName());
+										}
+
+										return false;
+									});
+
+									return is_array($aList) ? 0 < count($aList) : false;
+								}
+							}
+						}
+
+						unset($oBodyStructure);
+
+						return $bResult;
+					};
+				}
+
+				if (0 < strlen($sCutedSearch) || 0 < count($aFilters))
+				{
+					$bSearch = true;
+					$sSearchCriterias = $this->_prepareImapSearchString($oImapClient, $sCutedSearch,
+						$oAccount->getDefaultTimeOffset() * 60, $aFilters);
+
+					$bIndexAsUid = true;
+					$aIndexOrUids = null;
+
+					if ($bUseSortIfSupported)
+					{
+						$aIndexOrUids = $oImapClient->MessageSimpleSort(array($sSortOrder . ' ' . $sSortBy), $sSearchCriterias, $bIndexAsUid);
+					}
+					else
+					{
+						if (!\MailSo\Base\Utils::IsAscii($sCutedSearch))
+						{
+							try
+							{
+								$aIndexOrUids = $oImapClient->MessageSimpleSearch($sSearchCriterias, $bIndexAsUid, 'UTF-8');
+							}
+							catch (\MailSo\Imap\Exceptions\NegativeResponseException $oException)
+							{
+								// Charset is not supported. Skip and try request without charset.
+								$aIndexOrUids = null;
+							}
+						}
+
+						if (null === $aIndexOrUids)
+						{
+							$aIndexOrUids = $oImapClient->MessageSimpleSearch($sSearchCriterias, $bIndexAsUid);
+						}
+					}
+
+					if ($bSearchAttachments && is_array($aIndexOrUids) && 0 < count($aIndexOrUids))
+					{
+						$aIndexOrUids = $this->_doSpecialUidsSearch(
+							$oImapClient, $fAttachmentSearchCallback, $sFolderFullNameRaw, $aIndexOrUids, $iOffset, $iLimit);
+					}
+				}
+				else if ($bSearchAttachments)
+				{
+					$bIndexAsUid = true;
+					$aIndexOrUids = $this->_doSpecialIndexSearch(
+						$oImapClient, $fAttachmentSearchCallback, $sFolderFullNameRaw, $iOffset, $iLimit);
+				}
+			}
+			else if ($bUseThreadingIfSupported && 1 < $iMessageCount)
+			{
+				$bIndexAsUid = true;
+				$aThreadUids = array();
+				try
+				{
+					$aThreadUids = $oImapClient->MessageSimpleThread();
+				}
+				catch (\MailSo\Imap\Exceptions\RuntimeException $oException)
+				{
+					$aThreadUids = array();
+				}
+
+				$aThreads = $this->_compileThreadList($aThreadUids);
+				if ($bUseSortIfSupported)
+				{
+					$aThreads = $this->_resortThreadList($aThreads,
+						$oImapClient->MessageSimpleSort(array($sSortOrder . ' ' . $sSortBy), 'ALL', true));
+				}
+				else
+				{
+//						$this->chunkThreadArray($aThreads);
+				}
+
+				$aIndexOrUids = array_keys($aThreads);
+				$iMessageCount = count($aIndexOrUids);
+			}
+			else
+			{
+				 if ($bUseSortIfSupported && 1 < $iMessageCount)
+				{
+					$bIndexAsUid = true;
+					$aIndexOrUids = $oImapClient->MessageSimpleSort(array($sSortOrder . ' ' . $sSortBy), 'ALL', $bIndexAsUid);
+				}
+				else
+				{
+					$bIndexAsUid = false;
+					$aIndexOrUids = array(1);
+					if (1 < $iMessageCount)
+					{
+						$aIndexOrUids = array_reverse(range(1, $iMessageCount));
+					}
+				}
+			}
+
+			if ($bUseThreadingIfSupported && 1 < $iMessageCount)
+			{
+				$aThreadUids = array();
+				try
+				{
+					$aThreadUids = $oImapClient->MessageSimpleThread();
+				}
+				catch (\MailSo\Imap\Exceptions\RuntimeException $oException)
+				{
+					$aThreadUids = array();
+				}
+
+				$aThreads = $this->_compileThreadList($aThreadUids);
+				$aIndexOrUids = array_keys($aThreads);
+				$iMessageCount = count($aIndexOrUids);
+			}
+
+			$iMessageResultCount = 0 < strlen($sSearch) || 0 < count($aFilters)
+			? count($aIndexOrUids) : $iMessageCount;
+
+			$aIndexOrUids = array_slice(
+				$aIndexOrUids,
+				0,
+				$Limit
+			);
+
+			$aFetchResponse = null;
+			try
+			{
+				$aFetchResponse = $oImapClient->Fetch([
+					\MailSo\Imap\Enumerations\FetchType::INDEX,
+					\MailSo\Imap\Enumerations\FetchType::UID,
+					\MailSo\Imap\Enumerations\FetchType::INTERNALDATE
+				], implode(',', $aIndexOrUids), $bIndexAsUid);
+			}
+			catch (\Exception $oEx)
+			{
+
+			}
+			if (is_array($aFetchResponse) && 0 < count($aFetchResponse))
+			{
+				$oFetchResponseItem = null;
+				foreach ($aFetchResponse as /* @var $oFetchResponseItem \MailSo\Imap\FetchResponse */ &$oFetchResponseItem)
+				{
+					$sUid = $oFetchResponseItem->GetFetchValue(\MailSo\Imap\Enumerations\FetchType::UID);
+					$sInternalDate = $oFetchResponseItem->GetFetchValue(\MailSo\Imap\Enumerations\FetchType::INTERNALDATE);
+
+					$mResult[$sUid] = [
+						'accountid' => $oAccount->EntityId,
 						'uid' => $sUid,
-						'flags' => array_map('strtolower', $aFlags)
+						'internaldate' => $sInternalDate
 					];
+				}
+			}
+
+			if ($bUseThreadingIfSupported && 0 < count($aThreads))
+			{
+				foreach ($mResult as $sKey => $aItem)
+				{
+					$iUid = $aItem['uid'];
+					if (isset($aThreads[$iUid]) && is_array($aThreads[$iUid]))
+					{
+						foreach($aThreads[$iUid] as $iThreadUid)
+						{
+							if (isset($mResult[$iThreadUid]))
+							{
+								unset($mResult[$iThreadUid]);
+							}
+							$mResult[$sKey]['threads'][] = $iThreadUid;
+						}
+					}
 				}
 			}
 		}
 
-		return $mResult;
+		return [
+			'Count' => $iMessageResultCount,
+			'Uids' => array_values($mResult)
+		];
+	}
+
+	public function getMessagesInfo($oAccount, $sFolderName, $Search, $bUseThreading = false,  $sSortBy = 'ARRIVAL', $sSortOrder = 'REVERSE')
+	{
+		if (0 === strlen($sFolderName))
+		{
+			throw new \Aurora\System\Exceptions\InvalidArgumentException();
+		}
+
+		$oImapClient =& $this->_getImapClient($oAccount);
+		$oImapClient->FolderExamine($sFolderName);
+
+		$oCurrentFolderInformation = $oImapClient->FolderCurrentInformation();
+
+		$mResult = array();
+
+		if ($oCurrentFolderInformation->Exists > 0)
+		{
+			$bUseSortIfSupported = false;
+			$aMessagesSortBy = $this->GetModule()->getConfig('MessagesSortBy', false);
+			if ($aMessagesSortBy !== false && is_array($aMessagesSortBy) && isset($aMessagesSortBy['Allow']) && (bool) $aMessagesSortBy['Allow'] !== false && !empty($sSortBy))
+			{
+				$bUseSortIfSupported = $oImapClient->IsSupported('SORT');
+			}
+
+			$sFilter = $this->_prepareImapSearchString($oImapClient, $Search);
+			if ($bUseSortIfSupported)
+			{
+				$aUids = $oImapClient->MessageSimpleSort(array($sSortOrder . ' ' . $sSortBy), $sFilter);
+			}
+			else
+			{
+				$aUids = $oImapClient->MessageSimpleSearch($sFilter);
+			}
+
+			$bIndexAsUid = true;
+
+			$iMessageCount = 0;
+			$aThreads = array();
+			$oServer = $oAccount->getServer();
+			$bUseThreadingIfSupported = $oServer->EnableThreading && $oAccount->UseThreading;
+			if ($bUseThreadingIfSupported)
+			{
+				$bUseThreadingIfSupported = $bUseThreading;
+			}
+			if ($bUseThreadingIfSupported)
+			{
+				$bUseThreadingIfSupported = $oImapClient->IsSupported('THREAD=REFS') || $oImapClient->IsSupported('THREAD=REFERENCES') || $oImapClient->IsSupported('THREAD=ORDEREDSUBJECT');
+			}
+			if ($bUseThreadingIfSupported/* && 1 < $iMessageCount*/)
+			{
+				$aThreadUids = array();
+				try
+				{
+					$aThreadUids = $oImapClient->MessageSimpleThread();
+				}
+				catch (\MailSo\Imap\Exceptions\RuntimeException $oException)
+				{
+					$aThreadUids = array();
+				}
+
+				$aThreads = $this->_compileThreadList($aThreadUids);
+				$aIndexOrUids = array_keys($aThreads);
+				$iMessageCount = count($aIndexOrUids);
+			}
+
+			$aIndexOrUidsChunk = array_chunk(
+				$aUids,
+				$this->GetModule()->getConfig('MessagesInfoChunkSize', 1000)
+			);
+
+			$mResult = array_flip($aUids);
+
+			foreach ($aIndexOrUidsChunk as $aIndexOrUids)
+			{
+				$aFetchResponse = $oImapClient->Fetch([
+					\MailSo\Imap\Enumerations\FetchType::INDEX,
+					\MailSo\Imap\Enumerations\FetchType::UID,
+					\MailSo\Imap\Enumerations\FetchType::FLAGS
+				], implode(',', $aIndexOrUids), $bIndexAsUid);
+
+				if (is_array($aFetchResponse) && 0 < count($aFetchResponse))
+				{
+					$oFetchResponseItem = null;
+					foreach ($aFetchResponse as /* @var $oFetchResponseItem \MailSo\Imap\FetchResponse */ &$oFetchResponseItem)
+					{
+						$sUid = $oFetchResponseItem->GetFetchValue(\MailSo\Imap\Enumerations\FetchType::UID);
+						$aFlags = $oFetchResponseItem->GetFetchValue(\MailSo\Imap\Enumerations\FetchType::FLAGS);
+						$iMessageCount++;
+						if (is_array($aFlags))
+						{
+							$mResult[$sUid] = [
+								'uid' => (int) $sUid,
+								'flags' => array_map('strtolower', $aFlags)
+							];
+						}
+					}
+				}
+			}
+
+			if ($bUseThreadingIfSupported && 0 < count($aThreads))
+			{
+				foreach ($mResult as $sKey => $aItem)
+				{
+					$iUid = $aItem['uid'];
+					if (isset($aThreads[$iUid]) && is_array($aThreads[$iUid]))
+					{
+						foreach($aThreads[$iUid] as $iThreadUid)
+						{
+							$aThreadFlags = [];
+							if (isset($mResult[$iThreadUid]))
+							{
+								$aThreadFlags = $mResult[$iThreadUid]['flags'];
+								unset($mResult[$iThreadUid]);
+							}
+							$mResult[$sKey]['thread'][] = [
+								'uid' => $iThreadUid,
+								'flags' => $aThreadFlags
+							];
+						}
+					}
+				}
+			}
+		}
+
+		return array_values($mResult);
 	}
 
 	/**
 	 * Retrieves quota information for the account.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 *
 	 * @return array|bool Array of quota values or bool if the information is unavailable.
 	 */
 	public function getQuota($oAccount)
 	{
+		$iMAX_32_INT = 2147483647;
 		$oImapClient =& $this->_getImapClient($oAccount);
-		
-		return $oImapClient->Quota();
+		$aQuota = $oImapClient->Quota();
+		if (is_array($aQuota) && isset($aQuota[1]) && ($aQuota[1] / 1024 > $iMAX_32_INT))
+		{
+			$aQuota[1] = 0;
+		}
+
+		return $aQuota;
 	}
 
 	/**
 	 * This is universal function for obtaining any MIME data via stream.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param mixed $mCallback This callback accepts the following parameters: $rMessageMimeIndexStream, $sContentType, $sFileName, $sMimeIndex.
 	 * @param string $sFolderName Folder the message resides in.
@@ -1923,10 +2338,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		return ($aFetchResponse && 1 === count($aFetchResponse));
 	}
-	
+
 	/**
 	 * Escapes quotes in search string.
-	 * 
+	 *
 	 * @param string $sSearch Search string for escaping.
 	 * @param bool $bDetectGmail = true. If **true** function will use gmail mode for escaping.
 	 *
@@ -1941,7 +2356,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Converts date from search string to Unix timestamp.
-	 * 
+	 *
 	 * @param string $sDate Date in string format.
 	 * @param int $iTimeZoneOffset Time zone in which the date string should be parsed.
 	 *
@@ -1950,7 +2365,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	private function _convertSearchDateToTimestamp($sDate, $iTimeZoneOffset)
 	{
 		$iResult = 0;
-		
+
 		if (0 < strlen($sDate))
 		{
 			$oDateTime = \DateTime::createFromFormat('Y.m.d', $sDate, \MailSo\Base\DateTimeHelper::GetUtcTimeZoneObject());
@@ -1962,7 +2377,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Parses search string to it's parts.
-	 * 
+	 *
 	 * @param string $sSearch Search string.
 	 *
 	 * @return array
@@ -2067,7 +2482,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Prepares search string for searching on IMAP.
-	 * 
+	 *
 	 * @param Object $oImapClient ImapClient object.
 	 * @param string $sSearch Search string.
 	 * @param int $iTimeZoneOffset = 0. Time zone in which the date string should be parsed.
@@ -2084,7 +2499,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			return 'ALL';
 		}
-		
+
 		$bFilterFlagged = false;
 		$bFilterUnseen = false;
 
@@ -2156,7 +2571,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 							$aImapSearchResult[] = $sValue;
 						}
 					}
-					
+
 					unset($aLines['EMAIL']);
 				}
 
@@ -2169,7 +2584,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 					$aImapSearchResult[] = $sValue;
 					$aImapSearchResult[] = 'CC';
 					$aImapSearchResult[] = $sValue;
-					
+
 					unset($aLines['TO']);
 				}
 
@@ -2323,9 +2738,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Reverses recursively thread uids and returns simple array.
-	 * 
+	 *
 	 * @param array $aThreadUids Hierarchical structure containing thread uids.
-	 * 
+	 *
 	 * @return array
 	 */
 	private function _reverseThreadUids($aThreadUids)
@@ -2343,9 +2758,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Maps recursively thread list.
-	 * 
+	 *
 	 * @param array $aThreads Thread list.
-	 * 
+	 *
 	 * @return array
 	 */
 	private function _mapThreadList($aThreads)
@@ -2373,11 +2788,11 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Compares items for sorting.
-	 * 
+	 *
 	 * @param type $a First item to compare.
 	 * @param type $b Second item to compare.
 	 * @param type $aSortUidsFlipped Array contains items to compare.
-	 * 
+	 *
 	 * @return int
 	 */
 	public function _sortHelper($a, $b, $aSortUidsFlipped)
@@ -2408,10 +2823,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Sorts array by array.
-	 * 
+	 *
 	 * @param array $aInput
 	 * @param array $aSortUidsFlipped
-	 * 
+	 *
 	 * @return void
 	 */
 	private function _sortArrayByArray(&$aInput, $aSortUidsFlipped)
@@ -2425,10 +2840,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Sorts array key by array.
-	 * 
+	 *
 	 * @param array $aThreads
 	 * @param array $aSortUidsFlipped
-	 * 
+	 *
 	 * @return void
 	 */
 	private function _sortArrayKeyByArray(&$aThreads, $aSortUidsFlipped)
@@ -2442,7 +2857,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Breaks into chunks each thread from the list and returns the list by reference.
-	 * 
+	 *
 	 * @param type $aThreads Thread list obtained by reference.
 	 */
 	private function _chunkThreadList(&$aThreads)
@@ -2481,7 +2896,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Resorts thread list.
-	 * 
+	 *
 	 * @param array $aThreads Thread list.
 	 * @param array $aSortUids Sort Uids.
 	 *
@@ -2509,7 +2924,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Compiles thread list.
-	 * 
+	 *
 	 * @param array $aThreads Thread list.
 	 *
 	 * @return array
@@ -2550,7 +2965,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Fetches some messages data and returns it in callback.
-	 * 
+	 *
 	 * @param Object $oImapClient ImapClient object.
 	 * @param string $sIndexRange
 	 * @param function $fItemCallback callback wich is used for data returning.
@@ -2606,7 +3021,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Searches messages and messages data.
-	 * 
+	 *
 	 * @param Object $oImapClient
 	 * @param function $fItemCallback
 	 * @param string $sFolderFullNameRaw
@@ -2629,7 +3044,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		$aList = $this->_getFolderInformation($oImapClient, $sFolderFullNameRaw);
 		$iCount = $aList[0];
-		
+
 		if (0 < $iCount)
 		{
 			$iInc = 0;
@@ -2637,7 +3052,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 			$aIndexes = range(1, $iCount);
 			$aRequestIndexes = array();
-			
+
 			foreach ($aIndexes as $iIndex)
 			{
 				$iInc++;
@@ -2671,7 +3086,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Searches messages uids for message list.
-	 * 
+	 *
 	 * @param Object $oImapClient
 	 * @param function $fItemCallback
 	 * @param string $sFolderFullNameRaw
@@ -2683,7 +3098,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	private function _doSpecialUidsSearch($oImapClient, $fItemCallback, $sFolderFullNameRaw, $aUids)
 	{
-		if (0 === strlen($sFolderFullNameRaw) || !is_callable($fItemCallback) || 
+		if (0 === strlen($sFolderFullNameRaw) || !is_callable($fItemCallback) ||
 			!is_array($aUids) || 0 === count($aUids))
 		{
 			throw new \Aurora\System\Exceptions\InvalidArgumentException();
@@ -2727,8 +3142,105 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
+	 * @param Aurora\Modules\Mail\Classes\Account $oAccount Account object.
+	 * @param string $sFolderName
+	 * @param int $iIndex
+	 * @param bool $bIndexIsUid = true
+
+	 *
+	 * @return \MailSo\Mail\Message|false
+	 *
+	 * @throws \MailSo\Base\Exceptions\InvalidArgumentException
+	 * @throws \MailSo\Net\Exceptions\Exception
+	 * @throws \MailSo\Imap\Exceptions\Exception
+	 */
+	public function getMessage($oAccount, $sFolderName, $iIndex, $bIndexIsUid = true)
+	{
+		$oImapClient =& $this->_getImapClient($oAccount);
+
+		$oImapClient->FolderExamine($sFolderName);
+
+		$oBodyStructure = null;
+		$oMessage = false;
+
+		$aBodyPeekMimeIndexes = array();
+		$aSignatureMimeIndexes = array();
+
+		$aFetchResponse = $oImapClient->Fetch(array(\MailSo\Imap\Enumerations\FetchType::BODYSTRUCTURE), $iIndex, $bIndexIsUid);
+		if (0 < \count($aFetchResponse) && isset($aFetchResponse[0]))
+		{
+			$oBodyStructure = $aFetchResponse[0]->GetFetchBodyStructure();
+			if ($oBodyStructure)
+			{
+				$aTextParts = $oBodyStructure->SearchHtmlOrPlainParts();
+				if (is_array($aTextParts) && 0 < \count($aTextParts))
+				{
+					foreach ($aTextParts as $oPart)
+					{
+						$aBodyPeekMimeIndexes[] = array($oPart->PartID(), $oPart->Size());
+					}
+				}
+
+				$aSignatureParts = $oBodyStructure->SearchByContentType('application/pgp-signature');
+				if (is_array($aSignatureParts) && 0 < \count($aSignatureParts))
+				{
+					foreach ($aSignatureParts as $oPart)
+					{
+						$aSignatureMimeIndexes[] = $oPart->PartID();
+					}
+				}
+			}
+		}
+
+		$aFetchItems = array(
+			\MailSo\Imap\Enumerations\FetchType::INDEX,
+			\MailSo\Imap\Enumerations\FetchType::UID,
+			\MailSo\Imap\Enumerations\FetchType::RFC822_SIZE,
+			\MailSo\Imap\Enumerations\FetchType::INTERNALDATE,
+			\MailSo\Imap\Enumerations\FetchType::FLAGS,
+			\MailSo\Imap\Enumerations\FetchType::BODY_HEADER_PEEK
+		);
+
+		if (0 < \count($aBodyPeekMimeIndexes))
+		{
+			foreach ($aBodyPeekMimeIndexes as $aTextMimeData)
+			{
+				$sLine = \MailSo\Imap\Enumerations\FetchType::BODY_PEEK.'['.$aTextMimeData[0].']';
+				if (\is_numeric($iBodyTextLimit) && 0 < $iBodyTextLimit && $iBodyTextLimit < $aTextMimeData[1])
+				{
+					$sLine .= '<0.'.((int) $iBodyTextLimit).'>';
+				}
+
+				$aFetchItems[] = $sLine;
+			}
+		}
+
+		if (0 < \count($aSignatureMimeIndexes))
+		{
+			foreach ($aSignatureMimeIndexes as $sTextMimeIndex)
+			{
+				$aFetchItems[] = \MailSo\Imap\Enumerations\FetchType::BODY_PEEK.'['.$sTextMimeIndex.']';
+			}
+		}
+
+		if (!$oBodyStructure)
+		{
+			$aFetchItems[] = \MailSo\Imap\Enumerations\FetchType::BODYSTRUCTURE;
+		}
+
+		$aFetchResponse = $oImapClient->Fetch($aFetchItems, $iIndex, $bIndexIsUid);
+		if (0 < \count($aFetchResponse))
+		{
+			$oMessage = \MailSo\Mail\Message::NewFetchResponseInstance(
+				$sFolderName, $aFetchResponse[0], $oBodyStructure);
+		}
+
+		return $oMessage;
+	}
+
+	/**
 	 * Obtains message list with messages data.
-	 * 
+	 *
 	 * @param Aurora\Modules\Mail\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 * @param int $iOffset = 0. Offset value for obtaining a partial list.
@@ -2743,7 +3255,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
 	 */
 	public function getMessageList($oAccount, $sFolderFullNameRaw, $iOffset = 0, $iLimit = 20,
-		$sSearch = '', $bUseThreading = false, $aFilters = array(), $sInboxUidnext = '')
+		$sSearch = '', $bUseThreading = false, $aFilters = array(), $sInboxUidnext = '', $sSortBy = 'ARRIVAL', $sSortOrder = 'REVERSE')
 	{
 		if (0 === strlen($sFolderFullNameRaw) || 0 > $iOffset || 0 >= $iLimit || 999 < $iLimit)
 		{
@@ -2772,6 +3284,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		$oMessageCollection->Search = $sSearch;
 		$oMessageCollection->UidNext = $sUidNext;
 		$oMessageCollection->Filters = implode(',', $aFilters);
+		$oMessageCollection->FolderHash = $aList[3];
 
 		$aThreads = array();
 		$oServer = $oAccount->getServer();
@@ -2781,20 +3294,19 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			$bUseThreadingIfSupported = $bUseThreading;
 		}
 
-		$oMessageCollection->FolderHash = $aList[3];
-
 		$bSearch = false;
 		if (0 < $iRealMessageCount)
 		{
 			$bIndexAsUid = false;
 			$aIndexOrUids = array();
 
-			$bUseSortIfSupported = $this->GetModule()->getConfig('UseSortImapForDateMode', false);
-			if ($bUseSortIfSupported)
+			$bUseSortIfSupported = false;
+			$aMessagesSortBy = $this->GetModule()->getConfig('MessagesSortBy', false);
+			if ($aMessagesSortBy !== false && is_array($aMessagesSortBy) && isset($aMessagesSortBy['Allow']) && (bool) $aMessagesSortBy['Allow'] !== false && !empty($sSortBy))
 			{
 				$bUseSortIfSupported = $oImapClient->IsSupported('SORT');
 			}
-			
+
 			if ($bUseThreadingIfSupported)
 			{
 				$bUseThreadingIfSupported = $oImapClient->IsSupported('THREAD=REFS') || $oImapClient->IsSupported('THREAD=REFERENCES') || $oImapClient->IsSupported('THREAD=ORDEREDSUBJECT');
@@ -2811,7 +3323,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				$fAttachmentSearchCallback = null;
 				$aMatch = array();
 
-				$oMailModule = \Aurora\System\Api::GetModule('Mail'); 
+				$oMailModule = \Aurora\System\Api::GetModule('Mail');
 				$bUseBodyStructuresForHasAttachmentsSearch = $oMailModule->getConfig('UseBodyStructuresForHasAttachmentsSearch', false);
 				if (($bUseBodyStructuresForHasAttachmentsSearch && \preg_match('/has[ ]?:[ ]?attachments/i', $sSearch)) ||
 					\preg_match('/attach:([^\s]+)/i', $sSearch, $aMatch))
@@ -2822,10 +3334,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 						'/[^>]*'.str_replace('\\*', '[^>]*', preg_quote(trim($sAttachmentName, '*'), '/')).'[^>]*/ui' : '';
 
 					if ($bUseBodyStructuresForHasAttachmentsSearch)
-					{	
+					{
 						$sCutedSearch = trim(preg_replace('/has[ ]?:[ ]?attachments/i', '', $sCutedSearch));
 					}
-					
+
 					$sCutedSearch = trim(preg_replace('/attach:([^\s]+)/', '', $sCutedSearch));
 
 					$fAttachmentSearchCallback = function ($oBodyStructure, $sSize, $sInternalDate, $aFlagsLower, $sUid) use ($sFolderFullNameRaw, $sAttachmentRegs) {
@@ -2878,7 +3390,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 					if ($bUseSortIfSupported)
 					{
-						$aIndexOrUids = $oImapClient->MessageSimpleSort(array('REVERSE ARRIVAL'), $sSearchCriterias, $bIndexAsUid);
+						$aIndexOrUids = $oImapClient->MessageSimpleSort(array($sSortOrder . ' ' . $sSortBy), $sSearchCriterias, $bIndexAsUid);
 					}
 					else
 					{
@@ -2933,20 +3445,20 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 					if ($bUseSortIfSupported)
 					{
 						$aThreads = $this->_resortThreadList($aThreads,
-							$oImapClient->MessageSimpleSort(array('REVERSE ARRIVAL'), 'ALL', true));
+							$oImapClient->MessageSimpleSort(array($sSortOrder . ' ' . $sSortBy), 'ALL', true));
 					}
 					else
 					{
 //						$this->chunkThreadArray($aThreads);
 					}
-					
+
 					$aIndexOrUids = array_keys($aThreads);
 					$iMessageCount = count($aIndexOrUids);
 				}
 				else if ($bUseSortIfSupported && 1 < $iMessageCount)
 				{
 					$bIndexAsUid = true;
-					$aIndexOrUids = $oImapClient->MessageSimpleSort(array('REVERSE ARRIVAL'), 'ALL', $bIndexAsUid);
+					$aIndexOrUids = $oImapClient->MessageSimpleSort(array($sSortOrder . ' ' . $sSortBy), 'ALL', $bIndexAsUid);
 				}
 				else
 				{
@@ -3046,7 +3558,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Obtains a list of specific messages.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 * @param array $aUids List of message UIDs.
@@ -3055,9 +3567,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @throws \Aurora\System\Exceptions\InvalidArgumentException
 	 */
-	public function getMessageListByUids($oAccount, $sFolderFullNameRaw, $aUids)
+	public function getMessageListByUids($oAccount, $sFolderFullNameRaw, $aUids, $sInboxUidnext = '')
 	{
-		if (0 === strlen($sFolderFullNameRaw) || !is_array($aUids) || 0 === count($aUids))
+		if (0 === strlen($sFolderFullNameRaw) /*|| !is_array($aUids) || 0 === count($aUids)*/)
 		{
 			throw new \Aurora\System\Exceptions\InvalidArgumentException();
 		}
@@ -3086,7 +3598,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			$bIndexAsUid = true;
 			$aIndexOrUids = $aUids;
-			
+
 			if (is_array($aIndexOrUids))
 			{
 				$oMessageCollection->MessageCount = $iMessageRealCount;
@@ -3155,12 +3667,19 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			$oMessageCollection->MessageUnseenCount,
 			$oMessageCollection->UidNext);
 
+		if (0 < strlen($sInboxUidnext) &&
+			'INBOX' === $oMessageCollection->FolderName &&
+			$sInboxUidnext !== $oMessageCollection->UidNext)
+		{
+			$oMessageCollection->New = $this->getNewMessagesInformation($oAccount, 'INBOX', $sInboxUidnext, $oMessageCollection->UidNext);
+		}
+
 		return $oMessageCollection;
 	}
 
 	/**
 	 * Obtains list of flags for one or several messages.
-	 * 
+	 *
 	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount Account object.
 	 * @param string $sFolderFullNameRaw Raw full name of the folder.
 	 * @param array $aUids List of message UIDs.

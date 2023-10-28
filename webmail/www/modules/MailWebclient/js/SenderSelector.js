@@ -36,6 +36,13 @@ function CSenderSelector()
 						return oFetcher.id() === Types.pInt(sId);
 					});
 				}
+				else if (sId.indexOf('alias') === 0)
+				{
+					sId = sId.replace('alias', '');
+					oFetcherOrIdentity = _.find(oAccount.aliases(), function (oAlias) {
+						return oAlias.id() === Types.pInt(sId);
+					});
+				}
 				else
 				{
 					oFetcherOrIdentity = _.find(oAccount.identities(), function (oIdnt) {
@@ -61,6 +68,10 @@ CSenderSelector.prototype.changeSelectedSender = function (oFetcherOrIdentity)
 		if (oFetcherOrIdentity.FETCHER)
 		{
 			sSelectedSenderId = 'fetcher' + sSelectedSenderId;
+		}
+		else if (oFetcherOrIdentity.ALIAS)
+		{
+			sSelectedSenderId = 'alias' + sSelectedSenderId;
 		}
 
 		if (_.find(this.senderList(), function (oItem) {return oItem.id === sSelectedSenderId;}))
@@ -149,6 +160,14 @@ CSenderSelector.prototype.fillSenderList = function (oFetcherOrIdentity)
 		oAccount.fetchersSubscribtion = oAccount.fetchers.subscribe(function () {
 			this.fillSenderList(oFetcherOrIdentity);
 		}, this);
+
+		_.each(oAccount.aliases(), function (oAlias) {
+			var sFullEmail = oAlias.fullEmail();
+			if (sFullEmail.length > 0)
+			{
+				aSenderList.push({fullEmail: sFullEmail, id: 'alias' + oAlias.id()});
+			}
+		}, this);
 	}
 
 	this.senderList(aSenderList);
@@ -168,7 +187,14 @@ CSenderSelector.prototype.setFetcherOrIdentityByReplyMessage = function (oMessag
 	
 	if (oFetcherOrIdentity)
 	{
-		this.changeSelectedSender(oFetcherOrIdentity);
+		if (oFetcherOrIdentity.accountId() !== this.senderAccountId())
+		{
+			this.changeSenderAccountId(oFetcherOrIdentity.accountId(), oFetcherOrIdentity);
+		}
+		else
+		{
+			this.changeSelectedSender(oFetcherOrIdentity);
+		}
 	}
 };
 

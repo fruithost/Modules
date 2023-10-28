@@ -127,7 +127,9 @@ class Contact extends \Aurora\System\EAV\Entity
 			'ETag'				=> array('string', ''),
 			'Auto'				=> array('bool', false, true),
 			'Frequency'			=> array('int', 0, true),
-			'DateModified'		=> array('datetime', null, true)
+			'DateModified'		=> array('datetime', null, true),
+
+			'AgeScore'			=> array('nodb', 0),
 		);
 		parent::__construct($sModule);
 	}
@@ -140,7 +142,7 @@ class Contact extends \Aurora\System\EAV\Entity
 	{
 		if (is_string($mValue))
 		{
-	        $mValue = str_replace(array("\r","\n\n"), array('\n','\n'), $mValue);
+//	        $mValue = str_replace(array("\r","\n"), array("\n","\n"), $mValue);
 		}
 
 		parent::__set($sKey, $mValue);
@@ -172,10 +174,7 @@ class Contact extends \Aurora\System\EAV\Entity
 					// It can be used only for suggestion to create.
 					elseif (!empty($sGroupName))
 					{
-						$oGroup = \Aurora\Modules\Contacts\Classes\Group::createInstance(
-							'\Aurora\Modules\Contacts\Classes\Group',
-							$this->GetModule()
-						);
+						$oGroup = new \Aurora\Modules\Contacts\Classes\Group($this->getModule());
 						$oGroup->IdUser = $this->IdUser;
 						$oGroup->Name = $sGroupName;
 						$aNonExistingGroups[] = $oGroup;
@@ -237,16 +236,11 @@ class Contact extends \Aurora\System\EAV\Entity
 	 */
 	public function InitFromVCardStr($iUserId, $sData, $sUid = '')
 	{
-		$oUser = null;
-		$oCoreDecorator = \Aurora\Modules\Core\Module::Decorator();
-		if ($oCoreDecorator)
+		$oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($iUserId);
+		if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
 		{
-			$oUser = $oCoreDecorator->GetUser($iUserId);
-			if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
-			{
-				$this->IdUser = $oUser->EntityId;
-				$this->IdTenant = $oUser->IdTenant;
-			}
+			$this->IdUser = $oUser->EntityId;
+			$this->IdTenant = $oUser->IdTenant;
 		}
 		
 		if (!empty($sUid))
@@ -323,6 +317,8 @@ class Contact extends \Aurora\System\EAV\Entity
 	 */
 	public function toResponseArray()
 	{
+		$this->calculateETag();
+
 		$aRes = parent::toResponseArray();
 		
 		$aGroupUUIDs = array();
@@ -336,7 +332,21 @@ class Contact extends \Aurora\System\EAV\Entity
 		{
 			$aRes[$sKey] = $mValue;
 		}
+
+		$aArgs = ['Contact' => $this];
+		\Aurora\System\Api::GetModule('Core')->broadcastEvent(
+			'Contacts::Contact::ToResponseArray',
+			$aArgs,
+			$aRes
+		);		
 		
 		return $aRes;
+	}
+
+	public function calculateETag()
+	{
+		if (empty($this->ETag)) {
+			$this->ETag = \md5(\serialize($this));
+		}
 	}
 }

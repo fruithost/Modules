@@ -55,6 +55,7 @@ class User extends \Aurora\System\EAV\Entity
 	 */
 	public function __construct($sModule)
 	{
+		$this->ParentType = \Aurora\Modules\Core\Classes\Tenant::class;
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		
 		$this->aStaticMap = array(
@@ -66,7 +67,7 @@ class User extends \Aurora\System\EAV\Entity
 			'Role'						=> array('int', \Aurora\System\Enums\UserRole::NormalUser),
 
 			'DateCreated'				=> array('datetime', null, true),
-			'LastLogin'					=> array('string', ''),
+			'LastLogin'					=> array('datetime', null),
 			'LastLoginNow'				=> array('string', ''),
 			'LoginsCount'				=> array('int', 0),
 
@@ -113,6 +114,11 @@ class User extends \Aurora\System\EAV\Entity
 	public function isAdmin()
 	{
 		return $this->EntityId === -1;
+	}	
+	
+	public function isNormalOrTenant()
+	{
+		return $this->Role === \Aurora\System\Enums\UserRole::NormalUser || $this->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
 	}	
 	
 	/**
@@ -200,5 +206,10 @@ class User extends \Aurora\System\EAV\Entity
 		}
 
 		return true;
+	}
+
+	public function getTenant()
+	{
+		return \Aurora\Api::GetModuleDecorator($this->getModule())->GetTenantUnchecked($this->IdTenant);
 	}
 }

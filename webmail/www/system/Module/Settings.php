@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,7 +10,7 @@ namespace Aurora\System\Module;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Api
  */
@@ -42,7 +42,7 @@ class Settings extends \Aurora\System\AbstractSettings
 	{
 		return \Aurora\System\Api::GetModuleManager()->GetModulesRootPath() . $this->ModuleName . '/config.json';
 	}
-	
+
 	public function InitDefaultConfiguration()
 	{
 		if (\file_exists($this->GetDefaultConfigFilePath()))
@@ -50,7 +50,7 @@ class Settings extends \Aurora\System\AbstractSettings
 			$sModulesSettingsPath = \Aurora\System\Api::GetModuleManager()->GetModulesSettingsPath();
 			if (!\file_exists($sModulesSettingsPath))
 			{
-				\set_error_handler(function() {});					
+				\set_error_handler(function() {});
 				\mkdir($sModulesSettingsPath, 0777);
 				\restore_error_handler();
 				if (!\file_exists($sModulesSettingsPath))
@@ -64,17 +64,42 @@ class Settings extends \Aurora\System\AbstractSettings
 
 	public function Load()
 	{
+		$bResult = false;
 		if (!\file_exists($this->sPath))
 		{
-			$this->InitDefaultConfiguration();
+			$mData = $this->LoadDataFromFile($this->GetDefaultConfigFilePath());
+		}
+		else
+		{
+			$mData = $this->LoadDataFromFile($this->sPath);
 		}
 
-		parent::Load();
+		if (!$mData)
+		{
+			$mData = $this->LoadDataFromFile($this->sPath.'.bak');
+			if ($mData)
+			{
+				\copy($this->sPath.'.bak', $this->sPath);
+			}
+			else
+			{
+				$this->Save();
+			}
+		}
+
+		if ($mData !== false)
+		{
+			$this->aContainer = $this->ParseData($mData);
+			$this->bIsLoaded = true;
+			$bResult = true;
+		}
+
+		return $bResult;
 	}
 
 	/**
 	 * @param string $sTenantName
-	 * 
+	 *
 	 * @return \Aurora\System\Module\TenantSettings
 	 */
 	public function GetTenantSetttings($sTenantName)
@@ -85,7 +110,7 @@ class Settings extends \Aurora\System\AbstractSettings
 				$this->ModuleName,
 				$sTenantName
 			);
-		}		
+		}
 
 		return isset($this->aTenantSettings[$sTenantName]) ? $this->aTenantSettings[$sTenantName] : null;
 	}
@@ -93,28 +118,28 @@ class Settings extends \Aurora\System\AbstractSettings
 	/**
 	 * @param string $sName
 	 * @param mixed $sDefaultValue
-	 * 
+	 *
  	 * @return mixed
 	 */
-   public function GetValue($sName, $sDefaultValue = null) 
+   public function GetValue($sName, $sDefaultValue = null)
    {
 		return $this->GetTenantValue(\Aurora\System\Api::getTenantName(), $sName, $sDefaultValue);
-   }	
+   }
 
 	/**
 	 * @param string $sName
 	 * @param mixed $sDefaultValue
-	 * 
+	 *
  	 * @return mixed
 	 */
-	public function GetTenantValue($sTenantName, $sName, $sDefaultValue = null) 
+	public function GetTenantValue($sTenantName, $sName, $sDefaultValue = null)
 	{
 		$mResult = $sDefaultValue;
 
 		 $oTenantSettings = $this->GetTenantSetttings(
 			$sTenantName
 		 );
- 
+
 		 if (isset($oTenantSettings) && isset($oTenantSettings->{$sName}))
 		 {
 			$mResult = $oTenantSettings->GetValue($sName, $sDefaultValue);
@@ -126,14 +151,14 @@ class Settings extends \Aurora\System\AbstractSettings
 
 
 		 return $mResult;
-	}   
+	}
 
 	/**
 	 * @param string $sTenantName
 	 * @param string $sName
 	 * @param string $sValue
 	 */
-	public function SetTenantValue($sTenantName, $sName, $sValue = null) 
+	public function SetTenantValue($sTenantName, $sName, $sValue = null)
     {
 		if (isset($this->{$sName}))
 		{
@@ -169,8 +194,8 @@ class Settings extends \Aurora\System\AbstractSettings
 			throw new \Aurora\System\Exceptions\SettingsException();
 		}
 	}
-	
-	public function SaveTenantSettings($sTenantName) 
+
+	public function SaveTenantSettings($sTenantName)
 	{
 		$mResult = false;
 		$oTenantSettings =  $this->GetTenantSetttings($sTenantName);
@@ -182,10 +207,6 @@ class Settings extends \Aurora\System\AbstractSettings
 		return $mResult;
 	}
 
-	
-	/*
-	 * 
-	 */
 	public function GetDefaultConfigValues()
 	{
 		$oDefaultSettings = new DefaultSettings($this->GetDefaultConfigFilePath());
@@ -195,7 +216,6 @@ class Settings extends \Aurora\System\AbstractSettings
 
 	public function IsTenantSettingsExists($sTenantName)
 	{
-		return \file_exists(\Aurora\System\Api::GetModuleManager()->GetModulesSettingsPath() . 'tenants/' . $sTenantName . '/' .  $this->ModuleName . '.config.json'); 
+		return \file_exists(\Aurora\System\Api::GetModuleManager()->GetModulesSettingsPath() . 'tenants/' . $sTenantName . '/' .  $this->ModuleName . '.config.json');
 	}
-
 }

@@ -11,7 +11,7 @@
 		<span class="dropdown_helper">
 			<span class="dropdown_arrow"><span></span></span>
 			<span class="dropdown_content" data-bind="foreach: accounts">
-				<span class="item" data-bind="text: email, visible: !isCurrent(), click: changeAccount"></span>
+				<span class="item" data-bind="text: sText, visible: !bCurrent, click: changeAccount"></span>
 			</span>
 		</span>
 	</span>

@@ -35,11 +35,28 @@
 			float: right;
 			padding: 2px 8px;
 		}
-		
+
 		&.selected .me {
 			color: @theme-contacts-panel-item-selected-me-color;
 		}
-		
+
+		.key {
+			.init-icon-font();
+			background: #f1f1f1;
+			border-radius: 10px 10px 10px 10px;
+			color: #6d6d6d;
+			float: right;
+			padding: 2px 8px;
+
+			&:before {
+				display: inline-block;
+				font-size: 20px;
+				height: 26px;
+				content: "\e658";
+				line-height: 1;
+			}
+		}
+
 		.data {
 			.box-sizing;
 

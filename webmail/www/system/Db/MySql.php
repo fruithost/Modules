@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,14 +10,14 @@ namespace Aurora\System\Db;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Api
  * @subpackage Db
  */
 class MySql extends Sql
 {
-	/*
+	/**
 	 * @var	resource
 	 */
 	protected $_rConectionHandle;
@@ -106,23 +106,23 @@ class MySql extends Sql
 
 		if (\Aurora\System\Api::$bUseDbLog)
 		{
-			\Aurora\System\Api::Log('DB(mysql) : start connect to '.$this->sUser.'@'.$this->sHost);
+			\Aurora\System\Logger::LogSql('DB(mysql) : start connect to '.$this->sUser.'@'.$this->sHost);
 		}
-		
+
 		$this->_rConectionHandle = @mysqli_connect($this->sHost, $this->sUser, $this->sPassword, (bool) $bNewLink);
 		if ($this->_rConectionHandle)
 		{
 			if (\Aurora\System\Api::$bUseDbLog)
 			{
-				\Aurora\System\Api::Log('DB : connected to '.$this->sUser.'@'.$this->sHost);
+				\Aurora\System\Logger::LogSql('DB : connected to '.$this->sUser.'@'.$this->sHost);
 			}
-			
+
 			@register_shutdown_function(array(&$this, 'Disconnect'));
 			return ($bWithSelect) ? $this->Select() : true;
 		}
 		else
 		{
-			\Aurora\System\Api::Log('DB : connect to '.$this->sUser.'@'.$this->sHost.' failed', \Aurora\System\Enums\LogLevel::Error);
+			\Aurora\System\Logger::LogSql('DB : connect to '.$this->sUser.'@'.$this->sHost.' failed', \Aurora\System\Enums\LogLevel::Error);
 			$this->_setSqlError();
 			return false;
 		}
@@ -192,7 +192,7 @@ class MySql extends Sql
 
 			if (\Aurora\System\Api::$bUseDbLog)
 			{
-				\Aurora\System\Api::Log('DB : disconnect from '.$this->sUser.'@'.$this->sHost);
+				\Aurora\System\Logger::LogSql('DB : disconnect from '.$this->sUser.'@'.$this->sHost);
 			}
 
 			$result = @mysqli_close($this->_rConectionHandle);

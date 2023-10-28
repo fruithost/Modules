@@ -8,6 +8,8 @@
 namespace Aurora\Modules\ChangePasswordWebclient;
 
 /**
+ * Displays change password button in mail settings.
+ * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
@@ -28,6 +30,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		
 		return array(
 			'ShowSingleMailChangePasswordInCommonSettings' => $this->getConfig('ShowSingleMailChangePasswordInCommonSettings', false),
+			'ShowSingleMailChangePasswordInSecuritySettings' => $this->getConfig('ShowSingleMailChangePasswordInSecuritySettings', false),
 		);
 	}
 	/***** public functions might be called with web API *****/

@@ -26,7 +26,13 @@ Enums.FolderTypes = {
 	'Starred': 7,
 	'Template': 8,
 	'System': 9,
-	'User': 10
+	'User': 10,
+	'AllInboxes': 11
+};
+
+Enums.SortOrder = {
+	'Asc': 0,
+	'Desc': 1
 };
 
 /**
@@ -82,6 +88,15 @@ Enums.UseSignature = {
 
 Enums.MailErrors = {
 	'CannotMoveMessageQuota': 4008
+};
+
+/**
+ * @enum {string}
+ */
+Enums.ServerOwnerType = {
+	'Account': 'account',
+	'Tenant': 'tenant',
+	'SuperAdmin': 'superadmin'
 };
 
 if (typeof window.Enums === 'undefined')

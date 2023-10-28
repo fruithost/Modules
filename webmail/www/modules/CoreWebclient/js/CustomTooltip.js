@@ -114,8 +114,10 @@ var CustomTooltip = {
 
 function InitCustomTooltip(oElement, oCommand)
 {
+	// tooltip text should be HTML encoded because of XSS vulnerability
+	// for example mail attachments names should be HTML encoded
 	var
-		sTooltipText = _.isFunction(oCommand) ? oCommand() : TextUtils.i18n(oCommand),
+		sTooltipText = TextUtils.encodeHtml(_.isFunction(oCommand) ? oCommand() : TextUtils.i18n(oCommand)),
 		$Element = $(oElement),
 		$Dropdown = $Element.find('span.dropdown'),
 		bShown = false,

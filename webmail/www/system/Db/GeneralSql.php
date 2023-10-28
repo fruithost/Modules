@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,7 +10,7 @@ namespace Aurora\System\Db;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Api
  * @subpackage Db
@@ -51,11 +51,11 @@ class GeneralSql
 		{
 			if ($bIsSlaveExecute)
 			{
-				\Aurora\System\Api::Log('DB-Slave['.$this->iExecuteCount.'] > '.trim($sLogDesc));
+				\Aurora\System\Logger::LogSql('DB-Slave['.$this->iExecuteCount.'] > '.trim($sLogDesc));
 			}
 			else
 			{
-				\Aurora\System\Api::Log('DB['.$this->iExecuteCount.'] > '.trim($sLogDesc));
+				\Aurora\System\Logger::LogSql('DB['.$this->iExecuteCount.'] > '.trim($sLogDesc));
 			}
 		}
 	}
@@ -66,6 +66,6 @@ class GeneralSql
 	 */
 	protected function errorLog($sErrorDesc)
 	{
-		\Aurora\System\Api::Log('DB ERROR < '.trim($sErrorDesc), \Aurora\System\Enums\LogLevel::Error);
+		\Aurora\System\Logger::LogSql('DB ERROR < '.trim($sErrorDesc), \Aurora\System\Enums\LogLevel::Error);
 	}
 }

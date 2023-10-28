@@ -7,7 +7,7 @@
 		false,
 		"bool"
 	],
-	"AllowExpandFolders": [
+	"FoldersExpandedByDefault": [
 		false,
 		"bool"
 	],
@@ -30,6 +30,10 @@
 	"DefaultFontSize": [
 		3,
 		"int"
+	],
+	"AlwaysTryUseImageWhilePasting": [
+		true,
+		"bool"
 	],
     "Disabled": [
 		false,
@@ -73,6 +77,34 @@
 	],
 	"HorizontalLayoutByDefault": [
 		false,
+		"bool"
+	],
+	"DisableRtlRendering": [
+		false,
+		"bool"
+	],
+	"AllowQuickReply": [
+		true,
+		"bool"
+	],
+	"AllowQuickSendOnCompose": [
+		false,
+		"bool"
+	],
+	"MarkMessageSeenWhenViewing": [
+		true,
+		"bool"
+	],
+	"MarkMessageSeenWhenAnswerForward": [
+		false,
+		"bool"
+	],
+	"UserLoginPartInAccountDropdown": [
+		false,
+		"bool"
+	],
+	"UseMeRecipientForMessages": [
+		true,
 		"bool"
 	]
 }

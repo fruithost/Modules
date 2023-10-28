@@ -17,10 +17,12 @@ var
 /**
  * @constructor
  * @param {string} sServerModule
+ * @param {string} sUpdateSettingsMethod
  */
-function CAbstractSettingsFormView(sServerModule)
+function CAbstractSettingsFormView(sServerModule, sUpdateSettingsMethod)
 {
 	this.sServerModule = sServerModule ? sServerModule : 'Core';
+	this.sUpdateSettingsMethod = sUpdateSettingsMethod ? sUpdateSettingsMethod : 'UpdateSettings';
 	
 	this.isSaving = ko.observable(false);
 	
@@ -168,7 +170,7 @@ CAbstractSettingsFormView.prototype.save = function ()
 	{
 		this.isSaving(true);
 
-		Ajax.send(this.sServerModule, 'UpdateSettings', this.getParametersForSave(), this.onResponse, this);
+		Ajax.send(this.sServerModule, this.sUpdateSettingsMethod, this.getParametersForSave(), this.onResponse, this);
 	}
 };
 

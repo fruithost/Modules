@@ -8,8 +8,6 @@
 namespace Aurora\Modules\Core\Managers;
 
 /**
- * CApiUsersManager class summary
- * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
@@ -87,13 +85,9 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				$aFilters = ['$AND' => $aFilters];
 			}
 		}
-		// TODO: use getEntitiesCount when it will be fixed
-		return count($this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\User::class,
-				array('PublicId'),
-				0,
-				0,
-				$aFilters
-				));
+		return $this->oEavManager->getEntitiesCount(\Aurora\Modules\Core\Classes\User::class,
+			$aFilters
+		);
 	}
 	
 	/**
@@ -120,7 +114,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				}
 			}
 				
-			$aResult = $this->oEavManager->getEntities(
+			$aResult = $this->oEavManager->getEntitiesAsArray(
 				\Aurora\Modules\Core\Classes\User::class,
 				array(
 					'PublicId', 'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
@@ -216,6 +210,13 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				{
 //					$oChannel->Password = md5($oChannel->Login.mt_rand(1000, 9000).microtime(true));
 					$oUser->DateCreated = date('Y-m-d H:i:s');
+
+					$oTenant = $oUser->getTenant();
+					if ($oTenant)
+					{
+						$oUser->ParentUUID = $oTenant->UUID;
+						$oUser->ParentModuleName = $this->GetModule()->GetName();
+					}
 					
 					if (!$this->oEavManager->saveEntity($oUser))
 					{
@@ -280,7 +281,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		{
 //			if ($oUser->validate())
 //			{
-				if (!$this->oEavManager->deleteEntity($oUser->EntityId))
+				if (!$this->oEavManager->deleteEntity($oUser->EntityId, \Aurora\Modules\Core\Classes\User::class))
 				{
 					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserDeleteFailed);
 				}

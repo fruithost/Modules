@@ -14,6 +14,7 @@ var
 	CAbstractSettingsFormView = require('modules/%ModuleName%/js/views/CAbstractSettingsFormView.js'),
 	
 	Popups = require('%PathToCoreWebclientModule%/js/Popups.js'),
+	AlertPopup = require('%PathToCoreWebclientModule%/js/popups/AlertPopup.js'),
 	ConfirmPopup = require('%PathToCoreWebclientModule%/js/popups/ConfirmPopup.js')
 ;
 
@@ -32,7 +33,8 @@ function CDbAdminSettingsView()
 	this.dbName = ko.observable(Settings.DbName);
 	this.dbHost = ko.observable(Settings.DbHost);
 	/*-- Editable fields */
-	
+
+	this.isCreating = ko.observable(false);
 	this.startError = ko.observable('');
 	this.setStartError();
 }
@@ -97,6 +99,10 @@ CDbAdminSettingsView.prototype.getParametersForSave = function ()
  */
 CDbAdminSettingsView.prototype.applySavedValues = function (oParameters)
 {
+	if (Settings.StoreAuthTokenInDB)
+	{
+		Popups.showPopup(AlertPopup, [TextUtils.i18n('%MODULENAME%/INFO_AUTHTOKEN_DB_STORED')]);
+	}
 	Settings.updateDb(oParameters.DbLogin, oParameters.DbName, oParameters.DbHost);
 	this.setStartError();
 };
@@ -122,18 +128,22 @@ CDbAdminSettingsView.prototype.testConnection = function ()
 
 CDbAdminSettingsView.prototype.createTables = function ()
 {
-	var fCreateTables = function () {
-		Ajax.send('CreateTables', null, function (oResponse) {
-			if (oResponse.Result)
-			{
-				Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_CREATE_TABLES_SUCCESSFUL'));
-			}
-			else
-			{
-				Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_CREATE_TABLES_FAILED'));
-			}
-		});
-	};
+	var 
+		self = this,		
+		fCreateTables = function () {
+			self.isCreating(true);
+			Ajax.send('CreateTables', null, function (oResponse) {
+				if (oResponse.Result)
+				{
+					Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_CREATE_TABLES_SUCCESSFUL'));
+				}
+				else
+				{
+					Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_CREATE_TABLES_FAILED'));
+				}
+				self.isCreating(false);
+			});
+		};
 	
 	if (this.sSavedState !== this.getCurrentState())
 	{
@@ -157,5 +167,19 @@ CDbAdminSettingsView.prototype.createTables = function ()
 		fCreateTables();
 	}
 };
+
+CDbAdminSettingsView.prototype.updateConfig = function ()
+{
+	Ajax.send('UpdateConfig', null, function (oResponse) {
+		if (oResponse.Result)
+		{
+			Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_UPDATE_CONFIG_SUCCESSFUL'));
+		}
+		else
+		{
+			Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_UPDATE_CONFIG_FAILED'));
+		}
+	});
+}
 
 module.exports = new CDbAdminSettingsView();

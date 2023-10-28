@@ -43,12 +43,13 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		$aSettings = array(
 			'AllowAppRegisterMailto' => $this->getConfig('AllowAppRegisterMailto', false),
 			'AllowChangeInputDirection' => $this->getConfig('AllowChangeInputDirection', false),
-			'AllowExpandFolders' => $this->getConfig('AllowExpandFolders', false),
+			'FoldersExpandedByDefault' => $this->getConfig('FoldersExpandedByDefault', false),
 			'AllowSpamFolder' => $this->getConfig('AllowSpamFolder', true),
 			'AllowAddNewFolderOnMainScreen' => $this->getConfig('AllowAddNewFolderOnMainScreen', false),
 			'ComposeToolbarOrder' => $this->getConfig('ComposeToolbarOrder', array()),
 			'DefaultFontName' => $this->getConfig('DefaultFontName', 'Tahoma'),
 			'DefaultFontSize' => $this->getConfig('DefaultFontSize', 3),
+			'AlwaysTryUseImageWhilePasting' => $this->getConfig('AlwaysTryUseImageWhilePasting', true),
 			'JoinReplyPrefixes' => $this->getConfig('JoinReplyPrefixes', false),
 			'MailsPerPage' => $this->getConfig('MailsPerPage', 20),
 			'MaxMessagesBodiesSizeToPrefetch' => $this->getConfig('MaxMessagesBodiesSizeToPrefetch', 50000),
@@ -59,10 +60,17 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			'PrefixesToRemoveBeforeSearchMessagesBySubject' => $this->getConfig('PrefixesToRemoveBeforeSearchMessagesBySubject', []),
 			'AllowHorizontalLayout' => $this->getConfig('AllowHorizontalLayout', false),
 			'HorizontalLayoutByDefault' => $this->getConfig('HorizontalLayoutByDefault', false),
+			'DisableRtlRendering' => $this->getConfig('DisableRtlRendering', false),
+            'AllowQuickReply' => $this->getConfig('AllowQuickReply', false),
+			'AllowQuickSendOnCompose' => $this->getConfig('AllowQuickSendOnCompose', false),
+			'MarkMessageSeenWhenViewing' => $this->getConfig('MarkMessageSeenWhenViewing', true),
+			'MarkMessageSeenWhenAnswerForward' => $this->getConfig('MarkMessageSeenWhenAnswerForward', false),
+			'UserLoginPartInAccountDropdown' => $this->getConfig('UserLoginPartInAccountDropdown', false),
+			'UseMeRecipientForMessages' => $this->getConfig('UseMeRecipientForMessages', false),
 		);
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
-		if ($oUser && $oUser->Role === \Aurora\System\Enums\UserRole::NormalUser)
+		if ($oUser && $oUser->isNormalOrTenant())
 		{
 			if (isset($oUser->{self::GetName().'::AllowChangeInputDirection'}))
 			{
@@ -92,7 +100,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		if ($oUser)
 		{
-			if ($oUser->Role === \Aurora\System\Enums\UserRole::NormalUser)
+			if ($oUser->isNormalOrTenant())
 			{
 				$oCoreDecorator = \Aurora\Modules\Core\Module::Decorator();
 				if (isset($Args['MailsPerPage']))

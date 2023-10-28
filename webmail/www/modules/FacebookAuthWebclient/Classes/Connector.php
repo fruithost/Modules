@@ -21,6 +21,13 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 	
 	public function CreateClient($sId, $sSecret, $sScope)
 	{
+		if (empty($sId) || empty($sSecret))
+		{
+			throw new \Aurora\Modules\OAuthIntegratorWebclient\Exceptions\NotConfigured(
+				\Aurora\Modules\OAuthIntegratorWebclient\Enums\ErrorCodes::NotConfigured
+			);
+		}
+
 		$sRedirectUrl = \rtrim(\MailSo\Base\Http::SingletonInstance()->GetFullUrl(), '\\/ ').'/?oauth='.$this->Name;
 		if (!\strpos($sRedirectUrl, '://localhost'))
 		{

@@ -278,6 +278,39 @@
 				&.redo .icon {
 					background-position: -600px -320px;
 				}
+
+				&.template {
+					.icon {
+						background-image: none;
+						&:before {
+							content: "\e90e";
+							speak: none;
+							font-style: normal;
+							font-weight: normal;
+							font-variant: normal;
+							text-transform: none;
+							line-height: 0.5;
+							font-family: 'afterlogic';
+							-webkit-font-smoothing: antialiased;
+							font-size: 24px;
+							color: #595959;
+						}
+					}
+					.dropdown_content {
+						padding: 0px;
+						min-width: fit-content;
+						.scroll-inner {
+							width: max-content !important;
+							div {
+								border-top: 1px solid #cbc8c0;
+								padding: 10px;
+								&:hover {
+									background: #e0e0e0;
+								}
+							}
+						}
+					}
+				}
 			}
 		
 			.dropdown {

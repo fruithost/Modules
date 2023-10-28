@@ -9,14 +9,27 @@ module.exports = function (oAppData) {
 		App = require('%PathToCoreWebclientModule%/js/App.js'),
 		ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 		
+		ContactsCache = require('modules/%ModuleName%/js/Cache.js'),
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
 		
 		SuggestionsAutocomplete = require('modules/%ModuleName%/js/SuggestionsAutocomplete.js'),
 		SuggestionsMethods = {
-			getSuggestionsAutocompleteCallback: function (sStorage, sExceptEmail) {
-				return function (oRequest, fResponse) {
-					SuggestionsAutocomplete.callback(oRequest, fResponse, sExceptEmail, sStorage);
-				};
+			getSuggestionsAutocompleteCallback: function (sStorage, sExceptEmail, bWithGroups) {
+				var
+					fSuggestionsAutocompleteCallback = function (oRequest, fResponse) {
+						SuggestionsAutocomplete.callback(oRequest, fResponse, sExceptEmail, sStorage, bWithGroups);
+					},
+					//TODO: Remove this wrapper after adding PGP-keys to team storage
+					fSuggestionsAutocompleteFilteredCallback = ModulesManager.run(
+						'OpenPgpWebclient',
+						'getSuggestionsAutocompleteFilteredCallback',
+						[fSuggestionsAutocompleteCallback]
+					)
+				;
+				return fSuggestionsAutocompleteFilteredCallback ?
+					fSuggestionsAutocompleteFilteredCallback
+					:
+					fSuggestionsAutocompleteCallback;
 			},
 			getSuggestionsAutocompletePhoneCallback: function () {
 				return SuggestionsAutocomplete.phoneCallback;
@@ -26,6 +39,9 @@ module.exports = function (oAppData) {
 			},
 			requestUserByPhone: function (sNumber, fCallBack, oContext) {
 				SuggestionsAutocomplete.requestUserByPhone(sNumber, fCallBack, oContext);
+			},
+			getContactsByEmails: function (aEmails, fCallBack) {
+				ContactsCache.getContactsByEmails(aEmails, fCallBack);
 			}
 		},
 				
@@ -52,7 +68,7 @@ module.exports = function (oAppData) {
 	
 	require('modules/%ModuleName%/js/enums.js');
 	
-	if (App.getUserRole() === Enums.UserRole.NormalUser)
+	if (App.isUserNormalOrTenant())
 	{
 		if (App.isMobile())
 		{

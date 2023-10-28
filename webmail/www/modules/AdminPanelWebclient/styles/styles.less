@@ -5,6 +5,10 @@
 		width: 360px;
 	}
 	
+	.show-header &.screen .tabsbar {
+		border-top: solid 1px #d4d4d4;
+	}
+	
 	&.screen {
 		display: flex;
 		flex-direction: column;
@@ -59,6 +63,15 @@
 				margin-bottom: 0px;
 				.fadeout();
 			}
+			
+			.me {
+				background: #f1f1f1;
+				border-radius: 10px 10px 10px 10px;
+				color: #6d6d6d;
+				float: right;
+				padding: 2px 8px;
+				margin-top: -16px;
+			}
 		}
 	}
 	
@@ -70,12 +83,5 @@
 				padding-right: 4px;
 			}
 		}
-	}
-	
-	.account_list .item .title {
-		mask: none;
-		-webkit-mask: none;
-		-o-mask: none;
-		-ms-mask: none;
 	}
 }

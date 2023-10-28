@@ -1,3 +1,4 @@
+<!-- ko if: !bIsHidden -->
 <div class="item file attachment" data-bind="
 	css: cssClasses,
 	event: allowDrag() ? { 'dragstart': eventDragStart } : null,
@@ -29,10 +30,10 @@
 		<span class="published_icon" data-bind="css: {'with_thumb': thumbnailSrc() !== ''}, click: function (oItem) { $root.onShareIconClick(oItem); }"></span>
 		<!-- /ko -->
 		<!-- ko if: (bIsSecure()) -->
-		<span class="secure-image"></span>
+		<span class="secure-image" data-bind="click: function (oItem) { $root.onSecureIconClick(oItem); }"></span>
 		<!-- /ko -->
 		<!-- ko if: (isShared()) -->
-		<span class="shared-image" data-bind="css: {'with_thumb': thumbnailSrc() !== ''}"></span>
+		<span class="shared-image" data-bind="css: {'with_thumb': thumbnailSrc() !== ''}, click: function (oItem) { $root.onFileShareIconClick(oItem); }"></span>
 		<!-- /ko -->
 		<div class="footer">
 			<span class="progress" data-bind="visible: visibleProgress()">
@@ -64,4 +65,6 @@
 	<!-- ko if: $data.data() !== null -->
 		<!-- ko template: $data --><!-- /ko -->
 	<!-- /ko -->
+<!-- /ko -->
+
 <!-- /ko -->

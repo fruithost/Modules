@@ -10,6 +10,7 @@ var
 	
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	Api = require('%PathToCoreWebclientModule%/js/Api.js'),
+	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	
 	CPageSwitcherView = require('%PathToCoreWebclientModule%/js/views/CPageSwitcherView.js'),
@@ -31,6 +32,8 @@ var
  */
 function CEntitiesView(sEntityType)
 {
+	this.bToolbarDisabled = App.getUserRole() === Enums.UserRole.TenantAdmin && sEntityType === 'Tenant';
+	
 	Cache.selectedTenantId.subscribe(function () {
 		if (this.sType !== 'Tenant')
 		{
@@ -46,23 +49,30 @@ function CEntitiesView(sEntityType)
 	this.entities = ko.observableArray([]);
 	this.aFilters = [];
 	this.initFilters();
+	this.errorMessage = ko.observable('');
 	
 	this.totalEntitiesCount = ko.observable(0);
+	this.entitiesCountText = ko.computed(function () {
+		if (this.oEntityData.EntitiesCountText)
+		{
+			return this.oEntityData.EntitiesCountText.replace(/%COUNT%/g, this.totalEntitiesCount());
+		}
+		return '';
+	}, this);
 	this.current = ko.observable(0);
 	this.showCreateForm = ko.observable(false);
 	this.isCreating = ko.observable(false);
 	this.hasSelectedEntity = ko.computed(function () {
-		var aIds = _.map(this.entities(), function (oEntity) {
-			return oEntity.Id;
-		});
-		return _.indexOf(aIds, this.current()) !== -1;
+		return !!_.find(this.entities(), function (oEntity) {
+			return oEntity.Id === this.current();
+		}.bind(this));
 	}, this);
 	
-	this.justCreatedId = ko.observable(0);
+	this.idToDisplayAfterGetTenants = ko.observable(0);
 	this.fChangeEntityHandler = function () {};
 	
 	ko.computed(function () {
-		if (this.justCreatedId() === 0 && !this.showCreateForm() && !this.hasSelectedEntity() && this.entities().length > 0)
+		if (this.idToDisplayAfterGetTenants() === 0 && !this.showCreateForm() && !this.hasSelectedEntity() && this.entities().length > 0)
 		{
 			this.fChangeEntityHandler(this.sType, this.entities()[0].Id);
 		}
@@ -120,6 +130,30 @@ CEntitiesView.prototype.onShow = function ()
 CEntitiesView.prototype.onHide = function ()
 {
 	this.bShown = false;
+};
+
+/**
+ * Checks if entity with specified identifier is on current page.
+ * @param {Number} iEntityId
+ * @returns {Boolean}
+ */
+CEntitiesView.prototype.hasEntity = function (iEntityId) {
+	return !!_.find(this.entities(), function (oEntity) {
+		return oEntity.Id === iEntityId;
+	});
+};
+
+/**
+ * Sets specified page and memorizes to set entity with specified ID as current after getting entities for specified page.
+ * @param {Number} iPage
+ * @param {Number} iEntityId
+ */
+CEntitiesView.prototype.setPageAndEntity = function (iPage, iEntityId) {
+	if (this.oPageSwitcher.currentPage() !== iPage)
+	{
+		this.idToDisplayAfterGetTenants(iEntityId);
+		this.oPageSwitcher.setPage(iPage, Settings.EntitiesPerPage);
+	}
 };
 
 /**
@@ -221,13 +255,16 @@ CEntitiesView.prototype.requestEntities = function ()
 {
 	if (this.bShown && (this.sType === 'Tenant' || Types.isPositiveNumber(Cache.selectedTenantId())))
 	{
-		var oParameters = {
-			TenantId: Cache.selectedTenantId(),
-			Type: this.sType,
-			Offset: (this.oPageSwitcher.currentPage() - 1) * Settings.EntitiesPerPage,
-			Limit: Settings.EntitiesPerPage,
-			Search: this.newSearchValue()
-		};
+		var
+			sEntityType = this.sType,
+			oParameters = {
+				TenantId: Cache.selectedTenantId(),
+				Type: sEntityType,
+				Offset: (this.oPageSwitcher.currentPage() - 1) * Settings.EntitiesPerPage,
+				Limit: Settings.EntitiesPerPage,
+				Search: this.newSearchValue()
+			}
+		;
 
 		_.each(this.aFilters, function (oFilterObservables) {
 			oParameters[oFilterObservables.sFileld] = oFilterObservables.requestValue();
@@ -235,6 +272,7 @@ CEntitiesView.prototype.requestEntities = function ()
 
 		this.searchValue(this.newSearchValue());
 		this.loading(true);
+		this.errorMessage('');
 		Ajax.send(this.oEntityData.ServerModuleName, this.oEntityData.GetListRequest, oParameters, function (oResponse) {
 			this.loading(false);
 			if (oResponse.Result)
@@ -249,10 +287,15 @@ CEntitiesView.prototype.requestEntities = function ()
 					if (oEntity && oEntity.Id)
 					{
 						oEntity.Id = Types.pInt(oEntity.Id);
+						oEntity.bItsMe = sEntityType === 'Tenant' && oEntity.Id === App.getTenantId() || sEntityType === 'User' && oEntity.Id === App.getUserId();
+						oEntity.bIsDefault = !!oEntity.IsDefault;
 						oEntity.checked = ko.observable(false);
 						oEntity.trottleChecked = function (oItem, oEvent) {
 							oEvent.stopPropagation();
-							this.checked(!this.checked());
+							if (!this.bItsMe && !this.bIsDefault)
+							{
+								this.checked(!this.checked());
+							}
 						};
 						aParsedEntities.push(oEntity);
 					}
@@ -261,17 +304,24 @@ CEntitiesView.prototype.requestEntities = function ()
 				this.totalEntitiesCount(iCount);
 				if (this.entities().length === 0)
 				{
-					this.fChangeEntityHandler(this.sType, undefined, 'create');
+					this.fChangeEntityHandler(sEntityType, undefined, 'create');
 				}
-				else if (this.justCreatedId() !== 0)
+				else if (this.idToDisplayAfterGetTenants() !== 0)
 				{
-					this.fChangeEntityHandler(this.sType, this.justCreatedId());
+					this.fChangeEntityHandler(sEntityType, this.idToDisplayAfterGetTenants());
 				}
 				this.aIdListDeleteProcess = [];
 			}
 			else
 			{
-				Api.showErrorByCode(oResponse);
+				if (Types.isNonEmptyString(oResponse.ErrorMessage))
+				{
+					this.errorMessage(oResponse.ErrorMessage);
+				}
+				else
+				{
+					Api.showErrorByCode(oResponse);
+				}
 				this.entities([]);
 			}
 		}, this);
@@ -302,9 +352,9 @@ CEntitiesView.prototype.changeEntity = function (iId, oEntities)
 			oFilterObservables.selectedValue(oEntities[oFilterObservables.sEntity]);
 			oFilterObservables.requestValue(oEntities[oFilterObservables.sEntity]);
 		}
-		else if (oFilterObservables.requestValue() !== -1 || oFilterObservables.requestValue() !== 0)
+		else
 		{
-			if (oFilterObservables.selectedValue() === -1 || oFilterObservables.selectedValue() === 0)
+			if (oFilterObservables.selectedValue() <= 0)
 			{
 				oFilterObservables.requestValue(oFilterObservables.selectedValue());
 			}
@@ -316,7 +366,7 @@ CEntitiesView.prototype.changeEntity = function (iId, oEntities)
 		}
 	}.bind(this));
 	this.current(Types.pInt(iId));
-	this.justCreatedId(0);
+	this.idToDisplayAfterGetTenants(0);
 };
 
 /**
@@ -352,7 +402,7 @@ CEntitiesView.prototype.createEntity = function ()
 			if (oResponse.Result)
 			{
 				Screens.showReport(this.oEntityData.ReportSuccessCreateText);
-				this.justCreatedId(Types.pInt(oResponse.Result));
+				this.idToDisplayAfterGetTenants(Types.pInt(oResponse.Result));
 				this.oEntityCreateView.updateSavedState();
 				this.cancelCreatingEntity();
 			}
@@ -363,8 +413,6 @@ CEntitiesView.prototype.createEntity = function ()
 			this.requestEntities();
 			this.isCreating(false);
 		}, this);
-
-		this.oEntityCreateView.clearFields();
 	}
 };
 
@@ -386,6 +434,11 @@ CEntitiesView.prototype.deleteCheckedEntities = function ()
 
 CEntitiesView.prototype.deleteEntities = function (aIdList)
 {
+	if (!this.oEntityData.DeleteRequest)
+	{
+		return;
+	}
+	
 	if (Types.isNonEmptyArray(this.aIdListDeleteProcess))
 	{
 		aIdList = _.difference(aIdList, this.aIdListDeleteProcess);
@@ -401,14 +454,20 @@ CEntitiesView.prototype.deleteEntities = function (aIdList)
 			sTitle = '',
 			oEntityToDelete = aIdList.length === 1 ? _.find(this.entities(), function (oEntity) {
 				return oEntity.Id === aIdList[0];
-			}) : null
+			}) : null,
+			oDeleteEntityParams = {
+				'Type': this.sType,
+				'Count': aIdList.length,
+				'ConfirmText': TextUtils.i18n(this.oEntityData.ConfirmDeleteLangConst, {}, null, aIdList.length)
+			}
 		;
 		if (oEntityToDelete)
 		{
-			sTitle = oEntityToDelete.Name;
+			sTitle = oEntityToDelete.Name || oEntityToDelete.PublicId;
 		}
+		App.broadcastEvent('ConfirmDeleteEntity::before', oDeleteEntityParams);
 		Popups.showPopup(ConfirmPopup, [
-			TextUtils.i18n(this.oEntityData.ConfirmDeleteLangConst, {}, null, aIdList.length), 
+			oDeleteEntityParams.ConfirmText, 
 			_.bind(this.confirmedDeleteEntities, this, aIdList), sTitle, TextUtils.i18n('COREWEBCLIENT/ACTION_DELETE')
 		]);
 	}
@@ -427,7 +486,8 @@ CEntitiesView.prototype.confirmedDeleteEntities = function (aIdList, bDelete)
 		var oParameters = {
 			TenantId: Cache.selectedTenantId(),
 			Type: this.sType,
-			IdList: aIdList
+			IdList: aIdList,
+			DeletionConfirmedByAdmin: true
 		};
 		
 		Ajax.send(this.oEntityData.ServerModuleName, this.oEntityData.DeleteRequest, oParameters, function (oResponse) {
@@ -437,7 +497,7 @@ CEntitiesView.prototype.confirmedDeleteEntities = function (aIdList, bDelete)
 			}
 			else
 			{
-				Screens.showError(TextUtils.i18n(this.oEntityData.ErrorDeleteLangConst, {}, null, aIdList.length));
+				Api.showErrorByCode(oResponse, TextUtils.i18n(this.oEntityData.ErrorDeleteLangConst, {}, null, aIdList.length));
 			}
 			this.requestEntities();
 		}, this);
@@ -452,7 +512,10 @@ CEntitiesView.prototype.groupCheck = function ()
 {
 	var bCheckAll = !this.hasCheckedEntities();
 	_.each(this.entities(), function (oEntity) {
-		oEntity.checked(bCheckAll);
+		if (!oEntity.bItsMe && !oEntity.bIsDefault)
+		{
+			oEntity.checked(bCheckAll);
+		}
 	});
 };
 

@@ -1,0 +1,33 @@
+<div class="popup" style="display: none;">
+	<div class="mask" data-bind="click: cancelPopup"></div>
+	<div class="popup_panel popup_show_backup_codes">
+		<span class="close" data-bind="click: cancelPopup"></span>
+		<div class="fields">
+			<h1 data-bind="i18n: {'key': '%MODULENAME%/HEADING_SAVE_CODES'}"></h1>
+			<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_KEEP_CODES_SAFE'}"></div>
+			<div class="fieldset list-block">
+				<div class="item-content">
+					<div data-bind="foreach: backupCodes" class="backup-codes-container">
+						<!-- ko if: $data -->
+							<div data-bind="text: $data"></div>
+						<!-- /ko -->
+						<!-- ko if: !$data -->
+							<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ALREADY_USED'}"></div>
+						<!-- /ko -->
+					</div>
+				</div>
+			</div>
+			<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_USE_CODE_ONCE'}"></div>
+			<div class="hint" data-bind="text: codesGeneratedDataInfo"></div>
+			<div class="buttons big_single_button">
+				<span class="button contour_button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_GET_NEW_CODES'}, command: generateBackupCodesCommand"></span>
+			</div>
+			<div class="buttons">
+				<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_PRINT'}, click: print"></span>
+				<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_DOWNLOAD'}, click: download"></span>
+				<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CLOSE'}, click: cancelPopup"></span>
+			</div>
+		</div>
+	</div>
+	<span class="helper"></span>
+</div>

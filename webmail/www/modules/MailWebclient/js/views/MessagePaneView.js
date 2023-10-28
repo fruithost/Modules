@@ -4,12 +4,12 @@ var
 	_ = require('underscore'),
 	$ = require('jquery'),
 	ko = require('knockout'),
-	
+
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	UrlUtils = require('%PathToCoreWebclientModule%/js/utils/Url.js'),
 	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
-	
+
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	MainTabExtMethods = require('modules/%ModuleName%/js/MainTabExtMethods.js'),
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
@@ -18,21 +18,21 @@ var
 	Storage = require('%PathToCoreWebclientModule%/js/Storage.js'),
 	UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 	WindowOpener = require('%PathToCoreWebclientModule%/js/WindowOpener.js'),
-	
+
 	CAbstractScreenView = require('%PathToCoreWebclientModule%/js/views/CAbstractScreenView.js'),
-	
+
 	ComposeUtils = require('modules/%ModuleName%/js/utils/Compose.js'),
 	LinksUtils = require('modules/%ModuleName%/js/utils/Links.js'),
 	MailUtils = require('modules/%ModuleName%/js/utils/Mail.js'),
 	SendingUtils = require('modules/%ModuleName%/js/utils/Sending.js'),
-	
+
 	AccountList = require('modules/%ModuleName%/js/AccountList.js'),
 	Ajax = require('modules/%ModuleName%/js/Ajax.js'),
 	MailCache  = require('modules/%ModuleName%/js/Cache.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js'),
-	
+
 	CAttachmentModel = require('modules/%ModuleName%/js/models/CAttachmentModel.js'),
-	
+
 	MainTab = App.isNewTab() && window.opener && window.opener.MainTabMailMethods
 ;
 
@@ -42,10 +42,10 @@ var
 function CMessagePaneView()
 {
 	CAbstractScreenView.call(this, '%ModuleName%');
-	
+
 	this.bNewTab = App.isNewTab();
 	this.isLoading = ko.observable(false);
-	
+
 	this.bAllowSearchMessagesBySubject = Settings.AllowSearchMessagesBySubject;
 
 	MailCache.folderList.subscribe(this.onFolderListSubscribe, this);
@@ -56,7 +56,7 @@ function CMessagePaneView()
 	UserSettings.timeFormat.subscribe(this.onCurrentMessageSubscribe, this);
 	UserSettings.dateFormat.subscribe(this.onCurrentMessageSubscribe, this);
 	this.displayedMessageUid = ko.observable('');
-	
+
 	this.browserTitle = ko.computed(function () {
 		var
 			oMessage = this.currentMessage(),
@@ -65,19 +65,19 @@ function CMessagePaneView()
 		;
 		return sPrefix + AccountList.getEmail() + ' - ' + TextUtils.i18n('%MODULENAME%/HEADING_MESSAGE_BROWSER_TAB');
 	}, this);
-	
+
 	this.isCurrentMessage = ko.computed(function () {
 		return !!this.currentMessage();
 	}, this);
-	
+
 	this.isCurrentMessageLoaded = ko.computed(function () {
 		return this.isCurrentMessage() && !this.isLoading();
 	}, this);
-	
+
 	this.visibleNoMessageSelectedText = ko.computed(function () {
 		return this.messages().length > 0 && !this.isCurrentMessage();
 	}, this);
-	
+
 	this.prevMessageUid = MailCache.prevMessageUid;
 	this.nextMessageUid = MailCache.nextMessageUid;
 
@@ -87,7 +87,7 @@ function CMessagePaneView()
 	this.isEnableNextMessage = ko.computed(function () {
 		return App.isNewTab() && Types.isNonEmptyString(this.nextMessageUid());
 	}, this);
-	
+
 	this.isEnableDelete = this.isCurrentMessage;
 	this.isEnableReply = this.isCurrentMessageLoaded;
 	this.isEnableReplyAll = this.isCurrentMessageLoaded;
@@ -97,7 +97,7 @@ function CMessagePaneView()
 	this.isEnableSave = function () {
 		return this.isCurrentMessage() && this.currentMessage().sDownloadAsEmlUrl !== '';
 	};
-	
+
 	this.deleteCommand = Utils.createCommand(this, this.executeDeleteMessage, this.isEnableDelete);
 	this.prevMessageCommand = Utils.createCommand(this, this.executePrevMessage, this.isEnablePrevMessage);
 	this.nextMessageCommand = Utils.createCommand(this, this.executeNextMessage, this.isEnableNextMessage);
@@ -108,44 +108,88 @@ function CMessagePaneView()
 	this.printCommand = Utils.createCommand(this, this.executePrint, this.isEnablePrint);
 	this.saveCommand = Utils.createCommand(this, this.executeSave, this.isEnableSave);
 	this.forwardAsAttachment = Utils.createCommand(this, this.executeForwardAsAttachment, this.isCurrentMessageLoaded);
+	this.otherToolbarCommands = ko.observableArray([]);
+	App.broadcastEvent('%ModuleName%::AddPreviewPaneToolbarCommand', {
+		AddPreviewPaneToolbarCommand: _.bind(function (oCommand) {
+			var oNewCommand = _.extend({
+				'Text': '',
+				'CssClass': '',
+				'Handler': function () {},
+				'Visible': true
+			}, oCommand);
+			oNewCommand.Command = Utils.createCommand(this, oNewCommand.Handler, this.isCurrentMessageLoaded);
+			this.otherToolbarCommands.push(oNewCommand);
+		}, this),
+		View: this
+	});
+
 	this.moreCommand = Utils.createCommand(this, null, this.isCurrentMessageLoaded);
 	this.moreSectionCommands = ko.observableArray([]);
 	App.broadcastEvent('%ModuleName%::AddMoreSectionCommand', _.bind(function (oCommand) {
-		var oNewCommand = _.extend({'Text': '', 'CssClass': '', 'Handler': function () {}}, oCommand);
+		var oNewCommand = _.extend({
+			'Text': '',
+			'CssClass': '',
+			'Handler': function () {},
+			'Visible': true
+		}, oCommand);
 		oNewCommand.Command = Utils.createCommand(this, oNewCommand.Handler, this.isCurrentMessageLoaded);
 		this.moreSectionCommands.push(oNewCommand);
 	}, this));
 
 	this.visiblePicturesControl = ko.observable(false);
 	this.visibleShowPicturesLink = ko.observable(false);
-	
+
 	this.visibleConfirmationControl = ko.computed(function () {
 		return (this.currentMessage() && this.currentMessage().readingConfirmationAddressee() !== '' && this.currentMessage() && this.currentMessage().readingConfirmationAddressee() !== AccountList.getEmail());
 	}, this);
-	
+
 	this.isCurrentNotDraftOrSent = ko.computed(function () {
-		var oCurrFolder = MailCache.folderList().currentFolder();
+		var oCurrFolder = MailCache.getCurrentFolder();
 		return (oCurrFolder && oCurrFolder.fullName().length > 0 &&
 			oCurrFolder.type() !== Enums.FolderTypes.Drafts &&
 			oCurrFolder.type() !== Enums.FolderTypes.Sent);
 	}, this);
 
 	this.isCurrentSentFolder = ko.computed(function () {
-		var oCurrFolder = MailCache.folderList().currentFolder();
+		var oCurrFolder = MailCache.getCurrentFolder();
 		return !!oCurrFolder && oCurrFolder.fullName().length > 0 && oCurrFolder.type() === Enums.FolderTypes.Sent;
 	}, this);
 
 	this.isCurrentNotDraftFolder = ko.computed(function () {
-		var oCurrFolder = MailCache.folderList().currentFolder();
+		var oCurrFolder = MailCache.getCurrentFolder();
 		return !!oCurrFolder && oCurrFolder.fullName().length > 0 && oCurrFolder.type() !== Enums.FolderTypes.Drafts;
 	}, this);
 
-	this.isVisibleReplyTool = this.isCurrentNotDraftOrSent;
-	this.isVisibleResendTool = this.isCurrentSentFolder;
-	this.isVisibleForwardTool = this.isCurrentNotDraftFolder;
+	this.topControllers = ko.observableArray();
+	this.bodyControllers = ko.observableArray();
+	this.bottomControllers = ko.observableArray();
+	this.controllers = ko.computed(function () {
+		return _.union(this.topControllers(), this.bodyControllers(), this.bottomControllers());
+	}, this);
 
-	this.uid = ko.observable('');
+	this.disableAllSendTools = ko.computed(function () {
+		var bDisable = false;
+		_.each(this.controllers(), function (oController) {
+			if (_.isFunction(oController.disableAllSendTools) && oController.disableAllSendTools())
+			{
+				bDisable = true;
+			}
+		});
+		return bDisable;
+	}, this);
+	this.isVisibleReplyTool = ko.computed(function () {
+		return !this.disableAllSendTools() && this.isCurrentNotDraftOrSent();
+	}, this);
+	this.isVisibleResendTool = ko.computed(function () {
+		return !this.disableAllSendTools() && this.isCurrentSentFolder();
+	}, this);
+	this.isVisibleForwardTool = ko.computed(function () {
+		return !this.disableAllSendTools() && this.isCurrentNotDraftFolder();
+	}, this);
+
+	this.accountId = ko.observable(0);
 	this.folder = ko.observable('');
+	this.uid = ko.observable('');
 	this.folder.subscribe(function () {
 		if (this.jqPanelHelper)
 		{
@@ -172,9 +216,9 @@ function CMessagePaneView()
 	this.aBccAddr = ko.observableArray([]);
 	this.allRecipients = ko.observableArray([]);
 	this.currentAccountEmail = ko.observable();
-	this.meSender = TextUtils.i18n('%MODULENAME%/LABEL_ME_SENDER');
-	this.meRecipient = TextUtils.i18n('%MODULENAME%/LABEL_ME_RECIPIENT');
-	
+	this.sMeSender = Settings.UseMeRecipientForMessages ? TextUtils.i18n('%MODULENAME%/LABEL_ME_SENDER') : null;
+	this.sMeRecipient = Settings.UseMeRecipientForMessages ? TextUtils.i18n('%MODULENAME%/LABEL_ME_RECIPIENT') : null;
+
 	this.fullDate = ko.observable('');
 	this.midDate = ko.observable('');
 
@@ -182,18 +226,13 @@ function CMessagePaneView()
 	this.textBodyForNewWindow = ko.observable('');
 	this.domTextBody = ko.observable(null);
 	this.rtlMessage = ko.observable(false);
-	
+
 	this.contentHasFocus = ko.observable(false);
 
-	this.topControllers = ko.observableArray();
-	this.bodyControllers = ko.observableArray();
-	this.controllers = ko.computed(function () {
-		return _.union(this.topControllers(), this.bodyControllers());
-	}, this);
 	App.broadcastEvent('%ModuleName%::RegisterMessagePaneController', _.bind(function (oController, sPlace) {
 		this.registerController(oController, sPlace);
 	}, this));
-	
+
 	this.fakeHeader = ko.computed(function () {
 		var topControllersVisible = !!_.find(this.topControllers(), function (oController) {
 			return !!oController.visible && oController.visible();
@@ -202,8 +241,8 @@ function CMessagePaneView()
 	}, this);
 
 	this.sAttachmentsSwitcherViewTemplate = App.isMobile() ? '%ModuleName%_Message_AttachmentsSwitcherView' : '';
-	this.sQuickReplyViewTemplate = App.isMobile() ? '' : '%ModuleName%_Message_QuickReplyView';
-	
+	this.sQuickReplyViewTemplate = App.isMobile() || !Settings.AllowQuickReply ? '' : '%ModuleName%_Message_QuickReplyView';
+
 	this.attachments = ko.observableArray([]);
 	this.notInlineAttachments = ko.computed(function () {
 		return _.filter(this.attachments(), function (oAttach) {
@@ -215,7 +254,7 @@ function CMessagePaneView()
 			return oAttachment.fileName();
 		}, this).join(', ');
 	}, this);
-	
+
 	this.allAttachmentsDownloadMethods = ko.observableArray([]);
 	this.visibleDownloadAllAttachmentsSeparately = ko.computed(function () {
 		return this.notInlineAttachments().length > 1;
@@ -226,7 +265,7 @@ function CMessagePaneView()
 	App.broadcastEvent('%ModuleName%::AddAllAttachmentsDownloadMethod', _.bind(function (oMethod) {
 		this.allAttachmentsDownloadMethods.push(oMethod);
 	}, this));
-	
+
 	this.detailsVisible = ko.observable(Storage.getData('MessageDetailsVisible') === '1');
 	this.detailsTooltip = ko.computed(function () {
 		return this.detailsVisible() ? TextUtils.i18n('COREWEBCLIENT/ACTION_HIDE_DETAILS') : TextUtils.i18n('COREWEBCLIENT/ACTION_SHOW_DETAILS');
@@ -235,15 +274,15 @@ function CMessagePaneView()
 	this.hasNotInlineAttachments = ko.computed(function () {
 		return this.notInlineAttachments().length > 0;
 	}, this);
-	
+
 	this.hasBodyText = ko.computed(function () {
 		return this.textBody().length > 0;
 	}, this);
 
 	this.visibleAddMenu = ko.observable(false);
-	
+
 	// Quick Reply Part
-	
+
 	this.replyText = ko.observable('');
 	this.replyTextFocus = ko.observable(false);
 	this.replyPaneVisible = ko.computed(function () {
@@ -267,7 +306,7 @@ function CMessagePaneView()
 	this.sendButtonText = ko.computed(function () {
 		return this.hasReplyAllCcAddrs() ? TextUtils.i18n('%MODULENAME%/ACTION_SEND_ALL') : TextUtils.i18n('%MODULENAME%/ACTION_SEND');
 	}, this);
-	
+
 	ko.computed(function () {
 		if (!this.replyTextFocus() || this.replyAutoSavingStarted() || this.replySavingStarted() || this.replySendingStarted())
 		{
@@ -278,7 +317,7 @@ function CMessagePaneView()
 			this.startAutosaveTimer();
 		}
 	}, this);
-	
+
 	this.saveButtonText = ko.computed(function () {
 		return this.replyAutoSavingStarted() ? TextUtils.i18n('%MODULENAME%/ACTION_SAVE_IN_PROGRESS') : TextUtils.i18n('%MODULENAME%/ACTION_SAVE');
 	}, this);
@@ -294,29 +333,29 @@ function CMessagePaneView()
 		}
 		return '';
 	}, this);
-	
+
 	this.isEnableSendQuickReply = ko.computed(function () {
 		return this.isCurrentMessageLoaded() && this.replyText() !== '' && !this.replySendingStarted();
 	}, this);
 	this.isEnableSaveQuickReply = ko.computed(function () {
 		return this.isEnableSendQuickReply() && !this.replySavingStarted() && !this.replyAutoSavingStarted();
 	}, this);
-	
+
 	this.saveQuickReplyCommand = Utils.createCommand(this, this.executeSaveQuickReply, this.isEnableSaveQuickReply);
 	this.sendQuickReplyCommand = Utils.createCommand(this, this.executeSendQuickReply, this.isEnableSendQuickReply);
 
 	this.domMessageHeader = ko.observable(null);
 	this.domQuickReply = ko.observable(null);
-	
+
 	this.domMessageForPrint = ko.observable(null);
-	
+
 	// to have time to take action "Open full reply form" before the animation starts
 	this.replyTextFocusThrottled = ko.observable(false).extend({'throttle': 50});
-	
+
 	this.replyTextFocus.subscribe(function () {
 		this.replyTextFocusThrottled(this.replyTextFocus());
 	}, this);
-	
+
 	this.isQuickReplyActive = ko.computed(function () {
 		return this.replyText().length > 0 || this.replyTextFocusThrottled();
 	}, this);
@@ -324,7 +363,7 @@ function CMessagePaneView()
 	//*** Quick Reply Part
 
 	this.jqPanelHelper = null;
-	
+
 	this.visibleAttachments = ko.observable(false);
 	this.showMessage = function () {
 		this.visibleAttachments(false);
@@ -332,11 +371,11 @@ function CMessagePaneView()
 	this.showAttachments = function () {
 		this.visibleAttachments(true);
 	};
-	
+
 	this.sDefaultFontName = Settings.DefaultFontName;
-	
+
 	Pulse.registerDayOfMonthFunction(_.bind(this.updateMomentDate, this));
-	
+
 	App.broadcastEvent('%ModuleName%::ConstructView::after', {'Name': 'CMessagePaneView', 'View': this});
 }
 
@@ -392,9 +431,9 @@ CMessagePaneView.prototype.onFolderListSubscribe = function ()
 
 CMessagePaneView.prototype.onMessagesSubscribe = function ()
 {
-	if (!this.currentMessage() && this.uid().length > 0)
+	if (!this.currentMessage() && this.uid() && this.uid().length > 0)
 	{
-		MailCache.setCurrentMessage(this.uid(), this.folder());
+		MailCache.setCurrentMessage(this.accountId(), this.folder(), this.uid());
 	}
 };
 
@@ -409,7 +448,7 @@ CMessagePaneView.prototype.passReplyDataToNewTab = function (sUniq)
 			'ReplyText': this.replyText(),
 			'ReplyDraftUid': this.replyDraftUid()
 		});
-		
+
 		this.replyText('');
 		this.replyDraftUid('');
 	}
@@ -422,7 +461,7 @@ CMessagePaneView.prototype.onCurrentMessageSubscribe = function ()
 		oAccount = oMessage ? AccountList.getAccount(oMessage.accountId()) : null,
 		oReplyData = null
 	;
-	
+
 	if (MainTab && oMessage)
 	{
 		oReplyData = MainTab.getReplyData(oMessage.sUniq);
@@ -437,11 +476,11 @@ CMessagePaneView.prototype.onCurrentMessageSubscribe = function ()
 		this.replyText('');
 		this.replyDraftUid('');
 	}
-	
+
 	if (oMessage && this.uid() === oMessage.uid())
 	{
 		this.hasReplyAllCcAddrs(SendingUtils.hasReplyAllCcAddrs(oMessage));
-		
+
 		this.subject(oMessage.subject());
 		this.importance(oMessage.importance());
 		this.from(oMessage.oFrom.getDisplay());
@@ -456,7 +495,7 @@ CMessagePaneView.prototype.onCurrentMessageSubscribe = function ()
 		{
 			this.oFromAddr(null);
 		}
-		
+
 		this.to(oMessage.oTo.getFull());
 		this.aToAddr(oMessage.oTo.aCollection);
 		this.cc(oMessage.oCc.getFull());
@@ -471,10 +510,13 @@ CMessagePaneView.prototype.onCurrentMessageSubscribe = function ()
 		this.fullDate(oMessage.oDateModel.getFullDate());
 
 		this.isLoading(oMessage.uid() !== '' && !oMessage.completelyFilled());
-		
+
 		this.setMessageBody();
-		
-		this.rtlMessage(oMessage.rtl());
+
+		if (!Settings.DisableRtlRendering)
+		{
+			this.rtlMessage(oMessage.rtl());
+		}
 
 		if (App.isNewTab())
 		{
@@ -483,11 +525,11 @@ CMessagePaneView.prototype.onCurrentMessageSubscribe = function ()
 			/*jshint onevar: true*/
 
 			_.each(oMessage.attachments(), _.bind(function (oAttach) {
-				var oCopy = new CAttachmentModel();
+				var oCopy = new CAttachmentModel(oAttach.iAccountId);
 				oCopy.copyProperties(oAttach);
 				aAtachments.push(oCopy);
 			}, this));
-			
+
 			this.attachments(aAtachments);
 		}
 		else
@@ -523,19 +565,19 @@ CMessagePaneView.prototype.onCurrentMessageSubscribe = function ()
 	else
 	{
 		this.hasReplyAllCcAddrs(false);
-		
+
 		this.isLoading(false);
 		$(this.domTextBody()).empty().data('displayed-message-uid', '');
 		this.displayedMessageUid('');
 		this.rtlMessage(false);
-		
-		// cannot use removeAll, because the attachments of messages are passed by reference 
+
+		// cannot use removeAll, because the attachments of messages are passed by reference
 		// and the call to removeAll removes attachments from message in the cache too.
 		this.attachments([]);
 		this.visiblePicturesControl(false);
 		this.visibleShowPicturesLink(false);
 	}
-	
+
 	this.doAfterPopulatingMessage();
 };
 
@@ -565,7 +607,7 @@ CMessagePaneView.prototype.setMessageBody = function ()
 		;
 
 		this.textBody(sText);
-		
+
 		if ($body.data('displayed-message-uid') === oMessage.uid())
 		{
 			aCollapsedStatuses = this.getBlockquotesStatus();
@@ -603,16 +645,16 @@ CMessagePaneView.prototype.setMessageBody = function ()
 CMessagePaneView.prototype.getBlockquotesStatus = function ()
 {
 	var aCollapsedStatuses = [];
-	
+
 	$($('blockquote', $(this.domTextBody())).get()).each(function () {
 		var $blockquote = $(this);
-		
+
 		if ($blockquote.hasClass('blockquote_before_toggle'))
 		{
 			aCollapsedStatuses.push($blockquote.hasClass('collapsed'));
 		}
 	});
-	
+
 	return aCollapsedStatuses;
 };
 
@@ -626,7 +668,7 @@ CMessagePaneView.prototype.doHidingBlockquotes = function (aCollapsedStatuses)
 		iHiddenHeight = 80,
 		iStatusIndex = 0
 	;
-	
+
 	$($('blockquote', $(this.domTextBody())).get()).each(function () {
 		var
 			$blockquote = $(this),
@@ -656,7 +698,7 @@ CMessagePaneView.prototype.doHidingBlockquotes = function (aCollapsedStatuses)
 						$switchButton.html(TextUtils.i18n('%MODULENAME%/ACTION_SHOW_QUOTED_TEXT'));
 						bHidden = true;
 					}
-					
+
 					$blockquote.toggleClass('collapsed', bHidden);
 				});
 				if (iStatusIndex < aCollapsedStatuses.length)
@@ -675,19 +717,34 @@ CMessagePaneView.prototype.doHidingBlockquotes = function (aCollapsedStatuses)
  */
 CMessagePaneView.prototype.onRoute = function (aParams)
 {
-	var oParams = LinksUtils.parseMailbox(aParams);
-	
+	var
+		oParams = LinksUtils.parseMailbox(aParams),
+		iMessageAccountId = 0,
+		sFolder = oParams.Folder,
+		sUid = oParams.Uid
+	;
+
 	AccountList.changeCurrentAccountByHash(oParams.AccountHash);
-	
-	if (this.replyText() !== '' && this.uid() !== oParams.Uid)
+	iMessageAccountId = MailCache.currentAccountId();
+
+	if (sFolder === MailCache.oUnifiedInbox.fullName() && Types.isNonEmptyString(sUid))
+	{
+		var aParts = sUid.split(':');
+		iMessageAccountId = Types.pInt(aParts[0]);
+		sFolder = 'INBOX';
+		sUid = Types.pString(aParts[1]);
+	}
+
+	if (this.replyText() !== '' && this.uid() !== sUid)
 	{
 		this.saveReplyMessage(false);
 	}
 
-	this.uid(oParams.Uid);
-	this.folder(oParams.Folder);
-	MailCache.setCurrentMessage(this.uid(), this.folder());
-	
+	this.accountId(iMessageAccountId);
+	this.uid(sUid);
+	this.folder(sFolder);
+	MailCache.setCurrentMessage(this.accountId(), this.folder(), this.uid());
+
 	this.contentHasFocus(true);
 };
 
@@ -730,11 +787,11 @@ CMessagePaneView.prototype.executeReplyOrForward = function (sReplyType)
 	if (this.currentMessage())
 	{
 		SendingUtils.setReplyData(this.getReplyHtmlText(), this.replyDraftUid());
-		
+
 		this.replyText('');
 		this.replyDraftUid('');
-		
-		ComposeUtils.composeMessageAsReplyOrForward(sReplyType, this.currentMessage().folder(), this.currentMessage().uid());
+
+		ComposeUtils.composeMessageAsReplyOrForward(sReplyType, this.currentMessage().accountId(), this.currentMessage().folder(), this.currentMessage().uid());
 	}
 };
 
@@ -757,7 +814,7 @@ CMessagePaneView.prototype.executePrevMessage = function ()
 {
 	if (this.isEnablePrevMessage())
 	{
-		Routing.setHash(LinksUtils.getViewMessage(MailCache.folderList().currentFolderFullName(), this.prevMessageUid()));
+		Routing.setHash(LinksUtils.getViewMessage(MailCache.currentAccountId(), MailCache.getCurrentFolderFullname(), this.prevMessageUid()));
 	}
 };
 
@@ -765,7 +822,7 @@ CMessagePaneView.prototype.executeNextMessage = function ()
 {
 	if (this.isEnableNextMessage())
 	{
-		Routing.setHash(LinksUtils.getViewMessage(MailCache.folderList().currentFolderFullName(), this.nextMessageUid()));
+		Routing.setHash(LinksUtils.getViewMessage(MailCache.currentAccountId(), MailCache.getCurrentFolderFullname(), this.nextMessageUid()));
 	}
 };
 
@@ -809,9 +866,9 @@ CMessagePaneView.prototype.executePrint = function ()
 
 CMessagePaneView.prototype.executeSave = function ()
 {
-	if (this.isEnableSave())
+	if (this.isEnableSave() && this.currentMessage())
 	{
-		UrlUtils.downloadByUrl(this.currentMessage().sDownloadAsEmlUrl);
+		UrlUtils.downloadByUrl(this.currentMessage().sDownloadAsEmlUrl, true);
 	}
 };
 
@@ -862,7 +919,7 @@ CMessagePaneView.prototype.executeSendQuickReply = function ()
 	{
 		this.replySendingStarted(true);
 		this.requiresPostponedSending(this.replyAutoSavingStarted());
-		SendingUtils.sendReplyMessage('SendMessage', this.getReplyHtmlText(), this.replyDraftUid(), 
+		SendingUtils.sendReplyMessage('SendMessage', this.getReplyHtmlText(), this.replyDraftUid(),
 			this.onSendOrSaveMessageResponse, this, this.requiresPostponedSending());
 
 		this.replyTextFocus(false);
@@ -889,7 +946,7 @@ CMessagePaneView.prototype.saveReplyMessage = function (bAutosave)
 		{
 			this.replySavingStarted(true);
 		}
-		SendingUtils.sendReplyMessage('SaveMessage', this.getReplyHtmlText(), this.replyDraftUid(), 
+		SendingUtils.sendReplyMessage('SaveMessage', this.getReplyHtmlText(), this.replyDraftUid(),
 			this.onSendOrSaveMessageResponse, this);
 	}
 };
@@ -942,6 +999,12 @@ CMessagePaneView.prototype.onShow = function ()
 CMessagePaneView.prototype.onHide = function ()
 {
 	this.bShown = false;
+	_.each(this.controllers(), _.bind(function (oController) {
+		if ($.isFunction(oController.onHide))
+		{
+			oController.onHide();
+		}
+	}, this));
 };
 
 /**
@@ -957,7 +1020,7 @@ CMessagePaneView.prototype.onBind = function ($MailViewDom)
 	}, this)]);
 
 	this.$MailViewDom = _.isUndefined($MailViewDom) ? this.$viewDom : $MailViewDom;
-	
+
 	this.$MailViewDom.on('mousedown', 'a', function (oEvent) {
 		if (oEvent && 3 !== oEvent['which'])
 		{
@@ -992,6 +1055,7 @@ CMessagePaneView.prototype.hotKeysBind = function ()
 		}
 		else if (bComputed && ev.keyCode === Enums.Key.r)
 		{
+			ev.preventDefault();
 			this.executeReply();
 		}
 	}, this));
@@ -1029,8 +1093,11 @@ CMessagePaneView.prototype.registerController = function (oController, sPlace) {
 		case 'BeforeMessageBody':
 			this.bodyControllers.push(oController);
 			break
+		case 'AfterMessageBody':
+			this.bottomControllers.push(oController);
+			break;
 	}
-	
+
 	if ($.isFunction(oController.assignMessagePaneExtInterface))
 	{
 		oController.assignMessagePaneExtInterface(this.getExtInterface());
@@ -1047,8 +1114,7 @@ CMessagePaneView.prototype.getExtInterface = function ()
 			var oMessage = this.currentMessage();
 			if (oMessage && this.isCurrentMessageLoaded())
 			{
-				oMessage.text(sText);
-				oMessage.$text = null;
+				oMessage.changeText(sText);
 				this.setMessageBody();
 			}
 		}, this)
@@ -1059,8 +1125,11 @@ CMessagePaneView.prototype.doAfterPopulatingMessage = function ()
 {
 	var
 		oMessage = this.currentMessage(),
-		bLoaded = oMessage && this.isCurrentMessageLoaded(),
+		bLoaded = oMessage && !this.isLoading(),
 		oMessageProps = bLoaded ? {
+			iAccountId: oMessage.accountId(),
+			sFolderFullName: oMessage.folder(),
+			sMessageUid: oMessage.uid(),
 			aToEmails: oMessage.oTo.getEmails(),
 			bPlain: oMessage.isPlain(),
 			sRawText: oMessage.textRaw(),
@@ -1071,20 +1140,20 @@ CMessagePaneView.prototype.doAfterPopulatingMessage = function ()
 			aExtend: oMessage.aExtend
 		} : null
 	;
-	
+
 	_.each(this.controllers(), _.bind(function (oController) {
 		if ($.isFunction(oController.doAfterPopulatingMessage))
 		{
 			oController.doAfterPopulatingMessage(oMessageProps);
 		}
 	}, this));
-	
+
 	ModulesManager.run('ContactsWebclient', 'applyContactsCards', [this.$MailViewDom.find('span.address')]);
 };
 
 CMessagePaneView.prototype.searchBySubject = function ()
 {
-	if (Settings.AllowSearchMessagesBySubject)
+	if (Settings.AllowSearchMessagesBySubject && this.currentMessage())
 	{
 		var
 			sFolder = this.currentMessage().folder(),

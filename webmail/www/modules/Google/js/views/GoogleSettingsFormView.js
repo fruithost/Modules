@@ -4,18 +4,18 @@ var
 	_ = require('underscore'),
 	$ = require('jquery'),
 	ko = require('knockout'),
-	
+
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	UrlUtils = require('%PathToCoreWebclientModule%/js/utils/Url.js'),
-	
+
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	Api = require('%PathToCoreWebclientModule%/js/Api.js'),
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 	WindowOpener = require('%PathToCoreWebclientModule%/js/WindowOpener.js'),
-	
+
 	CAbstractSettingsFormView = ModulesManager.run('SettingsWebclient', 'getAbstractSettingsFormViewClass'),
-	
+
 	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
 
@@ -25,14 +25,14 @@ var
 function CGoogleSettingsFormView()
 {
 	CAbstractSettingsFormView.call(this, Settings.ServerModuleName);
-	
+
 	this.connected = ko.observable(Settings.Connected);
 	this.scopes = ko.observable(Settings.getScopesCopy());
 	this.bRunCallback = false;
-	
+
 	window.googleConnectCallback = _.bind(function (bResult, sErrorCode, sModule) {
 		this.bRunCallback = true;
-		
+
 		if (!bResult)
 		{
 			Api.showErrorByCode({'ErrorCode': Types.pInt(sErrorCode), 'Module': sModule}, '', true);
@@ -94,16 +94,16 @@ CGoogleSettingsFormView.prototype.checkAndConnect = function ()
 		}),
 		bGlobalAuthOn = !!oAuthGlobalScope && !!oAuthGlobalScope.Value()
 	;
-	
+
 	_.each(this.scopes(), function (oScope) {
 		if (oScope.Value())
 		{
 			oParams.Scopes.push(oScope.Name);
 		}
 	});
-	
+
 	App.broadcastEvent('OAuthAccountChange::before', oParams);
-	
+
 	if (oParams.AllowConnect && (bAuthOn || bAuthOn === bGlobalAuthOn || !bAuthOn && App.isAccountDeletingAvailable()))
 	{
 		this.connect(oParams.Scopes);
@@ -121,17 +121,17 @@ CGoogleSettingsFormView.prototype.connect = function (aScopes)
 	$.cookie('oauth-redirect', 'connect');
 	this.bRunCallback = false;
 	var
-		oWin = WindowOpener.open(UrlUtils.getAppPath() + '?oauth=google', 'Google'),
+		oWin = WindowOpener.open(UrlUtils.getAppPath() + '?oauth=google-connect', 'Google'),
 		iIntervalId = setInterval(_.bind(function() {
 			if (oWin.closed)
 			{
+				clearInterval(iIntervalId);
 				if (!this.bRunCallback)
 				{
 					window.location.reload();
 				}
 				else
 				{
-					clearInterval(iIntervalId);
 					App.broadcastEvent('OAuthAccountChange::after');
 					this.updateSavedState();
 					Settings.updateScopes(this.connected(), this.scopes());
@@ -156,9 +156,9 @@ CGoogleSettingsFormView.prototype.checkAndDisconnect = function ()
 		}),
 		bGlobalAuthOn = !!oAuthGlobalScope && !!oAuthGlobalScope.Value()
 	;
-	
+
 	App.broadcastEvent('OAuthAccountChange::before', oParams);
-	
+
 	if (oParams.AllowDisconnect && (!bGlobalAuthOn || App.isAccountDeletingAvailable()))
 	{
 		this.disconnect();

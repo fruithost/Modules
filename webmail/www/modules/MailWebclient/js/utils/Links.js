@@ -5,6 +5,9 @@ var
 	
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	
+	Routing = require('%PathToCoreWebclientModule%/js/Routing.js'),
+	
+	MailCache = null,
 	Settings = require('modules/%ModuleName%/js/Settings.js'),
 	
 	LinksUtils = {}
@@ -27,7 +30,17 @@ function IsPageParam(sTemp)
  */
 function IsMsgParam(sTemp)
 {
-	return ('msg' === sTemp.substr(0, 3) && (/^[1-9][\d]*$/).test(sTemp.substr(3)));
+	return ('msg' === sTemp.substr(0, 3) && (/^[1-9][\d:]*$/).test(sTemp.substr(3)));
+};
+
+/**
+ * @param {string} sTemp
+ * 
+ * @return {boolean}
+ */
+function IsServerParam(sTemp)
+{
+	return ('s' === sTemp.substr(0, 1) && (/^[1-9][\d]*$/).test(sTemp.substr(1)));
 };
 
 /**
@@ -36,10 +49,12 @@ function IsMsgParam(sTemp)
  * @param {string=} sUid = ''
  * @param {string=} sSearch = ''
  * @param {string=} sFilters = ''
+ * @param {string=} sSortBy = ''
+ * @param {string=} iSortOrder = 0
  * @param {string=} sCustom = ''
  * @return {Array}
  */
-LinksUtils.getMailbox = function (sFolder, iPage, sUid, sSearch, sFilters, sCustom)
+LinksUtils.getMailbox = function (sFolder, iPage, sUid, sSearch, sFilters, sSortBy, iSortOrder, sCustom)
 {
 	var
 		AccountList = require('modules/%ModuleName%/js/AccountList.js'),
@@ -51,15 +66,28 @@ LinksUtils.getMailbox = function (sFolder, iPage, sUid, sSearch, sFilters, sCust
 	sUid = Types.pString(sUid);
 	sSearch = Types.pString(sSearch);
 	sFilters = Types.pString(sFilters);
+	sSortBy = Types.pString(sSortBy, Settings.MessagesSortBy.DefaultSortBy);
+	iSortOrder = Types.pInt(iSortOrder, Settings.MessagesSortBy.DefaultSortOrder);
+	sCustom = Types.pString(sCustom);
 
-	if (sFolder && '' !== sFolder)
+	if (Types.isNonEmptyString(sFolder))
 	{
 		aResult.push(sFolder);
 	}
 	
-	if (sFilters && '' !== sFilters)
+	if ('' !== sFilters)
 	{
 		aResult.push('filter:' + sFilters);
+	}
+	
+	if ('' !== sSortBy && Settings.MessagesSortBy.DefaultSortBy !== sSortBy)
+	{
+		aResult.push('sortby:' + sSortBy);
+	}
+	
+	if (Settings.MessagesSortBy.DefaultSortOrder !== iSortOrder)
+	{
+		aResult.push('sortorder:' + iSortOrder);
 	}
 	
 	if (1 < iPage)
@@ -67,17 +95,17 @@ LinksUtils.getMailbox = function (sFolder, iPage, sUid, sSearch, sFilters, sCust
 		aResult.push('p' + iPage);
 	}
 
-	if (sUid && '' !== sUid)
+	if ('' !== sUid)
 	{
 		aResult.push('msg' + sUid);
 	}
 
-	if (sSearch && '' !== sSearch)
+	if ('' !== sSearch)
 	{
 		aResult.push(sSearch);
 	}
 	
-	if (sCustom && '' !== sCustom)
+	if ('' !== sCustom)
 	{
 		aResult.push('custom:' + sCustom);
 	}
@@ -86,22 +114,37 @@ LinksUtils.getMailbox = function (sFolder, iPage, sUid, sSearch, sFilters, sCust
 };
 
 /**
+ * Requires MailCache. It cannot be required earlier because it is not initialized yet.
+ */
+LinksUtils.requireMailCache = function ()
+{
+	if (MailCache === null)
+	{
+		MailCache = require('modules/%ModuleName%/js/Cache.js');
+	}
+};
+
+/**
  * @param {Array} aParamsToParse
- * @param {string} sInboxFullName
  * 
  * @return {Object}
  */
-LinksUtils.parseMailbox = function (aParamsToParse, sInboxFullName)
+LinksUtils.parseMailbox = function (aParamsToParse)
 {
+	this.requireMailCache();
+	
 	var
 		bMailtoCompose = aParamsToParse.length > 0 && aParamsToParse[0] === 'compose' && aParamsToParse[1] === 'to',
 		aParams = bMailtoCompose ? [] : aParamsToParse,
 		sAccountHash = '',
-		sFolder = 'INBOX',
+		sFolder = '',
+		sInboxFullName = MailCache.folderList().inboxFolderFullName() || 'INBOX',
 		iPage = 1,
 		sUid = '',
 		sSearch = '',
 		sFilters = '',
+		sSortBy = Settings.MessagesSortBy.DefaultSortBy,
+		iSortOrder = Settings.MessagesSortBy.DefaultSortOrder,
 		sCustom = '',
 		sTemp = '',
 		iIndex = 0
@@ -131,6 +174,38 @@ LinksUtils.parseMailbox = function (aParamsToParse, sInboxFullName)
 				sFilters = Enums.FolderFilter.Unseen;
 				iIndex++;
 			}
+		}
+
+		if (aParams.length > iIndex)
+		{
+			sTemp = Types.pString(aParams[iIndex]);
+			if (sTemp.substr(0, 7) === 'sortby:')
+			{
+				if (Settings.MessagesSortBy.Allow)
+				{
+					sSortBy = sTemp.substr(7);
+				}
+				iIndex++;
+			}
+		}
+
+		if (aParams.length > iIndex)
+		{
+			sTemp = Types.pString(aParams[iIndex]);
+			if (sTemp.substr(0, 10) === 'sortorder:')
+			{
+				if (Settings.MessagesSortBy.Allow)
+				{
+					iSortOrder = Types.pEnum(Types.pInt(sTemp.substr(10)), Enums.SortOrder, Settings.MessagesSortBy.DefaultSortOrder);
+				}
+				iIndex++;
+			}
+		}
+		
+		if (!_.find(Settings.MessagesSortBy.List, function(oSortData) { return oSortData.SortBy === sSortBy; }))
+		{
+			sSortBy = Settings.MessagesSortBy.DefaultSortBy;
+			iSortOrder = Settings.MessagesSortBy.DefaultSortOrder;
 		}
 
 		if (aParams.length > iIndex)
@@ -185,6 +260,8 @@ LinksUtils.parseMailbox = function (aParamsToParse, sInboxFullName)
 		'Uid': sUid,
 		'Search': sSearch,
 		'Filters': sFilters,
+		'SortBy': sSortBy,
+		'SortOrder': iSortOrder,
 		'Custom': sCustom
 	};
 };
@@ -194,12 +271,12 @@ LinksUtils.parseMailbox = function (aParamsToParse, sInboxFullName)
  * @param {string} sUid
  * @return {Array}
  */
-LinksUtils.getViewMessage = function (sFolder, sUid)
+LinksUtils.getViewMessage = function (iAccountId, sFolder, sUid)
 {
 	var
 		AccountList = require('modules/%ModuleName%/js/AccountList.js'),
-		oCurrAccount = AccountList.getCurrent(),
-		sAccountHash = oCurrAccount ? oCurrAccount.hash() : ''
+		oAccount = AccountList.getAccount(iAccountId),
+		sAccountHash = oAccount ? oAccount.hash() : ''
 	;
 	return [Settings.HashModuleName + '-view', sAccountHash, sFolder, 'msg' + sUid];
 };
@@ -219,17 +296,18 @@ LinksUtils.getCompose = function ()
 
 /**
  * @param {string} sType
+ * @param {int} iAccountId
  * @param {string} sFolder
  * @param {string} sUid
  * 
  * @return {Array}
  */
-LinksUtils.getComposeFromMessage = function (sType, sFolder, sUid)
+LinksUtils.getComposeFromMessage = function (sType, iAccountId, sFolder, sUid)
 {
 	var
 		AccountList = require('modules/%ModuleName%/js/AccountList.js'),
-		oCurrAccount = AccountList.getCurrent(),
-		sAccountHash = oCurrAccount ? oCurrAccount.hash() : ''
+		oAccount = AccountList.getAccount(iAccountId),
+		sAccountHash = oAccount ? oAccount.hash() : ''
 	;
 	return [Settings.HashModuleName + '-compose', sAccountHash, sType, sFolder, sUid];
 };
@@ -249,6 +327,16 @@ LinksUtils.getComposeWithToField = function (sTo)
 	return [Settings.HashModuleName + '-compose', sAccountHash, 'to', sTo];
 };
 
+LinksUtils.getComposeWithData = function (oData)
+{
+	var
+		AccountList = require('modules/%ModuleName%/js/AccountList.js'),
+		oCurrAccount = AccountList.getCurrent(),
+		sAccountHash = oCurrAccount ? oCurrAccount.hash() : ''
+	;
+	return [Settings.HashModuleName + '-compose', sAccountHash, 'data', oData];
+};
+
 /**
  * @param {string} sType
  * @param {Object} oObject
@@ -265,17 +353,18 @@ LinksUtils.getComposeWithObject = function (sType, oObject)
 };
 
 /**
+ * @param {int} iAccountId
  * @param {string} sFolderName
  * @param {string} sUid
  * @param {object} oObject
  * @returns {Array}
  */
-LinksUtils.getComposeWithEmlObject = function (sFolderName, sUid, oObject)
+LinksUtils.getComposeWithEmlObject = function (iAccountId, sFolderName, sUid, oObject)
 {
 	var
 		AccountList = require('modules/%ModuleName%/js/AccountList.js'),
-		oCurrAccount = AccountList.getCurrent(),
-		sAccountHash = oCurrAccount ? oCurrAccount.hash() : ''
+		oAccount = AccountList.getAccount(iAccountId),
+		sAccountHash = oAccount ? oAccount.hash() : ''
 	;
 	return [Settings.HashModuleName + '-compose', sAccountHash, Enums.ReplyType.ForwardAsAttach, sFolderName, sUid, oObject];
 };
@@ -289,7 +378,7 @@ LinksUtils.parseCompose = function (aParams)
 	var
 		sAccountHash = (aParams.length > 0) ? aParams[0] : '',
 		sRouteType = (aParams.length > 1) ? aParams[1] : '',
-		oObject = ((sRouteType === Enums.ReplyType.ForwardAsAttach || sRouteType === 'attachments') && aParams.length > 2) ? 
+		oObject = ((sRouteType === Enums.ReplyType.ForwardAsAttach || sRouteType === 'attachments' || sRouteType === 'data') && aParams.length > 2) ? 
 					(sRouteType === Enums.ReplyType.ForwardAsAttach ? aParams[4] : aParams[2]) : null,
 		oToAddr = (sRouteType === 'to' && aParams.length > 2) ? LinksUtils.parseToAddr(aParams[2]) : null,
 		bMessage = ((sRouteType === Enums.ReplyType.Reply || sRouteType === Enums.ReplyType.ReplyAll 
@@ -316,7 +405,7 @@ LinksUtils.parseCompose = function (aParams)
 LinksUtils.parseToAddr = function (mToAddr)
 {
 	var
-		sToAddr = decodeURI(Types.pString(mToAddr)),
+		sToAddr = Types.pString(mToAddr),
 		bHasMailTo = sToAddr.indexOf('mailto:') !== -1,
 		aMailto = [],
 		aMessageParts = [],
@@ -339,10 +428,10 @@ LinksUtils.parseToAddr = function (mToAddr)
 				{
 					switch (aParts[0].toLowerCase())
 					{
-						case 'subject': sSubject = aParts[1]; break;
-						case 'cc': sCcAddr = aParts[1]; break;
-						case 'bcc': sBccAddr = aParts[1]; break;
-						case 'body': sBody = aParts[1]; break;
+						case 'subject': sSubject = decodeURIComponent(aParts[1]); break;
+						case 'cc': sCcAddr = decodeURIComponent(aParts[1]); break;
+						case 'bcc': sBccAddr = decodeURIComponent(aParts[1]); break;
+						case 'body': sBody = decodeURIComponent(aParts[1]); break;
 					}
 				}
 			});
@@ -356,6 +445,76 @@ LinksUtils.parseToAddr = function (mToAddr)
 		'cc': sCcAddr,
 		'bcc': sBccAddr,
 		'body': sBody
+	};
+};
+
+/**
+ * @param {array} aParams
+ * @returns {Object}
+ */
+LinksUtils.parseMailServers = function (aParams)
+{
+	var
+		iIndex = 0,
+		sTemp = '',
+		iPage = 1,
+		sSearch = '',
+		bCreate = false,
+		iEditServerId = 0
+	;
+	
+	if (Types.isNonEmptyArray(aParams))
+	{
+		if (aParams.length > iIndex)
+		{
+			sTemp = Types.pString(aParams[iIndex]);
+			if (IsPageParam(sTemp))
+			{
+				iPage = Types.pInt(sTemp.substr(1));
+				if (iPage <= 0)
+				{
+					iPage = 1;
+				}
+				iIndex++;
+			}
+		}
+		
+		if (aParams.length > iIndex)
+		{
+			sTemp = Types.pString(aParams[iIndex]);
+			if (!IsServerParam(sTemp) && sTemp !== 'create')
+			{
+				sSearch = sTemp;
+				iIndex++;
+			}
+		}
+		
+		if (aParams.length > iIndex)
+		{
+			sTemp = Types.pString(aParams[iIndex]);
+			if (IsServerParam(sTemp))
+			{
+				iEditServerId = Types.pInt(sTemp.substr(1), iEditServerId);
+				if (iEditServerId <= 0)
+				{
+					iEditServerId = 1;
+				}
+				iIndex++;
+			}
+		}
+		
+		if (aParams.length > iIndex)
+		{
+			sTemp = Types.pString(aParams[iIndex]);
+			bCreate = sTemp === 'create';
+		}
+	}
+	
+	return {
+		'Page': iPage,
+		'Search': sSearch,
+		'Create': bCreate,
+		'EditServerId': iEditServerId
 	};
 };
 

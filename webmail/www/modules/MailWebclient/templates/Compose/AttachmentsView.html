@@ -2,6 +2,7 @@
 	<div class="panel_content">
 		<div class="middle_bar">
 			<div class="panel_top">
+				<div class="notice" data-bind="visible: autoEncryptSignMessage() || messageSignedOrEncrypted(), i18n: {'key': '%MODULENAME%/INFO_ATTACHMENTS_NOT_SIGNED_ENCRYPTED'}"></div>
 				<span class="uploader_button desktop" data-bind="initDom: composeUploaderButton, customTooltip: '%MODULENAME%/ACTION_ATTACH_FROM_COMPUTER'">
 					<span class="icon"></span>
 					<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_ATTACH_FROM_COMPUTER'}"></span>

@@ -12,7 +12,7 @@ module.exports = function (oAppData) {
 		App = require('%PathToCoreWebclientModule%/js/App.js')
 	;
 	
-	if (App.getUserRole() === Enums.UserRole.NormalUser)
+	if (App.isUserNormalOrTenant())
 	{
 		return {
 			start: function (ModulesManager) {

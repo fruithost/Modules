@@ -1,10 +1,6 @@
 <div class="screen AdminPanelLayout" style="display: none;">
 	<div class="tabsbar">
 		<div class="content">
-			<span class="item logout" data-bind="click: logout">
-				<span class="link" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_LOGOUT'}"></span>
-			</span>
-		
 			<!-- ko foreach: aScreens -->
 			<span data-bind="attr: { 'class': 'item admin ' + sType.toLowerCase() + (sType === $parent.currentEntityType() ? ' current' : '') }">
 				<a class="link" href="#" data-bind="attr: {'href': linkHash}">
@@ -27,6 +23,10 @@
 				<!-- /ko -->
 			</span>
 			<!-- /ko -->
+			<div class="spacer"></div>
+			<span class="item logout" data-bind="visible: bShowLogout, click: logout">
+				<span class="link" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_LOGOUT'}"></span>
+			</span>
 		</div>
 	</div>
 	

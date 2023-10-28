@@ -1,15 +1,17 @@
 <?php
-
-/*
- * Copyright 2004-2015, AfterLogic Corp.
- * Licensed under AGPLv3 license or AfterLogic license
+/**
+ * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
- * See the LICENSE file for a full license statement.
+ * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
  */
 
 namespace MailSo\Mime;
 
 /**
+ * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
+ * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
+ *
  * @category MailSo
  * @package Mime
  */
@@ -153,16 +155,16 @@ class EmailCollection extends \MailSo\Base\Collection
 
 		while ($iCurrentPos < $sWorkingRecipientsLen)
 		{
-			switch ($sWorkingRecipients{$iCurrentPos})
+			switch ($sWorkingRecipients[$iCurrentPos])
 			{
 				case '\'':
 				case '"':
 					if (!$bIsInQuotes)
 					{
-						$sChQuote = $sWorkingRecipients{$iCurrentPos};
+						$sChQuote = $sWorkingRecipients[$iCurrentPos];
 						$bIsInQuotes = true;
 					}
-					else if ($sChQuote == $sWorkingRecipients{$iCurrentPos})
+					else if ($sChQuote == $sWorkingRecipients[$iCurrentPos])
 					{
 						$bIsInQuotes = false;
 					}
@@ -211,7 +213,7 @@ class EmailCollection extends \MailSo\Base\Collection
 							$this->Add(
 								\MailSo\Mime\Email::Parse(\substr($sWorkingRecipients, $iEmailStartPos, $iEmailEndPos - $iEmailStartPos))
 							);
-							
+
 							$iEmailStartPos = $iCurrentPos + 1;
 						}
 						catch (\MailSo\Base\Exceptions\InvalidArgumentException $oException)

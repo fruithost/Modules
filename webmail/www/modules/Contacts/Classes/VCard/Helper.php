@@ -18,6 +18,42 @@ namespace Aurora\Modules\Contacts\Classes\VCard;
  */
 class Helper
 {
+	public static function AddPhoneToNotes(&$aContact, $sPhone)
+	{
+		if (isset($aContact['Notes'])) {
+			$aContact['Notes'] = "\r\n Phone: " . $sPhone;
+		}
+	}
+
+	public static function SetPersonalPhone(&$aContact, $sPhone, $bFullBusinessList = false)
+	{
+		if (!isset($aContact['PersonalMobile'])) {
+			$aContact['PersonalMobile'] = $sPhone;
+		} else if (!isset($aContact['PersonalPhone'])) {
+			$aContact['PersonalPhone'] = $sPhone;
+		} else if (!isset($aContact['PersonalPhone'])) {
+			$aContact['PersonalPhone'] = $sPhone;
+		} else if (!isset($aContact['PersonalFax'])) {
+			$aContact['PersonalFax'] = $sPhone;
+		} else if (!$bFullBusinessList) {
+			self::SetBusinessPhone($aContact, $sPhone, true);
+		} else {
+			self::AddPhoneToNotes($aContact, $sPhone);
+		}
+	}
+
+	public static function SetBusinessPhone(&$aContact, $sPhone, $bFullPersonalList = false)
+	{
+		if (!isset($aContact['BusinessPhone'])) {
+			$aContact['BusinessPhone'] = $sPhone;
+		} else if (!isset($aContact['BusinessFax'])) {
+			$aContact['BusinessFax'] = $sPhone;
+		} else if (!$bFullPersonalList) {
+			self::SetPersonalPhone($aContact, $sPhone, true);
+		} else {
+			self::AddPhoneToNotes($aContact, $sPhone);
+		}
+	}
 	
 	public static function GetContactDataFromVcard($oVCard, $sUUID = '')
 	{
@@ -33,6 +69,7 @@ class Helper
 			$aContact['UUID'] = (string) $oVCard->UID;
 		}
 */
+
 		$aGroupNames = [];
 		if (isset($oVCard->CATEGORIES))
 		{
@@ -43,8 +80,6 @@ class Helper
 		}
 		$aContact['GroupNames'] = $aGroupNames;
 
-		$aContact['FullName'] = isset($oVCard->FN) ? (string) $oVCard->FN : '';
-
 		if (isset($oVCard->N))
 		{
 			$aNames = $oVCard->N->getParts();
@@ -54,6 +89,7 @@ class Helper
 				$aContact['FirstName'] = !empty($aNames[1]) ? (string) $aNames[1] : '';
 			}
 		}
+		$aContact['FullName'] = !empty((string) $oVCard->FN) ? (string) $oVCard->FN : $aContact['FirstName'] . (!empty($aContact['FirstName']) ? ' ' : '') . $aContact['LastName'];
 
 		$aContact['NickName'] = isset($oVCard->NICKNAME) ? (string) $oVCard->NICKNAME : '';
 		$aContact['Notes'] = isset($oVCard->NOTE) ? (string) $oVCard->NOTE : '';
@@ -220,32 +256,38 @@ class Helper
 					{
 						if ($oTypes->has('HOME'))
 						{
-							$aContact['PersonalFax'] = (string) $oTel;
+							self::SetPersonalPhone($aContact, (string) $oTel);
+//							$aContact['PersonalFax'] = (string) $oTel;
 						}
 						if ($oTypes->has('WORK'))
 						{
-							$aContact['BusinessFax'] = (string) $oTel;
+							self::SetBusinessPhone($aContact, (string) $oTel);
+//							$aContact['BusinessFax'] = (string) $oTel;
 						}
 					}
 					else
 					{
 						if ($oTypes->has('CELL'))
 						{
-							$aContact['PersonalMobile'] = (string) $oTel;
+							self::SetPersonalPhone($aContact, (string) $oTel);
+//							$aContact['PersonalMobile'] = (string) $oTel;
 						}
 						else if ($oTypes->has('HOME'))
 						{
-							$aContact['PersonalPhone'] = (string) $oTel;
+							self::SetPersonalPhone($aContact, (string) $oTel);
+//							$aContact['PersonalPhone'] = (string) $oTel;
 						}
 						else if ($oTypes->has('WORK'))
 						{
-							$aContact['BusinessPhone'] = (string) $oTel;
+							self::SetBusinessPhone($aContact, (string) $oTel);
+//							$aContact['BusinessPhone'] = (string) $oTel;
 						}
 					}
 				}
 				else
 				{
-					$aContact['PersonalPhone'] = (string) $oTel;
+					self::SetPersonalPhone($aContact, (string) $oTel);
+//					$aContact['PersonalPhone'] = (string) $oTel;
 				}
 			}
 		}
@@ -262,6 +304,52 @@ class Helper
 		
 		return $aContact;
 	}
+
+
+	public static function GetGroupDataFromVcard($oVCard, $sUUID = '')
+	{
+		$aGroup = [];
+
+		if (!empty($sUUID))
+		{
+			$aGroup['DavContacts::UID'] = (string) $sUUID;
+			$aGroup['UUID'] = $aGroup['DavContacts::UID'];
+		}
+		elseif (isset($oVCard->UID))
+		{
+			$aGroup['DavContacts::UID'] = \str_replace('urn:uuid:', '' ,(string) $oVCard->UID);
+			$aGroup['UUID'] = $aGroup['DavContacts::UID'];
+		}
+
+		if (isset($oVCard->FN))
+		{
+			$aGroup['Name'] = (string) $oVCard->FN;
+		}
+		elseif (isset($oVCard->N))
+		{
+			$aNames = $oVCard->N->getParts();
+			$aGroup['Name'] = \implode(' ', $aNames);
+		}
+
+		$aMembers = [];
+		if (isset($oVCard->MEMBER))
+		{
+			$aMembers = $oVCard->MEMBER;
+		} 
+		else if (isset($oVCard->{'X-ADDRESSBOOKSERVER-MEMBER'}))
+		{
+			$aMembers = $oVCard->{'X-ADDRESSBOOKSERVER-MEMBER'};
+		}
+
+		$aGroup['Contacts'] = [];
+		foreach ($aMembers as $sMember)
+		{
+			$aGroup['Contacts'][] = \str_replace('urn:uuid:', '', $sMember);
+		}
+
+		return $aGroup;
+	}
+
 	
 	/**
 	* @param \Aurora\Modules\Contacts\Classes\Contact $oContact
@@ -705,7 +793,7 @@ class Helper
 	{
 		$oVCard->VERSION = '3.0';
 
-		$oVCard->UID = $oContact->UUID;
+		$oVCard->UID = $oContact->{'DavContacts::VCardUID'};
 
 		$oVCard->FN = $oContact->FullName;
 		$oVCard->N = array(
@@ -730,7 +818,7 @@ class Helper
 		foreach ($oContact->GroupsContacts as $oGroupsContact)
 		{
 			$oContactsModule = \Aurora\System\Api::GetModuleDecorator('Contacts');
-			$oGroup = $oContactsModule->GetGroup($oGroupsContact->GroupUUID);
+			$oGroup = $oContactsModule->GetGroup($oContact->IdUser, $oGroupsContact->GroupUUID);
 			if ($oGroup)
 			{
 				$aCategories[] = $oGroup->Name;
@@ -755,4 +843,24 @@ class Helper
 			$oVCard->add('BDAY', $sBDayDT);
 		}
 	}
+
+	/**
+	* @param \Aurora\Modules\Contacts\Classes\Group $oGroup
+	* @param \Sabre\VObject\Component $oVCard
+	* @param bool $bIsUpdate = false
+	* @return void
+	*/
+	public static function UpdateVCardFromGroup($oGroup, &$oVCard, $bIsUpdate = false)
+	{
+		$oVCard->VERSION = '3.0';
+		$oVCard->UID = $oGroup->UUID;
+//		$oVCard->N = [$oGroup->Name];
+		$oVCard->FN = $oGroup->Name;
+		$oVCard->{'X-ADDRESSBOOKSERVER-KIND'} = 'GROUP';
+		unset($oVCard->{'X-ADDRESSBOOKSERVER-MEMBER'});
+		foreach ($oGroup->GroupContacts as $oGroupContact)
+		{
+			$oVCard->add('X-ADDRESSBOOKSERVER-MEMBER', 'urn:uuid:' . $oGroupContact->ContactUUID);
+		}
+	}	
 }

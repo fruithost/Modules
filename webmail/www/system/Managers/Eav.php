@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -7,12 +7,14 @@
 
 namespace Aurora\System\Managers;
 
+use Aurora\System\Exceptions\Exception;
+
 /**
- * Eav Manager class summary
+ * Eav Manager
  *
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package EAV
  */
@@ -23,29 +25,32 @@ class Eav
 	 */
 	public $oStorage;
 
-	/**
-	 * 
-	 * @param string $sForcedStorage
-	 */
-	public function __construct($sForcedStorage = 'Db')
+	public function __construct()
 	{
+		$sForcedStorage = 'Db';
+		$oSettings = \Aurora\Api::getSettings();
+		if($oSettings)
+		{
+			$sForcedStorage = $oSettings->getConf('EavStorageType', 'Db');
+		}
 		$oForcedStorage = __NAMESPACE__ . '\\Eav\\Storages\\' . $sForcedStorage . '\\Storage';
-		
+
 		$this->oStorage = new $oForcedStorage($this);
 	}
-	
-	public static function getInstance($sForcedStorage = 'Db')
+
+	public static function getInstance()
 	{
 		static $oInstance = null;
-		if(is_null($oInstance)) 
-		{ 
-			$oInstance = new self($sForcedStorage); 
-		} 
-		return $oInstance; 
+		if(is_null($oInstance))
+		{
+			$oInstance = new self();
+		}
+		return $oInstance;
 	}
 
+
 	/**
-	 * 
+	 *
 	 * @param int|string $mIdOrUUID
 	 * @param string $sType
 	 * @return boolean
@@ -67,14 +72,15 @@ class Eav
 	}
 
 	/**
-	 * 
+	 *
 	 * @param \Aurora\System\EAV\Entity $oEntity
 	 * @return bool
 	 */
 	public function saveEntity(\Aurora\System\EAV\Entity &$oEntity)
 	{
 		$mResult = false;
-		if (isset($oEntity->EntityId) && $this->isEntityExists($oEntity->EntityId, $oEntity->getName()) ||
+
+		if (!empty($oEntity->EntityId) && $this->isEntityExists($oEntity->EntityId, $oEntity->getName()) ||
 			isset($oEntity->UUID) && $this->isEntityExists($oEntity->UUID, $oEntity->getName()))
 		{
 			$mResult = $this->updateEntity($oEntity);
@@ -86,9 +92,9 @@ class Eav
 
 		return $mResult;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param \Aurora\System\EAV\Entity $oEntity
 	 * @return type
 	 * @throws \Aurora\System\Exceptions\ManagerException
@@ -97,9 +103,9 @@ class Eav
 	{
 		return $this->oStorage->createEntity($oEntity);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param \Aurora\System\EAV\Entity $oEntity
 	 * @return boolean
 	 * @throws type
@@ -110,7 +116,7 @@ class Eav
 	}
 
 	/**
-	 * 
+	 *
 	 * @param int|string $mIdOrUUID
 	 * @return bool
 	 */
@@ -128,16 +134,16 @@ class Eav
 
 		return $bResult;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param array $aIdsOrUUIDs
 	 * @return bool
 	 */
 	public function deleteEntities($aIdsOrUUIDs, $sType = null)
 	{
 		$bResult = false;
-		
+
 		if (!empty($aIdsOrUUIDs))
 		{
 			try
@@ -151,10 +157,10 @@ class Eav
 		}
 
 		return $bResult;
-	}	
-	
+	}
+
 	/**
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getTypes()
@@ -170,15 +176,15 @@ class Eav
 		}
 		return $aTypes;
 	}
-	
-	
+
+
 	public function getAttributesNamesByEntityType($sType)
 	{
 		return $this->oStorage->getAttributesNamesByEntityType($sType);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param string $sType
 	 * @param array $aWhere
 	 * @return int
@@ -196,9 +202,9 @@ class Eav
 		}
 		return $iCount;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param string $sType
 	 * @param array $aViewAttributes
 	 * @param int $iOffset
@@ -209,25 +215,55 @@ class Eav
 	 * @param array $aIdsOrUUIDs
 	 * @return array
 	 */
-	public function getEntities($sType, $aViewAttributes = array(), $iOffset = 0, $iLimit = 0, $aWhere = array(), $mOrderBy = array(), $iSortOrder = \Aurora\System\Enums\SortOrder::ASC, $aIdsOrUUIDs = array())
+	public function getEntitiesAsArray($sType, $aViewAttributes = [], $iOffset = 0, $iLimit = 0, $aWhere = [], $mOrderBy = [],
+		$iSortOrder = \Aurora\System\Enums\SortOrder::ASC, $aIdsOrUUIDs = [], $sCustomViewSql = '')
+	{
+		return $this->oStorage->getEntitiesAsArray(
+			$sType,
+			$aViewAttributes,
+			$iOffset,
+			$iLimit,
+			$aWhere,
+			$mOrderBy,
+			$iSortOrder,
+			$aIdsOrUUIDs,
+			$sCustomViewSql
+		);
+	}
+
+	/**
+	 *
+	 * @param string $sType
+	 * @param array $aViewAttributes
+	 * @param int $iOffset
+	 * @param int $iLimit
+	 * @param array $aWhere
+	 * @param string|array $mOrderBy
+	 * @param int $iSortOrder
+	 * @param array $aIdsOrUUIDs
+	 * @return array
+	 */
+	public function getEntities($sType, $aViewAttributes = [], $iOffset = 0, $iLimit = 0, $aWhere = [], $mOrderBy = [],
+		$iSortOrder = \Aurora\System\Enums\SortOrder::ASC, $aIdsOrUUIDs = [], $sCustomViewSql = '')
 	{
 		$aEntities = array();
 		try
 		{
 			if (is_array($aViewAttributes) && count($aViewAttributes) === 0)
 			{
-				$aViewAttributes = $this->oStorage->getAttributesNamesByEntityType($sType);
+				$aViewAttributes = \Aurora\System\EAV\Entity::createInstance($sType)->getAttributesKeys();
 			}
-			
+
 			$aEntities = $this->oStorage->getEntities(
-				$sType, 
-				$aViewAttributes, 
-				$iOffset, 
-				$iLimit, 
-				$aWhere, 
-				$mOrderBy, 
-				$iSortOrder, 
-				$aIdsOrUUIDs
+				$sType,
+				$aViewAttributes,
+				$iOffset,
+				$iLimit,
+				$aWhere,
+				$mOrderBy,
+				$iSortOrder,
+				$aIdsOrUUIDs,
+				$sCustomViewSql
 			);
 		}
 		catch (\Aurora\System\Exceptions\DbException $oException)
@@ -237,17 +273,37 @@ class Eav
 		return $aEntities;
 	}
 
-	public function getEntitiesUids($sType, $iOffset = 0, $iLimit = 20, $aSearchAttrs = array(), $mSortAttributes = array(), $iSortOrder = \Aurora\System\Enums\SortOrder::ASC)
+	public function getEntitiesUids($sType, $iOffset = 0, $iLimit = 20, $aSearchAttrs = [], $mSortAttributes = [],
+		$iSortOrder = \Aurora\System\Enums\SortOrder::ASC, $sCustomViewSql = '')
 	{
-		return  $this->oStorage->getEntitiesUids($sType, $iOffset, $iLimit, $aSearchAttrs, $mSortAttributes, $iSortOrder);
+		return  $this->oStorage->getEntitiesUids($sType, $iOffset, $iLimit, $aSearchAttrs, $mSortAttributes, $iSortOrder, $sCustomViewSql);
 	}
 
 	/**
-	 * 
+	 *
+	 * @param int|string $mIdOrUUID
+	 * @return string
+	 */
+	public function getEntityType($mIdOrUUID)
+	{
+		$sEntityType = null;
+		try
+		{
+			$sEntityType = $this->oStorage->getEntityType($mIdOrUUID);
+		}
+		catch (\Aurora\System\Exceptions\DbException $oException)
+		{
+			throw new \Aurora\System\Exceptions\ApiException(0, $oException);
+		}
+		return $sEntityType;
+	}
+
+	/**
+	 *
 	 * @param int|string $mIdOrUUID
 	 * @return \Aurora\System\EAV\Entity
 	 */
-	public function getEntity($mIdOrUUID, $sType)
+	public function getEntity($mIdOrUUID, $sType = null)
 	{
 		$oEntity = null;
 		try
@@ -273,12 +329,12 @@ class Eav
 		}
 		if (!$this->oStorage->setAttributes($mEntity, $aAttributes))
 		{
-			throw new \Aurora\System\Exceptions\ManagerException(Errs::Main_UnknownError);
+			throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::Main_UnknownError);
 		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @param \Aurora\System\EAV\Entity |array $mEntity
 	 * @param \Aurora\System\EAV\Attribute $oAttribute
 	 * @return boolean
@@ -291,9 +347,13 @@ class Eav
 		{
 			if ($oAttribute->validate())
 			{
-				if (!$this->oStorage->setAttributes(array($mEntity), array($oAttribute)))
+				if (!$this->oStorage->setAttributes([$mEntity], [$oAttribute]))
 				{
-					throw new \Aurora\System\Exceptions\ManagerException(Errs::Main_UnknownError);
+					throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::Main_UnknownError);
+				}
+				else
+				{
+					$bResult = true;
 				}
 			}
 		}
@@ -305,19 +365,19 @@ class Eav
 
 		return $bResult;
 	}
-	
+
 	/**
 	 * @return bool
 	 */
 	public function deleteAttribute($sType, $iEntityId, $sAttribute)
 	{
 		return $this->oStorage->deleteAttribute($sType, $iEntityId, $sAttribute);
-	}	
-	
+	}
+
 	public function resetOverridedAttributes($sType = null)
 	{
 		$iPageSize = 20;
-		
+
 		$aTypes = [];
 		if (empty($sType))
 		{
@@ -343,7 +403,7 @@ class Eav
 				while ($iPage <= $iNumPages)
 				{
 					$aEntities = $this->getEntities(
-						$sType, 
+						$sType,
 						$aAttributes,
 						abs($iPage * $iPageSize),
 						$iPageSize
@@ -357,28 +417,28 @@ class Eav
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Tests if there is connection to storage with current settings values.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function testStorageConnection()
 	{
 		return $this->oStorage->testConnection();
 	}
-	
+
 	/**
 	 * Creates tables required for module work by executing create.sql file.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function createTablesFromFile()
 	{
 		$bResult = false;
-		
+
 		try
 		{
 			$bResult = \Aurora\System\Managers\Db::getInstance()->executeSqlFile(
@@ -391,5 +451,10 @@ class Eav
 		}
 
 		return $bResult;
+	}
+
+	public function updateAttributeType($sTypeName, $sAttributeName, $sFromEntityType, $sToEntityType)
+	{
+		$this->oStorage->updateAttributeType($sTypeName, $sAttributeName, $sFromEntityType, $sToEntityType);
 	}
 }

@@ -24,6 +24,17 @@
 	}
 }
 
+.SettingsLayout .items_list .item {
+	.unified_marker {
+		border-radius: 10px;
+		background: #959595;
+		display: inline-block;
+		color: white;
+		font-size: 8pt;
+		font-weight: normal;
+		padding: 1px 6px;
+	}
+}
 .messages_panel {
 
 	.items_list {
@@ -34,6 +45,22 @@
 		.controls .separator,
 		.data .separator {
 			display: block;
+		}
+		
+		.unified_marker {
+			display: none;
+		}
+		.custom_marker,
+		.unified_messages_panel& .unified_marker {
+			background: #959595;
+			border-radius: 10px;
+			color: white;
+			display: block;
+			float: right;
+			font-size: 8pt;
+			font-weight: normal;
+			margin-top: 1px;
+			padding: 0px 6px 1px;
 		}
 
 		.size {
@@ -228,7 +255,7 @@
 	}
 	
 	.message_header {
-		background: #ffffff;
+		background: @theme-mail-message-header-background;
 		color: #4d4d4d;
 		padding-bottom: 6px;
 		position: relative;
@@ -320,6 +347,14 @@
 				position: relative;
 				top: -4px;
 				white-space: nowrap;
+
+				.to_arrow {
+					display: inline-block;
+					height: 1em;
+					line-height: 1;
+					margin: 0 0 4px;
+					vertical-align: middle;
+				}
 			}
 			
 			&.message_detail_info .message_info_line:last-child {
@@ -484,6 +519,44 @@
 			color: #929292;
 			padding-left: 5px;
 		}
+
+		.buttons {
+			display: inline-block;
+			margin-top: 7px;
+
+			.button {
+				margin-right: 5px;
+
+				&.selected_button {
+					background: #ffffff;
+					border: 1px solid #6fa8de;
+					color: #4f88be;
+					cursor: default;
+					text-shadow: none;
+
+					&.disabled {
+						color: mix(#ffffff, #000, 50%);
+
+						&:hover {
+							background: #ffffff;
+						}
+					}
+				}
+			}
+
+			&.animation .button {
+				.transition(~"opacity 200ms ease, background 200ms ease, color 200ms ease");
+			}
+
+			&.touched .button {
+				opacity: 0.4;
+
+				&:hover,
+				&.selected_button {
+					opacity: 1;
+				}
+			}
+		}
 	}
 	
 	.panels.has_attachments {
@@ -540,5 +613,33 @@
 		margin: 0;
 		vertical-align: bottom;
 		width: auto;
+	}
+}
+
+.toolbar {
+	.sort .icon:before {
+		    content: "\e913";
+	}
+	.sort .dropdown_content .item.selected {
+		background: #f9f9f9 !important;
+	}
+
+	.sort-order-icon:before {
+		speak: none;
+		font-style: normal;
+		font-weight: normal;
+		font-variant: normal;
+		text-transform: none;
+		line-height: 1;
+		font-family: 'afterlogic';
+		-webkit-font-smoothing: antialiased;
+		content: "\e66d";
+		display: inline-block;
+		font-size: 16px;
+		vertical-align: text-bottom;
+	}
+
+	.sort-order-desc-icon:before {
+		content: "\e66e";
 	}
 }

@@ -13,7 +13,6 @@ module.exports = function (oAppData) {
 		
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
 		
-		bNormalUser = App.getUserRole() === Enums.UserRole.NormalUser,
 		bAnonymUser = App.getUserRole() === Enums.UserRole.Anonymous
 	;
 
@@ -58,7 +57,7 @@ module.exports = function (oAppData) {
 		};
 	}
 	
-	if (bNormalUser)
+	if (App.isUserNormalOrTenant())
 	{
 		return {
 			start: function (ModulesManager) {

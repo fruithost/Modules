@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,7 +10,7 @@ namespace Aurora\System;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Api
  */
@@ -62,6 +62,15 @@ class Utils
 	public static function ArrayValue($aArray, $sKey, $mDefault)
 	{
 		return (isset($aArray[$sKey])) ? $aArray[$sKey] : $mDefault;
+	}
+
+	/**
+	 * @param array $aArray
+	 * @return bool
+	 */
+	public static function IsAssocArray($aArray)
+	{
+		return in_array(false, array_map('is_int', array_keys($aArray)));
 	}
 
 	/**
@@ -137,7 +146,7 @@ class Utils
 	{
 		if (strlen($sPpath) > 0)
 		{
-			return (($sPpath{0} == '/' || $sPpath{0} == '\\') || (strlen($sPpath) > 1 && self::IsWin() && $sPpath{1} == ':'));
+			return (($sPpath[0] == '/' || $sPpath[0] == '\\') || (strlen($sPpath) > 1 && self::IsWin() && $sPpath[1] == ':'));
 		}
 		return false;
 	}
@@ -255,7 +264,10 @@ class Utils
 				}
 				break;
 			case ($sFromEncoding === 'utf-8' && $sToEncoding === 'utf7-imap'):
-				$sResult = self::Utf8ToUtf7Modified($sResult);
+				if (!self::IsUtf7($sResult))
+				{
+					$sResult = self::Utf8ToUtf7Modified($sResult);
+				}
 				if (false === $sResult)
 				{
 					$sResult = $sString;
@@ -317,13 +329,13 @@ class Utils
 
 		for ($i = 0; $strlen > 0; $i++, $strlen--)
 		{
-			$char = $str{$i};
+			$char = $str[$i];
 			if ($char == '&')
 			{
 				$i++;
 				$strlen--;
 
-				$char = isset($str{$i}) ? $str{$i} : null;
+				$char = isset($str[$i]) ? $str[$i] : null;
 				if ($char === null)
 				{
 					break;
@@ -339,7 +351,7 @@ class Utils
 				$k = 10;
 				for (; $strlen > 0; $i++, $strlen--)
 				{
-					$char = $str{$i};
+					$char = $str[$i];
 
 					$b = $array[ord($char)];
 					if ((ord($char) & 0x80) || $b == -1)
@@ -383,7 +395,7 @@ class Utils
 
 				if (($ch || $k < 6) ||
 					(!$strlen || $char != '-') ||
-					($strlen > 2 && '&' === $str{$i+1} && '-' !==  $str{$i+2}))
+					($strlen > 2 && '&' === $str[$i+1] && '-' !==  $str[$i+2]))
 				{
 					return $error;
 				}
@@ -418,7 +430,7 @@ class Utils
 
 		while ($strlen)
 		{
-			$c = ord($str{$i});
+			$c = ord($str[$i]);
 			if ($c < 0x80)
 			{
 				$ch = $c;
@@ -468,7 +480,7 @@ class Utils
 
 			for ($j=0; $j < $n; $j++)
 			{
-				$o = ord($str{$i+$j});
+				$o = ord($str[$i+$j]);
 				if (($o & 0xc0) != 0x80)
 				{
 					return $error;
@@ -562,7 +574,7 @@ class Utils
 		$sPassword = self::UrlSafeBase64Decode(trim($sPassword));
 		return \MailSo\Base\Crypt::XxteaDecrypt($sPassword, Api::$sSalt);
 	}
-	
+
 	/**
 	 * @param string $sEmail
 	 * @return string
@@ -744,7 +756,7 @@ class Utils
 		$sTimeOffset = trim($sTimeOffset);
 		if (0 < strlen($sTimeOffset))
 		{
-			$sSign = $sTimeOffset{0};
+			$sSign = $sTimeOffset[0];
 			$sTimeOffset = substr($sTimeOffset, 1);
 			$nOffset = (is_numeric($sTimeOffset)) ? (int) $sTimeOffset : 0;
 
@@ -1157,7 +1169,7 @@ class Utils
 		{
 			$sResult .= substr($sChars, rand(0, $iCharLen), 1);
 		}
-		
+
 		return $sResult;
 	}
 
@@ -1322,7 +1334,7 @@ class Utils
 
 		);
         }
-        
+
         /**
 	 * @param string $sFileName
 	 * @return string
@@ -1350,7 +1362,7 @@ class Utils
 		$aMimeTypes = self::GetMimeContentTypes();
                 return array_search($sMimeContentType, $aMimeTypes);
         }
-        
+
 	/**
 	 * @param string $sLanguage
 	 * @return string
@@ -1617,7 +1629,7 @@ class Utils
 		return preg_replace('/^0000000000/', '+', preg_replace('/[^\d]+/', '',
 			preg_replace('/^[+]/', '0000000000', trim($sPhone))));
 	}
-	
+
 	/**
 	 * @param string $sSearch
 	 * @return string
@@ -1694,7 +1706,7 @@ class Utils
 					}
 				}
 			}
-			
+
 			if (is_resource($handle))
 			{
 				closedir($handle);
@@ -1707,35 +1719,45 @@ class Utils
 		  'directories' => $directories
 		);
 	}
-	
+
 	public static function SearchFiles($sPath, $sPattern)
 	{
 		$files = array();
 
 		// Create recursive dir iterator which skips dot folders
-		$oDirIterator = new \RecursiveDirectoryIterator($sPath, 
+		$oDirIterator = new \RecursiveDirectoryIterator($sPath,
 				\FilesystemIterator::SKIP_DOTS |
 				\FilesystemIterator::UNIX_PATHS
-		);		
+		);
 
 		$oIterators = new \RecursiveIteratorIterator($oDirIterator,
 				\RecursiveIteratorIterator::SELF_FIRST
 		);
-		
+
+		if ($sPattern === "*")
+		{
+			$sPattern = "\w+";
+		}
+		else
+		{
+			$sPattern = preg_quote($sPattern);
+		}
+
 		foreach($oIterators as $oIterator)
 		{
 			$sName = $oIterator->getFilename();
 			$aMatches = array();
-			$iResult = preg_match("/" . preg_quote($sPattern) . "/ui", $sName, $aMatches);
+
+			$iResult = preg_match("/" . $sPattern . "/ui", $sName, $aMatches);
 			if ($sName !== '.sabredav' && $sName !== AU_API_HELPDESK_PUBLIC_NAME && $iResult === 1)
 			{
-				$files[] = $oIterator->getPathname();		
+				$files[] = $oIterator->getPathname();
 			}
 		}
-		
+
 		return $files;
 	}
-	
+
 	public static function GetRemoteFileInfo($sUrl)
 	{
 		$aResult = array(
@@ -1752,7 +1774,7 @@ class Utils
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_NOBODY => true
 		));
-		
+
 		\curl_exec($oCurl);
 		$aInfo = \curl_getinfo($oCurl);
 
@@ -1760,13 +1782,13 @@ class Utils
 		{
 			$sContentType = '';
 			$aResult['size'] = isset($aInfo['download_content_length']) ? (int) $aInfo['download_content_length'] : 0;
-			
+
 			if (isset($aInfo['content_type']))
 			{
 				$aContentType = explode(';', $aInfo['content_type']);
 				$sContentType = isset($aContentType[0]) ? $aContentType[0] : '';
 			}
-			
+
 			$aResult['code'] = $aInfo['http_code'];
 			$aResult['content-type'] = $sContentType;
 		}
@@ -1775,7 +1797,7 @@ class Utils
 		{
 			\curl_close($oCurl);
 		}
-		
+
 		return $aResult;
 	}
 
@@ -1864,17 +1886,17 @@ class Utils
 					$oFileInfo->title = $oFileInfo->title . '.pdf';
 					break;*/
 			}
-/*			
+/*
 			if (!isset($oFileInfo->fileSize))
 			{
 				$aRemoteFileInfo = \Aurora\System\Utils::GetRemoteFileInfo($oFileInfo->downloadUrl);
 				$oFileInfo->fileSize = $aRemoteFileInfo['size'];
 			}
- * 
+ *
  */
 		}
 	}
-	
+
 	/**
 	 * @return \Aurora\Modules\StandardAuth\Classes\Account | null
 	 */
@@ -1898,7 +1920,7 @@ class Utils
 
 		return $oResult;
 	}
-	
+
 	/**
 	 * @return \CHelpdeskUser|null
 	 */
@@ -1916,7 +1938,7 @@ class Utils
 
 		return $oResult;
 	}
-	
+
 	public static function GetAppUrl()
 	{
 		$aUrlParts = parse_url($_SERVER['HTTP_REFERER']);
@@ -1925,10 +1947,10 @@ class Utils
 		$sHost = !empty($aUrlParts['host']) ? $aUrlParts['host'] : 'localhost';
 		$sPath = !empty($aUrlParts['path']) ? str_replace('index.php', '', $aUrlParts['path']) : '';
 		$sPort = !empty($aUrlParts['port']) ? ':'.$aUrlParts['port'] : '';
-		
+
 		return $sProtocol.'://'.$sHost.$sPath.$sPort;
 	}
-	
+
 	/**
 	 * @param string $sValue
 	 * @return array
@@ -1945,11 +1967,11 @@ class Utils
 
 		return $aValue;
 	}
-	
-	public static function parseIniString($sIniString) 
+
+	public static function parseIniString($sIniString)
 	{
-		$aResult = array(); 
-		foreach (explode("\n", $sIniString) as $sLine) 
+		$aResult = array();
+		foreach (explode("\n", $sIniString) as $sLine)
 		{
 			$aValues = explode("=", $sLine, 2);
 			if (isset($aValues[0], $aValues[1]))
@@ -1958,8 +1980,8 @@ class Utils
 			}
 		}
 		return $aResult;
-	}	
-	
+	}
+
 	/**
 	 * @param bool $bDownload
 	 * @param string $sContentType
@@ -1994,15 +2016,15 @@ class Utils
 
 		\header('Content-Disposition: '.($bDownload ? 'attachment' : 'inline' ).'; '.
 			\trim(\MailSo\Base\Utils::EncodeHeaderUtf8AttributeValue('filename', $sFileName)), true);
-		
+
 		\header('Accept-Ranges: none', true);
 		\header('Content-Transfer-Encoding: binary');
 	}
 
-	public static function OutputFileResource($sUserUUID, $sContentType, $sFileName, $rResource, $bThumbnail, $bDownload)
+	public static function OutputFileResource($iUserId, $sContentType, $sFileName, $rResource, $bThumbnail, $bDownload)
 	{
 		self::OutputFileHeaders($bDownload, $sContentType, $sFileName);
-		
+
 		if (!$bDownload && 'text/html' === $sContentType)
 		{
 			$sHtml = \stream_get_contents($rResource);
@@ -2026,7 +2048,7 @@ class Utils
 				$oCssToInlineStyles->setUseInlineStylesBlock(true);
 
 				echo '<html><head></head><body>'.
-					\MailSo\Base\HtmlUtils::ClearHtmlSimple($oCssToInlineStyles->convert(), true, true).
+					\MailSo\Base\HtmlUtils::ClearHtmlSimple($oCssToInlineStyles->convert(), true).
 					'</body></html>';
 			}
 		}
@@ -2034,15 +2056,15 @@ class Utils
 		{
 			if ($bThumbnail && !$bDownload)
 			{
-				Managers\Response::GetThumbResource($sUserUUID, $rResource, $sFileName, true);
+				Managers\Thumb::GetResource($iUserId, $rResource, $sFileName, true);
 			}
 			else
 			{
 				\MailSo\Base\Utils::FpassthruWithTimeLimitReset($rResource);
 			}
 		}
-	}	
-	
+	}
+
 	public static function GetClientFileResponse($sModule, $iUserId, $sFileName, $sTempName, $iSize)
 	{
 		$sMimeType = \MailSo\Base\Utils::MimeContentType($sFileName);
@@ -2078,7 +2100,7 @@ class Utils
 			'ThumbnailUrl' => $bThumb ? '?file-cache/' . $sHash .'/thumb' : '',
 		);
 	}
-	
+
 	/**
 	 * @param string $sFileName
 	 * @param string $sContentType
@@ -2099,11 +2121,11 @@ class Utils
 		}
 
 		return \MailSo\Base\Utils::ClearFileName(\MailSo\Base\Utils::Utf8Clear($sClearedFileName));
-	}	
-	
+	}
+
 	public static function getShortClassName($sClassName)
 	{
-		if ($mPos = \strrpos($sClassName, '\\')) 
+		if ($mPos = \strrpos($sClassName, '\\'))
 		{
 			return \substr($sClassName, $mPos + 1);
 		}
@@ -2112,7 +2134,39 @@ class Utils
 
 	public static function getSanitizedFilename($sFileName)
 	{
-		return preg_replace("/[\/\*\?\[^\]<>\|:]/i", "", $sFileName);		
+		return preg_replace("/[\/\*\?\[^\]<>\|:]/i", "", $sFileName);
+	}
+
+	public static function getClientIp()
+	{
+		$ipaddress = '';
+
+		if (isset($_SERVER['HTTP_CLIENT_IP']))
+		{
+			$ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+		}
+		else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+		{
+			$ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}
+		else if(isset($_SERVER['HTTP_X_FORWARDED']))
+		{
+			$ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+		}
+		else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+		{
+			$ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+		}
+		else if(isset($_SERVER['HTTP_FORWARDED']))
+		{
+			$ipaddress = $_SERVER['HTTP_FORWARDED'];
+		}
+		else if(isset($_SERVER['REMOTE_ADDR']))
+		{
+			$ipaddress = $_SERVER['REMOTE_ADDR'];
+		}
+
+		return $ipaddress;
 	}
 }
 

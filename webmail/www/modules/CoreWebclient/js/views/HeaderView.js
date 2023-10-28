@@ -3,6 +3,7 @@
 var
 	_ = require('underscore'),
 	$ = require('jquery'),
+	moment = require('moment'),
 	ko = require('knockout'),
 	
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
@@ -12,6 +13,9 @@ var
 	Routing = require('%PathToCoreWebclientModule%/js/Routing.js'),
 	Settings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
+	
+	Popups = require('%PathToCoreWebclientModule%/js/Popups.js'),
+	AlertPopup = require('%PathToCoreWebclientModule%/js/popups/AlertPopup.js'),
 	
 	CAbstractScreenView = require('%PathToCoreWebclientModule%/js/views/CAbstractScreenView.js')
 ;
@@ -49,6 +53,9 @@ function CHeaderView()
 	this.showLogout = App.getUserRole() !== window.Enums.UserRole.Anonymous && !App.isPublic();
 
 	this.sLogoUrl = Settings.LogoUrl;
+	this.sTopIframeUrl = Settings.TopIframeUrl;
+	this.iTopIframeHeightPx = Settings.TopIframeHeightPx;
+	this.bDebugMode = Settings.DebugMode;
 	
 	this.mobileDevice = Browser.mobileDevice;
 	this.bShowMobileSwitcher = Browser.mobileDevice && Settings.AllowMobile;
@@ -68,6 +75,43 @@ CHeaderView.prototype.ViewConstructorName = 'CHeaderView';
 CHeaderView.prototype.logout = function ()
 {
 	App.logout();
+};
+
+CHeaderView.prototype.debug = function ()
+{
+	if (Settings.AllowClientDebug)
+	{
+		var oParams = {
+			'Info': []
+		};
+		App.broadcastEvent('%ModuleName%::GetDebugInfo', oParams);
+
+		var aLogs = _.isArray(window.auroraLogs) ? window.auroraLogs : [];
+		if (aLogs.length > 0)
+		{
+			aLogs.unshift('<b>Logs:</b>');
+			aLogs.unshift('');
+			oParams.Info = oParams.Info.concat(aLogs);
+		}
+
+		var fComposeMessageWithData = ModulesManager.run('MailWebclient', 'getComposeMessageWithData');
+		if (_.isFunction(fComposeMessageWithData))
+		{
+			oParams.Info.unshift('Previous action: <br />');
+			oParams.Info.unshift('Minutes of hanging:');
+			oParams.Info.unshift('List displays?');
+			oParams.Info.unshift('Error displays?');
+			oParams.Info.unshift('Current folder:');
+			oParams.Info.unshift('Current account:');
+			oParams.Info.unshift('Please describe a problem:');
+			fComposeMessageWithData({
+				to: 'nadine@afterlogic.com',
+				subject: 'debug report - ' + moment().format('DD.MM, HH:mm:ss'),
+				body: oParams.Info.join('<br />'),
+				isHtml: true
+			});
+		}
+	}
 };
 
 CHeaderView.prototype.switchToFullVersion = function ()

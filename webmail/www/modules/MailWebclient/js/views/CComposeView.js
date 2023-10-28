@@ -10,7 +10,7 @@ var
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
-	
+
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	Browser = require('%PathToCoreWebclientModule%/js/Browser.js'),
 	CJua = require('%PathToCoreWebclientModule%/js/CJua.js'),
@@ -19,16 +19,16 @@ var
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 	WindowOpener = require('%PathToCoreWebclientModule%/js/WindowOpener.js'),
-	
+
 	CAbstractScreenView = require('%PathToCoreWebclientModule%/js/views/CAbstractScreenView.js'),
-	
+
 	Popups = require('%PathToCoreWebclientModule%/js/Popups.js'),
 	AlertPopup = require('%PathToCoreWebclientModule%/js/popups/AlertPopup.js'),
 	SelectFilesPopup = ModulesManager.run('FilesWebclient', 'getSelectFilesPopup'),
-	
+
 	LinksUtils = require('modules/%ModuleName%/js/utils/Links.js'),
 	SendingUtils = require('modules/%ModuleName%/js/utils/Sending.js'),
-	
+
 	AccountList = require('modules/%ModuleName%/js/AccountList.js'),
 	CoreAjax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	Ajax = require('modules/%ModuleName%/js/Ajax.js'),
@@ -36,14 +36,15 @@ var
 	MainTabExtMethods = require('modules/%ModuleName%/js/MainTabExtMethods.js'),
 	SenderSelector = require('modules/%ModuleName%/js/SenderSelector.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js'),
-	
+
 	CMessageModel = require('modules/%ModuleName%/js/models/CMessageModel.js'),
 	CAttachmentModel = require('modules/%ModuleName%/js/models/CAttachmentModel.js'),
-	
+
+	CComposeViewAutoEncrypt = require('modules/%ModuleName%/js/views/CComposeViewAutoEncrypt.js'),
 	CHtmlEditorView = require('modules/%ModuleName%/js/views/CHtmlEditorView.js'),
-	
+
 	MainTab = App.isNewTab() && window.opener && window.opener.MainTabMailMethods,
-	
+
 	$html = $('html')
 ;
 
@@ -53,11 +54,12 @@ var
 function CComposeView()
 {
 	CAbstractScreenView.call(this, '%ModuleName%');
-	
+	CComposeViewAutoEncrypt.call(this);
+
 	this.browserTitle = ko.computed(function () {
 		return AccountList.getEmail() + ' - ' + TextUtils.i18n('%MODULENAME%/HEADING_COMPOSE_BROWSER_TAB');
 	});
-	
+
 	var self = this;
 
 	this.toAddrDom = ko.observable();
@@ -123,7 +125,7 @@ function CComposeView()
 	this.senderAccountId = SenderSelector.senderAccountId;
 	this.senderList = SenderSelector.senderList;
 	this.visibleFrom = ko.computed(function () {
-		return this.senderList().length > 1;
+		return App.isNewTab() || this.senderList().length > 1 || this.senderAccountId() !== MailCache.currentAccountId();
 	}, this);
 	this.selectedSender = SenderSelector.selectedSender;
 	this.selectedFetcherOrIdentity = SenderSelector.selectedFetcherOrIdentity;
@@ -131,6 +133,7 @@ function CComposeView()
 		if (!this.oHtmlEditor.isEditing())
 		{
 			this.oHtmlEditor.clearUndoRedo();
+			this.oHtmlEditor.commit();
 		}
 	}, this);
 
@@ -203,13 +206,13 @@ function CComposeView()
 	this.subject = ko.observable('').extend({'reversible': true});
 	this.plainText = ko.observable(false);
 	this.textBody = ko.observable('');
-	this.textBody.subscribe(function () {
+	this.textBody.subscribe(function (value) {
 		this.oHtmlEditor.setText(this.textBody(), this.plainText());
 		this.oHtmlEditor.commit();
 	}, this);
 
 	this.focusedField = ko.observable();
-	this.oHtmlEditor.textFocused.subscribe(function () {
+	this.oHtmlEditor.textFocused.subscribe(function (val) {
 		if (this.oHtmlEditor.textFocused())
 		{
 			this.focusedField('text');
@@ -225,7 +228,7 @@ function CComposeView()
 
     this.templateUid = ko.observable('');
 	this.templateFolderName = ko.observable(MailCache.getTemplateFolder());
-	
+
 	this.draftUid = ko.observable('');
 	this.draftUid.subscribe(function () {
 		MailCache.editedDraftUid(this.draftUid());
@@ -311,32 +314,56 @@ function CComposeView()
 	this.composeShown = ko.computed(function () {
 		return !!this.opened && this.opened() || !!this.shown && this.shown();
 	}, this);
-	
+
 	this.toolbarControllers = ko.observableArray([]);
+	this.messageRowControllers = ko.observableArray([])
+	this.allControllers = ko.computed(function () {
+		return _.union(this.toolbarControllers(), this.messageRowControllers());
+	}, this);
 	this.disableHeadersEdit = ko.computed(function () {
 		var bDisableHeadersEdit = false;
-		
-		_.each(this.toolbarControllers(), function (oController) {
+
+		_.each(this.allControllers(), function (oController) {
 			bDisableHeadersEdit = bDisableHeadersEdit || !!oController.disableHeadersEdit && oController.disableHeadersEdit();
 		});
-		
+
 		return bDisableHeadersEdit;
+	}, this);
+	this.disableFromEdit = ko.computed(function () {
+		var bDisableFromEdit = false;
+
+		_.each(this.allControllers(), function (oController) {
+			bDisableFromEdit = bDisableFromEdit || !!oController.disableFromEdit && oController.disableFromEdit();
+		});
+
+		return bDisableFromEdit;
+	}, this);
+	this.messageSignedOrEncrypted = ko.computed(function () {
+		var bSignedOrEncrypted = false;
+
+		_.each(this.allControllers(), function (oController) {
+			if (_.isFunction(oController.pgpEncrypted) && _.isFunction(oController.pgpSecured))
+			{
+				bSignedOrEncrypted = bSignedOrEncrypted || oController.pgpEncrypted() || oController.pgpSecured();
+			}
+		});
+
+		return bSignedOrEncrypted;
 	}, this);
 	ko.computed(function () {
 		var bDisableBodyEdit = false;
-		
-		_.each(this.toolbarControllers(), function (oController) {
+
+		_.each(this.allControllers(), function (oController) {
 			bDisableBodyEdit = bDisableBodyEdit || !!oController.disableBodyEdit && oController.disableBodyEdit();
 		});
-		
 		this.oHtmlEditor.setDisableEdit(bDisableBodyEdit);
 	}, this);
-	
+
 	this.draftFolderIsAvailable = ko.computed(function () {
 		return !!MailCache.folderList().draftsFolder();
 	}, this);
 	this.disableAutosave = ko.observable(false);
-	// Autosave interval is automatically cleared when compose is not shown or message is sending/saving or 
+	// Autosave interval is automatically cleared when compose is not shown or message is sending/saving or
 	// it's disabled by compose screen or one of controllers. After changins these parameters autosave
 	// interval might be started again.
 	if (Settings.AllowAutosaveInDrafts && Settings.AutoSaveIntervalSeconds > 0)
@@ -344,12 +371,12 @@ function CComposeView()
 		this.iAutosaveInterval = -1;
 		ko.computed(function () {
 			var bAllowAutosave = this.draftFolderIsAvailable() && this.composeShown() && !this.sending() && !this.saving() && !this.disableAutosave() && !MailCache.disableComposeAutosave();
-			_.each(this.toolbarControllers(), function (oController) {
+			_.each(this.allControllers(), function (oController) {
 				bAllowAutosave = bAllowAutosave && !(!!oController.disableAutosave && oController.disableAutosave());
 			});
-			
+
 			window.clearInterval(this.iAutosaveInterval);
-			
+
 			if (bAllowAutosave)
 			{
 				this.iAutosaveInterval = window.setInterval(_.bind(this.executeSave, this, true), Settings.AutoSaveIntervalSeconds * 1000);
@@ -370,7 +397,6 @@ function CComposeView()
 	this.sPopupButtonsViewTemplate = !App.isNewTab() ? '%ModuleName%_Compose_PopupButtonsView' : '';
 
 	this.aHotkeys = [
-		{ value: 'Ctrl+Enter', action: TextUtils.i18n('%MODULENAME%/LABEL_SEND_HOTKEY'), visible: ko.observable(true) },
 		{ value: 'Ctrl+S', action: TextUtils.i18n('%MODULENAME%/LABEL_SAVE_HOTKEY'), visible: this.draftFolderIsAvailable },
 		{ value: 'Ctrl+Z', action: TextUtils.i18n('%MODULENAME%/LABEL_UNDO_HOTKEY'), visible: ko.observable(true) },
 		{ value: 'Ctrl+Y', action: TextUtils.i18n('%MODULENAME%/LABEL_REDO_HOTKEY'), visible: ko.observable(true) },
@@ -379,6 +405,11 @@ function CComposeView()
 		{ value: 'Ctrl+I', action: TextUtils.i18n('%MODULENAME%/LABEL_ITALIC_HOTKEY'), visible: ko.observable(true) },
 		{ value: 'Ctrl+U', action: TextUtils.i18n('%MODULENAME%/LABEL_UNDERLINE_HOTKEY'), visible: ko.observable(true) }
 	];
+
+	if (Settings.AllowQuickSendOnCompose)
+	{
+		this.aHotkeys.unshift({ value: 'Ctrl+Enter', action: TextUtils.i18n('%MODULENAME%/LABEL_SEND_HOTKEY'), visible: ko.observable(true) });
+	}
 
 	this.bAllowFiles = !!SelectFilesPopup;
 
@@ -399,13 +430,16 @@ function CComposeView()
 	this.allowCcBccSwitchers = ko.computed(function () {
 		return !this.disableHeadersEdit() && !this.headersCompressed();
 	}, this);
-	
+
 	this.registerOwnToolbarControllers();
-	
+
+	this.setAutoEncryptSubscribes();
+
 	App.broadcastEvent('%ModuleName%::ConstructView::after', {'Name': this.ViewConstructorName, 'View': this});
 }
 
 _.extendOwn(CComposeView.prototype, CAbstractScreenView.prototype);
+_.extendOwn(CComposeView.prototype, CComposeViewAutoEncrypt.prototype);
 
 CComposeView.prototype.ViewTemplate = App.isNewTab() ? '%ModuleName%_ComposeScreenView' : '%ModuleName%_ComposeView';
 CComposeView.prototype.ViewConstructorName = 'CComposeView';
@@ -443,10 +477,10 @@ CComposeView.prototype.initInputosaurus = function (koAddrDom, koAddr, koLockAdd
 {
 	if (koAddrDom() && $(koAddrDom()).length > 0)
 	{
-		$(koAddrDom()).inputosaurus({
+		var oOptions = {
 			width: 'auto',
 			parseOnBlur: true,
-			autoCompleteSource: ModulesManager.run('ContactsWebclient', 'getSuggestionsAutocompleteCallback', ['all']) || function () {},
+			autoCompleteSource: ModulesManager.run('ContactsWebclient', 'getSuggestionsAutocompleteCallback', ['all', '', /*bWithGroups*/true]) || function () {},
 			autoCompleteDeleteItem: ModulesManager.run('ContactsWebclient', 'getSuggestionsAutocompleteDeleteHandler') || function () {},
 			autoCompleteAppendTo: $(koAddrDom()).closest('td'),
 			change : _.bind(function (ev) {
@@ -464,7 +498,8 @@ CComposeView.prototype.initInputosaurus = function (koAddrDom, koAddr, koLockAdd
 			}, this),
 			focus: _.bind(this.focusedField, this, sFocusedField),
 			mobileDevice: Browser.mobileDevice
-		});
+		};
+		$(koAddrDom()).inputosaurus(_.extendOwn(oOptions, this.getInputosaurusMethods()));
 	}
 };
 
@@ -510,7 +545,7 @@ CComposeView.prototype.hotKeysBind = function ()
 					this.saveCommand();
 				}
 			}
-			else if (bComputed && nKey === Enums.Key.Enter && this.toAddr() !== '')
+			else if (Settings.AllowQuickSendOnCompose && bComputed && nKey === Enums.Key.Enter && this.toAddr() !== '')
 			{
 				this.sendCommand();
 			}
@@ -521,10 +556,14 @@ CComposeView.prototype.hotKeysBind = function ()
 
 CComposeView.prototype.getMessageOnRoute = function ()
 {
-	var oParams = LinksUtils.parseCompose(this.routeParams());
-	if (this.routeType() !== '' && oParams.MessageFolderName && oParams.MessageUid)
+	var
+		oParams = LinksUtils.parseCompose(this.routeParams()),
+		oAccount = AccountList.getAccountByHash(oParams.AccountHash)
+	;
+
+	if (oAccount && this.routeType() !== '' && oParams.MessageFolderName && oParams.MessageUid)
 	{
-		MailCache.getMessage(oParams.MessageFolderName, oParams.MessageUid, this.onMessageResponse, this);
+		MailCache.getMessage(oAccount.id(), oParams.MessageFolderName, oParams.MessageUid, this.onMessageResponse, this);
 	}
 };
 
@@ -534,16 +573,20 @@ CComposeView.prototype.getMessageOnRoute = function ()
  */
 CComposeView.prototype.onShow = function ()
 {
+	// onShow is called before onRoute so reset is called here before anything else
+	this.reset();
+
 	var sFocusedField = this.focusedField();
 
 	$(this.splitterDom()).trigger('resize');
 	$(this.bottomPanel()).trigger('resize');
 
-	if (!this.oHtmlEditor.isInitialized())
-	{
+//	if (!this.oHtmlEditor.isInitialized())
+//	{
+		// Crea $container must be recreated because compose popup is destroyed after it is closed
 		this.oHtmlEditor.init(this.textBody(), this.plainText(), '7');
 		this.oHtmlEditor.commit();
-	}
+//	}
 
 	this.initUploader();
 
@@ -557,14 +600,15 @@ CComposeView.prototype.onShow = function ()
 	{
 		this.oJua.setDragAndDropEnabledStatus(true);
 	}
-	
+
 	this.visibleSaveTemplateControl(MailCache.getCurrentTemplateFolders().length > 0);
 };
 
 CComposeView.prototype.reset = function ()
 {
 	this.plainText(false);
-	
+	this.textBody('');
+
 	this.bUploadStatus = false;
 	window.clearTimeout(this.iUploadAttachmentsTimer);
 	this.messageUploadAttachmentsStarted(false);
@@ -576,7 +620,7 @@ CComposeView.prototype.reset = function ()
 	this.setDataFromMessage(new CMessageModel());
 
 	this.isDraftsCleared(false);
-	
+
 	this.ignoreHasUnsavedChanges(false);
 };
 
@@ -587,13 +631,16 @@ CComposeView.prototype.reset = function ()
  */
 CComposeView.prototype.onRoute = function (aParams)
 {
+	this.setDataFromMessage(new CMessageModel()); // clear before filling up
+
 	var oParams = LinksUtils.parseCompose(aParams);
-	
-	// should be the first action to set right account id in new tab
-	AccountList.changeCurrentAccountByHash(oParams.AccountHash);
-	
-	this.reset();
-	
+
+	if (App.isNewTab())
+	{
+		// should be the first action to set right account id in new tab
+		AccountList.changeCurrentAccountByHash(oParams.AccountHash);
+	}
+
 	this.routeType(oParams.RouteType);
 	switch (this.routeType())
 	{
@@ -610,6 +657,60 @@ CComposeView.prototype.onRoute = function (aParams)
 			{
 				this.getMessageOnRoute();
 			}
+			break;
+		case 'data':
+			var oData = oParams.Object;
+
+			if (oData)
+			{
+				if (oData.to)
+				{
+					this.setRecipient(this.toAddr, oData.to);
+				}
+				if (oData.subject)
+				{
+					this.subject(oData.subject);
+				}
+				if (!oData.isHtml)
+				{
+					this.plainText(true);
+				}
+				if (oData.selectedSenderId)
+				{
+					this.selectedSender(oData.selectedSenderId);
+				}
+				var sBody = '<div></div>';
+				if (oData.body)
+				{
+					sBody = oData.isHtml ? '<div>' + oData.body + '</div>' : oData.body;
+					this.textBody(sBody);
+				}
+				if (oData.replyToMessage)
+				{
+					var oReplyData = SendingUtils.getReplyDataFromMessage(oData.replyToMessage, Enums.ReplyType.Reply, App.currentAccountId(), null, true);
+
+					this.plainText(false);
+					this.draftInfo(oReplyData.DraftInfo);
+					this.draftUid(oReplyData.DraftUid);
+					this.setRecipient(this.toAddr, oReplyData.To);
+					this.setRecipient(this.ccAddr, oReplyData.Cc);
+					this.setRecipient(this.bccAddr, oReplyData.Bcc);
+					this.subject(oReplyData.Subject);
+					this.textBody(oReplyData.Text);
+					this.attachments(oReplyData.Attachments);
+					this.inReplyTo(oReplyData.InReplyTo);
+					this.references(oReplyData.References);
+
+					this.requestAttachmentsTempName();
+				}
+				if (oData.attachments)
+				{
+					this.addAttachments(oData.attachments);
+				}
+				this.triggerToolbarControllersAfterPopulatingMessage(true, !oData.isHtml, sBody);
+				this.commit(true);
+			}
+
 			break;
 		default:
 			this.routeParams(aParams);
@@ -751,6 +852,9 @@ CComposeView.prototype.onHide = function ()
 	{
 		this.oJua.setDragAndDropEnabledStatus(false);
 	}
+
+	this.recipientsInfo({});
+	this.recipientsInfo.valueHasMutated();
 };
 
 /**
@@ -809,7 +913,7 @@ CComposeView.prototype.onMessageResponse = function (oMessage)
 				this.inReplyTo(oReplyData.InReplyTo);
 				this.references(oReplyData.References);
 				break;
-			
+
 			case Enums.ReplyType.Forward:
 				SenderSelector.setFetcherOrIdentityByReplyMessage(oMessage);
 
@@ -838,7 +942,14 @@ CComposeView.prototype.onMessageResponse = function (oMessage)
 				}
 				else
 				{
-	                this.draftUid(oMessage.uid());
+					var
+						oFolderList = MailCache.oFolderListItems[oMessage.accountId()],
+						sDraftFolder = oFolderList ? oFolderList.draftsFolderFullName() : ''
+					;
+					if (sDraftFolder === oMessage.folder())
+					{
+						this.draftUid(oMessage.uid());
+					}
 				}
 				this.setDataFromMessage(oMessage);
 				break;
@@ -848,7 +959,7 @@ CComposeView.prototype.onMessageResponse = function (oMessage)
 		{
 			this.requestAttachmentsTempName();
 		}
-		
+
 		this.routeType('');
 	}
 
@@ -859,6 +970,30 @@ CComposeView.prototype.onMessageResponse = function (oMessage)
 	_.defer(_.bind(function () {
 		this.focusAfterFilling();
 	}, this));
+
+	if (oMessage)
+	{
+		var oParams = {
+			AccountId: oMessage.accountId(),
+			FolderFullName: oMessage.folder(),
+			MessageUid: oMessage.uid(),
+			Compose: this
+		};
+		if (this.allAttachmentsUploaded())
+		{
+			App.broadcastEvent('%ModuleName%::ComposeMessageLoaded', oParams);
+		}
+		else
+		{
+			var oSubscription = this.allAttachmentsUploaded.subscribe(function () {
+				if (this.allAttachmentsUploaded())
+				{
+					App.broadcastEvent('%ModuleName%::ComposeMessageLoaded', oParams);
+				}
+				oSubscription.dispose();
+			}, this);
+		}
+	}
 };
 
 /**
@@ -893,18 +1028,24 @@ CComposeView.prototype.setDataFromMessage = function (oMessage)
 	this.textBody(sTextBody);
 	this.selectedImportance(oMessage.importance());
 	this.sendReadingConfirmation(oMessage.readingConfirmationAddressee() !== '');
-	
-	_.each(this.toolbarControllers(), function (oController) {
+
+	var bDraft = !!oMessage.folderObject() && (oMessage.folderObject().type() === Enums.FolderTypes.Drafts);
+	this.triggerToolbarControllersAfterPopulatingMessage(bDraft, oMessage.isPlain(), oMessage.textRaw(), oMessage.sensitivity());
+};
+
+CComposeView.prototype.triggerToolbarControllersAfterPopulatingMessage = function (bDraft, bPlain, sRawText, iSensitivity)
+{
+	_.each(this.allControllers(), function (oController) {
 		if (_.isFunction(oController.doAfterPopulatingMessage))
 		{
 			oController.doAfterPopulatingMessage({
-				bDraft: !!oMessage.folderObject() && (oMessage.folderObject().type() === Enums.FolderTypes.Drafts),
-				bPlain: oMessage.isPlain(),
-				sRawText: oMessage.textRaw(),
-				iSensitivity: oMessage.sensitivity()
+				bDraft: bDraft,
+				bPlain: bPlain,
+				sRawText: sRawText,
+				iSensitivity: iSensitivity
 			});
 		}
-	});
+	}.bind(this));
 };
 
 /**
@@ -940,7 +1081,7 @@ CComposeView.prototype.onDataAsAttachmentUpload = function (oResponse, oRequest)
 CComposeView.prototype.addAttachments = function (aFiles)
 {
 	_.each(aFiles, _.bind(function (oFileData) {
-		var oAttach = new CAttachmentModel();
+		var oAttach = new CAttachmentModel(this.senderAccountId());
 		oAttach.parseFromUpload(oFileData);
 		this.attachments.push(oAttach);
 	}, this));
@@ -957,7 +1098,7 @@ CComposeView.prototype.addFilesAsAttachment = function (aFiles)
 	;
 
 	_.each(aFiles, function (oFile) {
-		oAttach = new CAttachmentModel();
+		oAttach = new CAttachmentModel(this.senderAccountId());
 		oAttach.fileName(oFile.fileName());
 		oAttach.hash(oFile.hash());
 		oAttach.thumbUrlInQueue(oFile.thumbUrlInQueue());
@@ -987,7 +1128,7 @@ CComposeView.prototype.onFilesUpload = function (oResponse, oRequest)
 		aResult = oResponse.Result,
 		aHashes = oParameters.Hashes
 	;
-	
+
 	this.messageUploadAttachmentsStarted(false);
 	if (_.isArray(aResult))
 	{
@@ -1024,25 +1165,26 @@ CComposeView.prototype.onFilesUpload = function (oResponse, oRequest)
 CComposeView.prototype.addMessageAsAttachment = function (oMessage)
 {
 	var
-		oAttach = new CAttachmentModel(),
+		oAttach = new CAttachmentModel(oMessage.accountId()),
 		oParameters = null
 	;
-	
+
 	if (oMessage)
 	{
 		oAttach.fileName(oMessage.subject() + '.eml');
 		oAttach.uploadStarted(true);
-		
+
 		this.attachments.push(oAttach);
-		
+
 		oParameters = {
+			'AccountID': oMessage.accountId(),
 			'MessageFolder': oMessage.folder(),
 			'MessageUid': oMessage.uid(),
 			'FileName': oAttach.fileName()
 		};
-		
+
 		this.messageUploadAttachmentsStarted(true);
-		
+
 		Ajax.send('SaveMessageAsTempFile', oParameters, this.onSaveMessageAsTempFile, this);
 	}
 };
@@ -1058,15 +1200,15 @@ CComposeView.prototype.onSaveMessageAsTempFile = function (oResponse, oRequest)
 		sFileName = oRequest.Parameters.FileName,
 		oAttach = null
 	;
-	
+
 	this.messageUploadAttachmentsStarted(false);
-	
+
 	if (oResult)
 	{
 		oAttach = _.find(this.attachments(), function (oAttach) {
 			return oAttach.fileName() === sFileName && oAttach.uploadStarted();
 		});
-		
+
 		if (oAttach)
 		{
 			oAttach.parseFromUpload(oResult, oRequest.Parameters.MessageFolder, oRequest.Parameters.MessageUid);
@@ -1077,7 +1219,7 @@ CComposeView.prototype.onSaveMessageAsTempFile = function (oResponse, oRequest)
 		oAttach = _.find(this.attachments(), function (oAttach) {
 			return oAttach.fileName() === sFileName && oAttach.uploadStarted();
 		});
-		
+
 		if (oAttach)
 		{
 			oAttach.errorFromUpload();
@@ -1136,7 +1278,7 @@ CComposeView.prototype.requestAttachmentsTempName = function ()
 	if (aHash.length > 0)
 	{
 		this.messageUploadAttachmentsStarted(true);
-		Ajax.send('SaveAttachmentsAsTempFiles', { 'Attachments': aHash }, this.onMessageUploadAttachmentsResponse, this);
+		Ajax.send('SaveAttachmentsAsTempFiles', { 'AccountID': this.senderAccountId(), 'Attachments': aHash }, this.onMessageUploadAttachmentsResponse, this);
 	}
 };
 
@@ -1152,7 +1294,7 @@ CComposeView.prototype.onMessageUploadAttachmentsResponse = function (oResponse,
 
 	if (oResponse.Result)
 	{
-		_.each(oResponse.Result, _.bind(this.setAttachTepmNameByHash, this));
+		_.each(oResponse.Result, _.bind(this.setAttachTempNameByHash, this));
 	}
 	else
 	{
@@ -1160,7 +1302,7 @@ CComposeView.prototype.onMessageUploadAttachmentsResponse = function (oResponse,
 			var oAttachment = _.find(this.attachments(), function (oAttach) {
 				return oAttach.hash() === sHash;
 			});
-			
+
 			if (oAttachment)
 			{
 				oAttachment.errorFromUpload();
@@ -1174,7 +1316,7 @@ CComposeView.prototype.onMessageUploadAttachmentsResponse = function (oResponse,
  * @param {string} sHash
  * @param {string} sTempName
  */
-CComposeView.prototype.setAttachTepmNameByHash = function (sHash, sTempName)
+CComposeView.prototype.setAttachTempNameByHash = function (sHash, sTempName)
 {
 	_.each(this.attachments(), function (oAttach) {
 		if (oAttach.hash() === sHash)
@@ -1201,7 +1343,7 @@ CComposeView.prototype.setMessageDataInNewTab = function (oParameters)
 	this.setRecipient(this.bccAddr, oParameters.bccAddr);
 	this.subject(oParameters.subject);
 	this.attachments(_.map(oParameters.attachments, function (oRawAttach) {
-		var oAttach = new CAttachmentModel();
+		var oAttach = new CAttachmentModel(oParameters.senderAccountId);
 		oAttach.parse(oRawAttach);
 		return oAttach;
 	}, this));
@@ -1211,13 +1353,13 @@ CComposeView.prototype.setMessageDataInNewTab = function (oParameters)
 	this.sendReadingConfirmation(oParameters.sendReadingConfirmation);
 	this.changedInPreviousWindow(oParameters.changedInPreviousWindow);
 
-	_.each(this.toolbarControllers(), function (oController) {
+	_.each(this.allControllers(), function (oController) {
 		if (_.isFunction(oController.doAfterApplyingMainTabParameters))
 		{
 			oController.doAfterApplyingMainTabParameters(oParameters);
 		}
 	});
-	
+
 	SenderSelector.changeSenderAccountId(oParameters.senderAccountId, oParameters.selectedFetcherOrIdentity);
 	this.focusedField(oParameters.focusedField);
 };
@@ -1233,7 +1375,7 @@ CComposeView.prototype.commit = function (bOnlyCurrentWindow)
 	this.subject.commit();
 	this.selectedImportance.commit();
 	this.sendReadingConfirmation.commit();
-	_.each(this.toolbarControllers(), function (oController) {
+	_.each(this.allControllers(), function (oController) {
 		if (_.isFunction(oController.commit))
 		{
 			oController.commit();
@@ -1260,16 +1402,16 @@ CComposeView.prototype.isChanged = function ()
 		bHtmlChanged = this.oHtmlEditor.textChanged(),
 		bAttachmentsChanged = this.attachmentsChanged(),
 		bChangedInPreviousWindow = this.changedInPreviousWindow()
-	;
-	
-	_.each(this.toolbarControllers(), function (oController) {
+    ;
+
+	_.each(this.allControllers(), function (oController) {
 		if (_.isFunction(oController.isChanged))
 		{
 			bControllersChanged = bControllersChanged || oController.isChanged();
 		}
 	});
-	
-	return bToAddrChanged || bCcAddrChanged || bBccAddrChanged || bSubjectChanged || 
+
+	return bToAddrChanged || bCcAddrChanged || bBccAddrChanged || bSubjectChanged ||
 			bImportanceChanged || bReadConfChanged || bControllersChanged || bHtmlChanged ||
 			bAttachmentsChanged || bChangedInPreviousWindow;
 };
@@ -1301,8 +1443,7 @@ CComposeView.prototype.onFileUploadSelect = function (sFileUid, oFileData)
 	{
 		return false;
 	}
-	
-	oAttach = new CAttachmentModel();
+	oAttach = new CAttachmentModel(this.senderAccountId());
 	oAttach.onUploadSelect(sFileUid, oFileData);
 	this.attachments.push(oAttach);
 
@@ -1392,7 +1533,8 @@ CComposeView.prototype.onFileRemove = function (sFileUid)
  */
 CComposeView.prototype.initUploader = function ()
 {
-	if (this.composeShown() && this.composeUploaderButton() && this.oJua === null)
+	// this.oJua must be re-initialized because compose popup is destroyed after it is closed
+	if (this.composeShown() && this.composeUploaderButton())
 	{
 		this.oJua = new CJua({
 			'action': '?/Api/',
@@ -1425,7 +1567,7 @@ CComposeView.prototype.initUploader = function ()
 			.on('onStart', _.bind(this.onFileUploadStart, this))
 			.on('onComplete', _.bind(this.onFileUploadComplete, this))
 		;
-		
+
 		this.allowDragNDrop(this.oJua.isDragAndDropSupported());
 	}
 };
@@ -1447,8 +1589,9 @@ CComposeView.prototype.getSendSaveParameters = function (bRemoveSignatureAnchor,
 
 	oParameters = {
 		'AccountID': this.senderAccountId(),
+		'IdentityID': this.selectedFetcherOrIdentity() && this.selectedFetcherOrIdentity().IDENTITY ? this.selectedFetcherOrIdentity().id() : '',
+		'AliasID': this.selectedFetcherOrIdentity() && this.selectedFetcherOrIdentity().ALIAS ? this.selectedFetcherOrIdentity().id() : '',
 		'FetcherID': this.selectedFetcherOrIdentity() && this.selectedFetcherOrIdentity().FETCHER ? this.selectedFetcherOrIdentity().id() : '',
-		'IdentityID': this.selectedFetcherOrIdentity() && !this.selectedFetcherOrIdentity().FETCHER ? this.selectedFetcherOrIdentity().id() : '',
 		'DraftInfo': this.draftInfo(),
 		'DraftUid': this.draftUid(),
 		'To': this.toAddr(),
@@ -1463,20 +1606,20 @@ CComposeView.prototype.getSendSaveParameters = function (bRemoveSignatureAnchor,
 		'InReplyTo': this.inReplyTo(),
 		'References': this.references()
 	};
-	
-	_.each(this.toolbarControllers(), function (oController) {
+
+	_.each(this.allControllers(), function (oController) {
 		if (_.isFunction(oController.doAfterPreparingSendMessageParameters))
 		{
 			oController.doAfterPreparingSendMessageParameters(oParameters);
 		}
 	});
-	
+
 	if (this.templateFolderName() !== '' && bSaveTemplate)
 	{
 		oParameters.DraftFolder = this.templateFolderName();
 		oParameters.DraftUid = this.templateUid();
 	}
-	
+
 	return oParameters;
 };
 
@@ -1496,20 +1639,20 @@ CComposeView.prototype.onSendOrSaveMessageResponse = function (oResponse, oReque
 	switch (oResData.Method)
 	{
 		case 'SaveMessage':
-            if (oResData.Result && oRequest.DraftUid === this.templateUid() && oRequest.DraftFolder === this.templateFolderName())
+            if (oResData.Result && oParameters.DraftUid === this.templateUid() && oParameters.DraftFolder === this.templateFolderName())
             {
 				this.templateUid(Types.pString(oResData.NewUid));
-                if (this instanceof CComposeView)// it is screen, not popup
+                if (this.composeShown() && this instanceof CComposeView)// it is screen, not popup
                 {
-					Routing.replaceHashDirectly(LinksUtils.getComposeFromMessage('drafts', oParameters.DraftFolder, this.templateUid()));
+					Routing.replaceHashDirectly(LinksUtils.getComposeFromMessage('drafts', MailCache.currentAccountId(), oParameters.DraftFolder, this.templateUid()));
                 }
             }
 			else if (oResData.Result && oParameters.DraftUid === this.draftUid())
 			{
 				this.draftUid(Types.pString(oResData.NewUid));
-				if (this instanceof CComposeView)// it is screen, not popup
+				if (this.composeShown() && this instanceof CComposeView)// it is screen, not popup
 				{
-					Routing.replaceHashDirectly(LinksUtils.getComposeFromMessage('drafts', oParameters.DraftFolder, this.draftUid()));
+					Routing.replaceHashDirectly(LinksUtils.getComposeFromMessage('drafts', MailCache.currentAccountId(), oParameters.DraftFolder, this.draftUid()));
 				}
 			}
 			this.saving(false);
@@ -1566,22 +1709,26 @@ CComposeView.prototype.executeSend = function (mParam)
 		fContinueSending = _.bind(function () {
 			this.sending(true);
 			this.requiresPostponedSending(!this.allowStartSending());
-			
+
 			SendingUtils.send('SendMessage', this.getSendSaveParameters(true), true, this.onSendOrSaveMessageResponse, this, this.requiresPostponedSending());
-			
+
 			this.backToListOnSendOrSave(true);
 		}, this)
 	;
 
-	if (this.isEnableSending() && this.verifyDataForSending())
+	if (this.autoEncryptSignMessage())
 	{
-		_.each(this.toolbarControllers(), function (oController) {
+		this.encryptSignAndSend();
+	}
+	else if (this.isEnableSending() && this.verifyDataForSending())
+	{
+		_.each(this.allControllers(), function (oController) {
 			if (_.isFunction(oController.doBeforeSend))
 			{
 				bCancelSend = bCancelSend || oController.doBeforeSend(fContinueSending);
 			}
 		});
-		
+
 		if (!bCancelSend)
 		{
 			fContinueSending();
@@ -1632,7 +1779,7 @@ CComposeView.prototype.executeSave = function (bAutosave, bWaitResponse, bSaveTe
 		{
 			if (!bAutosave)
 			{
-				_.each(this.toolbarControllers(), function (oController) {
+				_.each(this.allControllers(), function (oController) {
 					if (_.isFunction(oController.doBeforeSave))
 					{
 						bCancelSaving = bCancelSaving || oController.doBeforeSave(fSave);
@@ -1728,14 +1875,14 @@ CComposeView.prototype.getMessageDataForNewTab = function ()
 		changedInPreviousWindow: this.isChanged(),
 		focusedField: this.focusedField()
 	};
-	
-	_.each(this.toolbarControllers(), function (oController) {
+
+	_.each(this.allControllers(), function (oController) {
 		if (_.isFunction(oController.doAfterPreparingMainTabParameters))
 		{
 			oController.doAfterPreparingMainTabParameters(oParameters);
 		}
 	});
-	
+
 	return oParameters;
 };
 
@@ -1753,12 +1900,12 @@ CComposeView.prototype.openInNewWindow = function ()
 
 	if (this.draftUid().length > 0 && !this.isChanged())
 	{
-		sHash = Routing.buildHashFromArray(LinksUtils.getComposeFromMessage('drafts', MailCache.folderList().draftsFolderFullName(), this.draftUid(), true));
+		sHash = Routing.buildHashFromArray(LinksUtils.getComposeFromMessage('drafts', MailCache.currentAccountId(), MailCache.folderList().draftsFolderFullName(), this.draftUid(), true));
 		oWin = WindowOpener.openTab('?message-newtab' + sHash);
 	}
     else if (this.templateUid().length > 0 && !this.isChanged())
     {
-		sHash = Routing.buildHashFromArray(LinksUtils.getComposeFromMessage('drafts', this.templateFolderName(), this.templateUid(), true));
+		sHash = Routing.buildHashFromArray(LinksUtils.getComposeFromMessage('drafts', MailCache.currentAccountId(), this.templateFolderName(), this.templateUid(), true));
 		oWin = WindowOpener.openTab('?message-newtab' + sHash);
     }
 	else if (!this.isChanged())
@@ -1807,7 +1954,12 @@ CComposeView.prototype.registerOwnToolbarControllers = function ()
 		ViewTemplate: '%ModuleName%_Compose_SendButtonView',
 		sId: 'send',
 		bAllowMobile: true,
-		sendCommand: this.sendCommand
+		sendCommand: this.sendCommand,
+		toolbarControllers: ko.computed(function () {
+			return _.filter(this.toolbarControllers(), function (oController) {
+				return oController.bSendButton;
+			})
+		}, this)
 	});
 	this.registerToolbarController({
 		ViewTemplate: '%ModuleName%_Compose_SaveButtonView',
@@ -1844,14 +1996,28 @@ CComposeView.prototype.registerToolbarController = function (oController)
 		bAllowRegister = App.isMobile() ? oController.bAllowMobile : !oController.bOnlyMobile,
 		iLastIndex = Settings.ComposeToolbarOrder.length
 	;
-	
+
 	if (bAllowRegister)
 	{
+		oController.bSendButton = !!oController.bSendButton;
 		this.toolbarControllers.push(oController);
 		this.toolbarControllers(_.sortBy(this.toolbarControllers(), function (oContr) {
 			var iIndex = _.indexOf(Settings.ComposeToolbarOrder, oContr.sId);
 			return iIndex !== -1 ? iIndex : iLastIndex;
 		}));
+		if (_.isFunction(oController.assignComposeExtInterface))
+		{
+			oController.assignComposeExtInterface(this.getExtInterface());
+		}
+	}
+};
+
+CComposeView.prototype.registerMessageRowController = function (oController)
+{
+	var bAllowRegister = App.isMobile() ? oController.bAllowMobile : !oController.bOnlyMobile;
+	if (bAllowRegister)
+	{
+		this.messageRowControllers.push(oController);
 		if (_.isFunction(oController.assignComposeExtInterface))
 		{
 			oController.assignComposeExtInterface(this.getExtInterface());
@@ -1872,13 +2038,14 @@ CComposeView.prototype.getExtInterface = function ()
 			return this.notInlineAttachments().length > 0;
 		}, this),
 		getPlainText: _.bind(this.oHtmlEditor.getPlainText, this.oHtmlEditor),
+		koTextChange: this.oHtmlEditor.textChanged,
 		getFromEmail: _.bind(function () {
-			return AccountList.getEmail(this.senderAccountId());
+			return this.selectedFetcherOrIdentity() ? this.selectedFetcherOrIdentity().email() : AccountList.getEmail();
 		}, this),
 		getRecipientEmails: _.bind(function () {
 			return this.recipientEmails();
 		}, this),
-		
+		getSelectedSender: _.bind(this.selectedSender, this),
 		saveSilently: _.bind(this.executeSave, this, true),
 		setPlainTextMode: _.bind(this.plainText, this, true),
 		setPlainText: _.bind(function (sText) {
@@ -1888,7 +2055,52 @@ CComposeView.prototype.getExtInterface = function ()
 		setHtmlText: _.bind(function (sHtml) {
 			this.textBody(sHtml);
 		}, this),
-		undoHtml: _.bind(this.oHtmlEditor.undoAndClearRedo, this.oHtmlEditor)
+		undoHtml: _.bind(this.oHtmlEditor.undoAndClearRedo, this.oHtmlEditor),
+		getSubject: _.bind(function () {
+			return this.subject();
+		}, this),
+		koSubject: this.subject,
+		getAutoEncryptSignMessage: function () {
+			return this.autoEncryptSignMessage();
+		}.bind(this),
+		getRecipientsEmpty: function () {
+			return this.toAddr().length === 0 && this.ccAddr().length === 0 && this.bccAddr().length === 0;
+		}.bind(this),
+		getSendSaveParameters: function () {
+			return this.getSendSaveParameters();
+		}.bind(this),
+		isEnableSending: function () {
+			return this.isEnableSending();
+		}.bind(this),
+		isEnableSaving: function () {
+			return this.isEnableSaving();
+		}.bind(this),
+		getDraftFolderFullName: function (iAccountID) {
+			var oFolderList = MailCache.oFolderListItems[iAccountID];
+			return oFolderList ? oFolderList.draftsFolderFullName() : '';
+		},
+		koAllAttachmentsUploaded: this.allAttachmentsUploaded,
+		clearFolderCache: function (iAccountId, sDraftFolder) {
+			if (MainTab)
+			{
+				MainTab.removeMessagesFromCacheForFolder(iAccountId, sDraftFolder);
+			}
+			else
+			{
+				MailCache.removeMessagesFromCacheForFolder(iAccountId, sDraftFolder);
+			}
+		},
+		commitAndClose: function () {
+			this.commit();
+			if (_.isFunction(this.closePopup))
+			{
+				this.closePopup();
+			}
+			else
+			{
+				this.executeBackToList();
+			}
+		}.bind(this)
 	};
 };
 

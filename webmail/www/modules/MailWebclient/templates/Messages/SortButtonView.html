@@ -1,0 +1,17 @@
+<span class="item sort" data-bind="dropdown: {control: false},
+		customTooltip: '%MODULENAME%/ACTION_SORT_BY', visible: oMessageList.bVisibleSortByTool">
+	<span class="icon"></span>
+	<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_SORT_BY'}"></span>
+	<span class="icon arrow"></span>
+	<span class="dropdown">
+		<span class="dropdown_helper">
+			<span class="dropdown_arrow"><span></span></span>
+			<span class="dropdown_content" data-bind="foreach: oMessageList.aSortList">
+				<span class="item" data-bind="click: function () { $parent.oMessageList.executeSort(sSortBy); }, css: {'selected': selected}">
+					<span data-bind="text: sText"></span>
+					<span class="sort-order-icon" data-bind="visible: selected(), css: {'sort-order-desc-icon': sortOrder() === Enums.SortOrder.Desc}"></span>
+				</span>
+			</span>
+		</span>
+	</span>
+</span>

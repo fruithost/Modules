@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,15 +10,15 @@ namespace Aurora\System\Utils;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  */
 class Ldap
 {
 	/**
-	 * @var resource 
+	 * @var resource
 	 */
 	private $rLink;
-	
+
 	/**
 	 * @var resource
 	 */
@@ -52,7 +52,7 @@ class Ldap
 		{
 			$aQuotedMetaChars[$iKey] = '\\'.str_pad(dechex(ord($sValue)), 2, '0');
 		}
-		
+
 		return str_replace($aMetaChars,$aQuotedMetaChars, $sStr);
 	}
 
@@ -94,14 +94,13 @@ class Ldap
 		if (!is_resource($this->rLink))
 		{
 			\Aurora\System\Api::Log('LDAP: connect to '.$sHost.':'.$iPort);
-			
+
 			$rLink = ldap_connect($sHost, $iPort);
 			if ($rLink)
 			{
 				@ldap_set_option($rLink, LDAP_OPT_PROTOCOL_VERSION, 3);
 				@ldap_set_option($rLink, LDAP_OPT_REFERRALS, 0);
-				@ldap_set_option($rLink, LDAP_SCOPE_SUBTREE, 0);
-				
+
 				\Aurora\System\Api::Log('LDAP: bind = "'.$sBindDb.'" / "'.$sBindPassword.'"');
 				if (0 < strlen($sBindDb) && 0 < strlen($sBindPassword) ?
 					!@ldap_bind($rLink, $sBindDb, $sBindPassword) : !@ldap_bind($rLink)
@@ -255,7 +254,7 @@ class Ldap
 			{
 				$sModifyDn = $sModifyDn.','.$this->sSearchDN;
 			}
-			
+
 			\Aurora\System\Api::Log('ldap_modify = '.$sModifyDn);
 			\Aurora\System\Api::LogObject($aModifyEntry);
 
@@ -265,14 +264,14 @@ class Ldap
 
 		return $bResult;
 	}
-	
+
 	/**
 	 * @return int
 	 */
 	public function ResultCount()
 	{
 		$iResult = 0;
-		
+
 		$iCount = ldap_count_entries($this->rLink, $this->rSearch);
 		$this->validateLdapErrorOnFalse($iCount);
 		if (false !== $iCount)
@@ -333,18 +332,19 @@ class Ldap
 		}
 
 		$aList = array();
-		for ($iCurrent = 0, $rEntry = ldap_first_entry($this->rLink, $this->rSearch);
-			$iCurrent < $iEnd && is_resource($rEntry);
-			$iCurrent++, $rEntry = ldap_next_entry($this->rLink, $rEntry)
-		)
+		$iCurrent = 0;
+		$rEntry = ldap_first_entry($this->rLink, $this->rSearch);
+		do
 		{
 			if ($iCurrent >= $iStart)
 			{
 				array_push($aList, ldap_get_attributes($this->rLink, $rEntry));
 			}
+			$rEntry = ldap_next_entry($this->rLink, $rEntry);
+			$iCurrent++;
 		}
+		while ($iCurrent < $iEnd && is_resource($rEntry));
 
 		return $bAsc ? $aList : array_reverse($aList);
 	}
 }
-

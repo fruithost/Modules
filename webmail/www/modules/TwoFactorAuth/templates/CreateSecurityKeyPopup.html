@@ -1,0 +1,45 @@
+<div class="popup" style="display: none;">
+	<div class="mask"></div>
+	<div class="popup_panel">
+		<div class="fields">
+			<div class="fieldset">
+				<h1 data-bind="i18n: {'key': '%MODULENAME%/HEADING_CREATE_SECURITY_KEY'}"></h1>
+				<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/HINT_CREATE_SECURITY_KEY'}, visible: securityKeyInProgress"></div>
+				<div class="block_security_key_inprogress" data-bind="visible: securityKeyInProgress"></div>
+				<h3 data-bind="i18n: {'key': '%MODULENAME%/HEADING_CREATE_SECURITY_KEY_CANCELED'}, visible: securityKeyCanceled"></h3>
+				
+				<!-- ko if: securityKeyError -->
+					<h2 data-bind="i18n: {'key': '%MODULENAME%/HEADING_SECURITY_KEY_ERROR_VERIFICATION'}"></h2>
+					<!-- ko if: bSecurityKeysNotSupportedError -->
+						<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_SECURITY_KEY_ERROR_HTTPS_NEEDED'}, visible: !bIsHttps"></div>
+						<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_SECURITY_KEY_ERROR_NOT_SUPPORTED'}, visible: bIsHttps"></div>
+					<!-- /ko -->
+					<!-- ko if: !bSecurityKeysNotSupportedError -->
+						<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_SECURITY_KEY_ERROR_VERIFICATION'}, visible: hasSeveralOptions()"></div>
+						<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_SECURITY_KEY_ERROR_VERIFICATION_NO_OTHER_OPTIONS'}, visible: !hasSeveralOptions()"></div>
+					<!-- /ko -->
+				<!-- /ko -->
+				
+				<!-- ko if: !securityKeyInProgress() && !securityKeyCanceled() && !securityKeyError() -->
+					<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/HINT_SECURITY_KEY_NAME'}"></div>
+					<div class="row">
+						<input class="value input" type="text" spellcheck="false" maxlength="255"
+							   data-bind="value: name, hasFocus: nameFocus, valueUpdate: 'afterkeydown', onEnter: save" />
+					</div>
+				<!-- /ko -->
+			</div>
+			<div class="buttons" data-bind="visible: !securityKeyInProgress() && !securityKeyError()">
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}, command: saveCommand, visible: !securityKeyCanceled() && !saveNameInProgress()"></span>
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}, visible: !securityKeyCanceled() && saveNameInProgress()"></span>
+			</div>
+			<div class="buttons" data-bind="visible: securityKeyCanceled">
+				<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_TRY_AGAIN'}, click: registerSecurityKey"></span>
+				<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: closePopup"></span>
+			</div>
+			<div class="buttons" data-bind="visible: securityKeyError">
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_OK'}, click: closePopup"></span>
+			</div>
+		</div>
+	</div>
+	<span class="helper"></span>
+</div>

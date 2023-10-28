@@ -10,10 +10,9 @@ services:
     - redis-server
     - memcached
 php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
+  - 7.2
+  - 7.3
+  - 7.4
 
 before_install:
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
@@ -23,4 +22,4 @@ before_script:
   - "composer install"
 
 script: 
-- "phpunit"
+- "./vendor/bin/phpunit"

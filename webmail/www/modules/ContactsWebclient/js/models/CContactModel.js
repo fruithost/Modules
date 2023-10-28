@@ -18,7 +18,9 @@ var
 	
 	CDateModel = require('%PathToCoreWebclientModule%/js/models/CDateModel.js'),
 	
-	Settings = require('modules/%ModuleName%/js/Settings.js')
+	Settings = require('modules/%ModuleName%/js/Settings.js'),
+
+	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js')
 ;
 
 /**
@@ -26,6 +28,8 @@ var
  */
 function CContactModel()
 {
+	// Important: if new fields are added they should be added to clear method as well. Otherwise create contact functionality might work incorrectly.
+
 	this.sEmailDefaultType = Enums.ContactsPrimaryEmail.Personal;
 	this.sPhoneDefaultType = Enums.ContactsPrimaryPhone.Mobile;
 	this.sAddressDefaultType = Enums.ContactsPrimaryAddress.Personal;
@@ -43,6 +47,7 @@ function CContactModel()
 	this.personalCollapsed = ko.observable(false);
 	this.businessCollapsed = ko.observable(false);
 	this.otherCollapsed = ko.observable(false);
+	this.pgpSettingsCollapsed = ko.observable(false);
 	this.groupsCollapsed = ko.observable(false);
 
 	this.displayName = ko.observable('');
@@ -136,6 +141,33 @@ function CContactModel()
 	this.otherNotes = ko.observable('');
 	this.etag = ko.observable('');
 	
+	this.isOpenPgpEnabled = ModulesManager.run('OpenPgpWebclient', 'isOpenPgpEnabled') || ko.observable(false);
+
+	this.publicPgpKeyView = ko.observable('');
+	this.publicPgpKey = ko.observable('');
+	this.pgpEncryptMessages = ko.observable(false);
+	this.pgpSignMessages = ko.observable(false);
+
+	this.publicPgpKey.subscribe(function (sValue) {
+		if (sValue !== '')
+		{
+			ModulesManager.run('OpenPgpWebclient', 'getKeyInfo', [sValue, function (oKey) {
+				if (oKey)
+				{
+					this.publicPgpKeyView(oKey.getUser() + ' (' + oKey.getBitSize() + '-bit)');
+				}
+				else
+				{
+					this.publicPgpKeyView('');
+				}
+			}.bind(this)]);
+		}
+		else
+		{
+			this.publicPgpKeyView('');
+		}
+	}, this);
+
 	this.sharedToAll = ko.observable(false);
 
 	this.birthdayIsEmpty = ko.computed(function () {
@@ -249,6 +281,10 @@ function CContactModel()
 	this.otherIsEmpty = ko.computed(function () {
 		var sOtherEmail = (this.otherEmail() !== this.email()) ? this.otherEmail() : '';
 		return ('' === ('' + sOtherEmail + this.otherNotes())) && this.birthdayIsEmpty();
+	}, this);
+	
+	this.pgpSettingsEmpty = ko.computed(function () {
+		return typeof this.publicPgpKey() !== 'string' || this.publicPgpKey() === '';
 	}, this);
 	
 	this.phone = ko.computed({
@@ -385,6 +421,7 @@ function CContactModel()
 			this.personalCollapsed(!this.personalIsEmpty());
 			this.businessCollapsed(!this.businessIsEmpty());
 			this.otherCollapsed(!this.otherIsEmpty());
+			this.pgpSettingsCollapsed(!this.pgpSettingsEmpty());
 			this.groupsCollapsed(!this.groupsIsEmpty());
 		}
 	}, this);
@@ -439,20 +476,20 @@ CContactModel.birthMonthSelect = [
 
 CContactModel.prototype.clear = function ()
 {
-	this.isNew(false);
-	this.readOnly(false);
-
 	this.uuid('');
 	this.idUser('');
 	this.team(false);
-	this.storage('');
 	this.itsMe(false);
+	this.storage('');
 
+	this.isNew(false);
+	this.readOnly(false);
 	this.edited(false);
 	this.extented(false);
 	this.personalCollapsed(false);
 	this.businessCollapsed(false);
 	this.otherCollapsed(false);
+	this.pgpSettingsCollapsed(false);
 	this.groupsCollapsed(false);
 
 	this.displayName('');
@@ -462,6 +499,8 @@ CContactModel.prototype.clear = function ()
 
 	this.skype('');
 	this.facebook('');
+
+	this.displayNameFocused(false);
 
 	this.primaryEmail(this.sEmailDefaultType);
 	this.primaryPhone(this.sPhoneDefaultType);
@@ -497,8 +536,13 @@ CContactModel.prototype.clear = function ()
 	this.otherBirthDay(0);
 	this.otherBirthYear(0);
 	this.otherNotes('');
-
 	this.etag('');
+
+	this.publicPgpKeyView('');
+	this.publicPgpKey('');
+	this.pgpEncryptMessages(false);
+	this.pgpSignMessages(false);
+
 	this.sharedToAll(false);
 
 	this.groups([]);
@@ -573,7 +617,11 @@ CContactModel.prototype.toObject = function ()
 		'BirthDay': this.otherBirthDay(),
 		'BirthMonth': this.otherBirthMonth(),
 		'BirthYear': this.otherBirthYear(),
-
+		
+		'PublicPgpKey': this.publicPgpKey(),
+		'PgpEncryptMessages': this.pgpEncryptMessages(),
+		'PgpSignMessages': this.pgpSignMessages(),
+	
 		'GroupUUIDs': this.groups()
 	};
 
@@ -637,6 +685,10 @@ CContactModel.prototype.parse = function (oData)
 	this.otherNotes(Types.pString(oData.Notes));
 
 	this.etag(Types.pString(oData.ETag));
+
+	this.publicPgpKey(Types.pString(oData['OpenPgpWebclient::PgpKey']));
+	this.pgpEncryptMessages(Types.pBool(oData['OpenPgpWebclient::PgpEncryptMessages']));
+	this.pgpSignMessages(Types.pBool(oData['OpenPgpWebclient::PgpSignMessages']));
 
 	this.sharedToAll(oData.Storage === 'shared');
 

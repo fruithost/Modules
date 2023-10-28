@@ -1,0 +1,105 @@
+<div class="popup" style="display: none;">
+	<div class="mask"></div>
+	<div class="popup_panel popup_verify_second_factor">
+		<span class="close" data-bind="click: cancelPopup"></span>
+		<div class="fields">
+			<h1 data-bind="i18n: {'key': '%MODULENAME%/HEADING_TWA_VERIFICATION'}"></h1>
+			<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_TWA_VERIFICATION'}"></div>
+			<h3 data-bind="text: login"></h3>
+		</div>
+
+		<div class="fields" data-bind="visible: verificationPassed() && bAllowTrustedDevices">
+			<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ALL_SET'}"></div>
+			<label class="custom_checkbox" data-bind="css: {'checked': trustThisBrowser}">
+				<span class="icon"></span>
+				<input type="checkbox" id="trustThisBrowser" data-bind="checked: trustThisBrowser" />
+			</label>
+			<label for="trustThisBrowser" data-bind="text: sTrustThisBrowserText"></label>
+			<div class="buttons">
+				<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_CONTINUE'}, command: continueCommand"></span>
+			</div>
+		</div>
+		
+		<div class="fields" data-bind="visible: securityKeyVisible() && !verificationPassed()">
+			<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/HINT_SECURITY_KEY_VERIFICATION'}, visible: securityKeyInProgress"></div>
+			<div class="block_security_key_inprogress" data-bind="visible: securityKeyInProgress"></div>
+			
+			<!-- ko if: securityKeyError -->
+				<h2 data-bind="i18n: {'key': '%MODULENAME%/HEADING_SECURITY_KEY_ERROR_VERIFICATION'}"></h2>
+				<!-- ko if: bSecurityKeysNotSupportedError -->
+					<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_SECURITY_KEY_ERROR_HTTPS_NEEDED'}, visible: !bIsHttps"></div>
+					<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_SECURITY_KEY_ERROR_NOT_SUPPORTED'}, visible: bIsHttps"></div>
+				<!-- /ko -->
+				<!-- ko if: !bSecurityKeysNotSupportedError -->
+					<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_SECURITY_KEY_ERROR_VERIFICATION'}, visible: hasSeveralOptions()"></div>
+					<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_SECURITY_KEY_ERROR_VERIFICATION_NO_OTHER_OPTIONS'}, visible: !hasSeveralOptions()"></div>
+				<!-- /ko -->
+
+				<div class="buttons">
+					<span class="button button-fill" data-bind="i18n: {'key': '%MODULENAME%/ACTION_TRY_AGAIN'}, click: verifySecurityKey, visible: !bSecurityKeysNotSupportedError"></span>
+					<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: cancelPopup"></span>
+				</div>
+				<div class="fieldset link_other_options" data-bind="visible: hasSeveralOptions">
+					<span class="link" data-bind="i18n: {'key': '%MODULENAME%/ACTION_TRY_ANOTHER_WAY'}, click: useOtherOption"></span>
+				</div>
+			<!-- /ko -->
+		</div>
+		
+		<div class="fields" data-bind="visible: authenticatorAppVisible() && !verificationPassed()">
+			<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_AUTHENTICATOR_APP_VERIFICATION'}"></div>
+			<div class="fieldset list-block">
+				<div class="item-content">
+					<div data-bind="css: {'item-inner': isMobile(), 'row': !isMobile()}">
+						<input class="input" type="text" spellcheck="false"
+							   data-bind="value: authenticatorCode, hasFocus: authenticatorCodeFocused, valueUpdate: 'afterkeydown', onEnter: verifyAuthenticatorCode" />
+					</div>
+				</div>
+			</div>
+			<div class="buttons">
+				<span class="button button-fill" data-bind="i18n: {'key': '%MODULENAME%/ACTION_VERIFY'}, click: verifyAuthenticatorCode, visible: !authenticatorCodeInProgress()"></span>
+				<span class="button button-fill" data-bind="i18n: {'key': '%MODULENAME%/ACTION_VERIFY_IN_PROGRESS'}, visible: authenticatorCodeInProgress()"></span>
+				<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: cancelPopup"></span>
+			</div>
+			<div class="fieldset link_other_options" data-bind="visible: hasSeveralOptions">
+				<span class="link" data-bind="i18n: {'key': '%MODULENAME%/ACTION_TRY_ANOTHER_WAY'}, click: useOtherOption"></span>
+			</div>
+		</div>
+		
+		<div class="fields" data-bind="visible: allOptionsVisible">
+			<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_OTHER_VERIFICATION_OPTIONS'}"></div>
+			<div class="buttons" data-bind="visible: hasSecurityKey">
+				<div class="button contour_button button_other_option button-fill" data-bind="i18n: {'key': '%MODULENAME%/ACTION_USE_SECURITY_KEY'}, click: useSecurityKey"></div>
+			</div>
+			<div class="buttons" data-bind="visible: hasAuthenticatorApp">
+				<div class="button contour_button button_other_option button-fill" data-bind="i18n: {'key': '%MODULENAME%/ACTION_USE_AUTHENTICATOR_APP'}, click: useAuthenticatorApp"></div>
+			</div>
+			<div class="buttons" data-bind="visible: hasBackupCodes">
+				<div class="button contour_button button_other_option button-fill" data-bind="i18n: {'key': '%MODULENAME%/ACTION_USE_BACKUP_CODE'}, click: useBackupCodes"></div>
+			</div>
+			<div class="buttons">
+				<div class="button secondary_button button_other_option" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: cancelPopup"></div>
+			</div>
+		</div>
+		
+		<div class="fields" data-bind="visible: backupCodesVisible() && !verificationPassed()">
+			<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_ENTER_BACKUP_CODE'}"></div>
+			<div class="fieldset list-block">
+				<div class="item-content">
+					<div data-bind="css: {'item-inner': isMobile(), 'row': !isMobile()}">
+						<input class="input" type="text" spellcheck="false"
+							   data-bind="value: backupCode, hasFocus: backupCodeFocus, valueUpdate: 'afterkeydown', onEnter: verifyBackupCode" />
+					</div>
+				</div>
+			</div>
+			<div class="buttons">
+				<span class="button button-fill" data-bind="i18n: {'key': '%MODULENAME%/ACTION_VERIFY'}, click: verifyBackupCode, visible: !backupCodeInProgress()"></span>
+				<span class="button button-fill" data-bind="i18n: {'key': '%MODULENAME%/ACTION_VERIFY_IN_PROGRESS'}, visible: backupCodeInProgress()"></span>
+				<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: cancelPopup"></span>
+			</div>
+			<div class="fieldset link_other_options" data-bind="visible: hasSeveralOptions()">
+				<span class="link" data-bind="i18n: {'key': '%MODULENAME%/ACTION_TRY_ANOTHER_WAY'}, click: useOtherOption"></span>
+			</div>
+		</div>
+	</div>
+	<span class="helper"></span>
+</div>

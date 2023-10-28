@@ -90,6 +90,13 @@ class Tenant extends \Aurora\System\EAV\Entity
 			'InviteNotificationEmailAccount'	=> array('string', '')		
 	);
 	
+	public function __construct($sModule)
+	{
+		$this->ParentType = 'Aurora\System\Module\Settings';
+		
+		parent::__construct($sModule);
+	}	
+
 	/**
 	 * temp method
 	 */

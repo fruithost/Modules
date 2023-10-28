@@ -7,15 +7,12 @@ var
 ;
 
 Ajax.registerAbortRequestHandler(Settings.ServerModuleName, function (oRequest, oOpenedRequest) {
-	var
-		oParameters = oRequest.Parameters,
-		oOpenedParameters = oOpenedRequest.Parameters
-	;
-	
 	switch (oRequest.Method)
 	{
-		case 'GetEntityList':
-			return	oOpenedRequest.Method === 'GetEntityList' && oOpenedParameters.Type === oParameters.Type;
+		case 'GetUsers':
+			return oOpenedRequest.Method === 'GetUsers';
+		case 'GetTenants':
+			return oOpenedRequest.Method === 'GetTenants';
 	}
 	
 	return false;

@@ -1,3 +1,11 @@
+'use strict';
+
+var
+	_ = require('underscore'),
+	$ = require('jquery'),
+	ko = require('knockout')
+;
+
 //js-in-html-template
 ko.bindingHandlers.simpleTemplate = {
 	'init': function (oElement, fValueAccessor) {
@@ -56,3 +64,4 @@ ko.bindingHandlers.findFilled = {
 	}
 };
 
+module.exports = {};

@@ -13,6 +13,8 @@ var
  */
 function CIdentityModel()
 {
+	this.IDENTITY = true; // constant
+	
 	this.bAccountPart = false;
 	this.isDefault = ko.observable(false);
 	this.email = ko.observable('');
@@ -42,7 +44,11 @@ CIdentityModel.prototype.parse = function (oData)
 		this.friendlyName(Types.pString(oData.FriendlyName));
 		this.accountId(Types.pInt(oData.IdAccount));
 		this.id(Types.pInt(oData.EntityId));
-		this.signature(Types.pString(oData.Signature));
+		var sSignature = Types.pString(oData.Signature);
+		if (sSignature.indexOf('<') !== 0) {
+			sSignature = '<div>' + sSignature + '</div>';
+		}
+		this.signature = ko.observable(sSignature);
 		this.useSignature(!!oData.UseSignature);
 	}
 };

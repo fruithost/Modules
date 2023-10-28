@@ -41,21 +41,25 @@ function CSettingsView()
 		return Settings.EnableMultiTenant && this.tenants().length > 1;
 	}, this);
 	
-	this.aScreens = [
-		{
+	this.bShowLogout = App.getUserRole() === Enums.UserRole.SuperAdmin;
+	this.aScreens = [];
+	if (App.getUserRole() === Enums.UserRole.SuperAdmin)
+	{
+		this.aScreens.push({
 			linkHash: ko.observable(Routing.buildHashFromArray(Links.get(''))),
 			sLinkText: Text.i18n('%MODULENAME%/HEADING_SYSTEM_SETTINGS_TABNAME'),
 			sType: '',
 			oView: null
-		}
-	];
+		});
+	}
+	
 	_.each(EntitiesTabs.getData(), _.bind(function (oEntityData) {
 		var
 			oView = new CEntitiesView(oEntityData.Type),
 			fChangeEntity = _.bind(function (sType, iEntityId, sTabName) {
 				if (sTabName === 'create')
 				{
-					this.createEntity();
+					this.openCreateEntity();
 				}
 				else if (sType === this.currentEntityType())
 				{
@@ -156,11 +160,30 @@ CSettingsView.prototype.onAjaxSend = function (oParams)
 	}
 };
 
+/**
+ * Sets tenant with specified ID as current.
+ * If it's not on current page, tries to set required page before setting new current tenant.
+ * @param {type} iId
+ * @returns {undefined}
+ */
 CSettingsView.prototype.selectTenant = function (iId)
 {
-	var oEntitiesId = _.clone(this.currentEntitiesId());
-	oEntitiesId['Tenant'] = iId;
-	Routing.setHash(Links.get(this.currentEntityType(), oEntitiesId));
+	if (!this.currentEntitiesView() || this.currentEntitiesView().sType !== 'Tenant' || this.currentEntitiesView().hasEntity(iId))
+	{
+		var oEntitiesId = _.clone(this.currentEntitiesId());
+		oEntitiesId['Tenant'] = iId;
+		Routing.setHash(Links.get(this.currentEntityType(), oEntitiesId));
+	}
+	else
+	{
+		var
+			iTenantIndex = _.findIndex(Cache.tenants(), function (oTenant) {
+				return oTenant.Id === iId;
+			}),
+			iPage = Math.ceil((iTenantIndex + 1) / Settings.EntitiesPerPage)
+		;
+		this.currentEntitiesView().setPageAndEntity(iPage, iId);
+	}
 };
 
 /**
@@ -223,15 +246,19 @@ CSettingsView.prototype.cancelCreatingEntity = function ()
 /**
  * Sets hash for creating entity.
  */
-CSettingsView.prototype.createEntity = function ()
+CSettingsView.prototype.openCreateEntity = function ()
 {
-	var oEntitiesId = _.clone(this.currentEntitiesId());
-	delete oEntitiesId[this.currentEntityType()];
-	if (this.currentEntityType() !== 'Tenant' && !oEntitiesId['Tenant'] && Cache.selectedTenantId())
+	var oEntityData = EntitiesTabs.getEntityData(this.currentEntityType());
+	if (oEntityData.CreateRequest)
 	{
-		oEntitiesId['Tenant'] = Cache.selectedTenantId();
+		var oEntitiesId = _.clone(this.currentEntitiesId());
+		delete oEntitiesId[this.currentEntityType()];
+		if (this.currentEntityType() !== 'Tenant' && !oEntitiesId['Tenant'] && Cache.selectedTenantId())
+		{
+			oEntitiesId['Tenant'] = Cache.selectedTenantId();
+		}
+		Routing.setHash(Links.get(this.currentEntityType(), oEntitiesId, 'create'));
 	}
-	Routing.setHash(Links.get(this.currentEntityType(), oEntitiesId, 'create'));
 };
 
 /**
@@ -279,6 +306,18 @@ CSettingsView.prototype.onBind = function ()
 			}
 		}
 	}, this));
+
+	if (Settings && _.isFunction(Settings.getStartError))
+	{
+		var koError = Settings.getStartError();
+		if (_.isFunction(koError))
+		{
+			koError.subscribe(function () {
+				this.showStartError();
+			}, this);
+			this.aStartErrors.push(koError);
+		}
+	}
 	
 	this.showStartError();
 };
@@ -307,6 +346,17 @@ CSettingsView.prototype.onRoute = function (aParams)
 {
 	var
 		oParams = Links.parse(aParams),
+		oScreenByType = _.find(this.aScreens, function (oScreen) {
+			return oScreen.sType === oParams.CurrentType;
+		})
+	;
+	if (!oScreenByType && this.aScreens.length > 0)
+	{
+		Routing.replaceHash(Links.get(this.aScreens[0].sType, [], ''));
+		return;
+	}
+
+	var
 		aTabParams = aParams.slice(1),
 		bSameType = this.currentEntityType() === oParams.CurrentType,
 		bSameId = this.currentEntitiesId()[oParams.CurrentType] === oParams.Entities[oParams.CurrentType],
@@ -320,7 +370,9 @@ CSettingsView.prototype.onRoute = function (aParams)
 		fAfterRefuseTabHide = _.bind(function () {
 			if (oCurrentTab)
 			{
-				Routing.replaceHashDirectly(Links.get(this.currentEntityType(), this.currentEntitiesId(), this.currentTab() ? this.currentTab().name : ''));
+				Routing.stopListening();
+				Routing.setPreviousHash();
+				Routing.startListening();
 			}
 		}, this)
 	;
@@ -365,7 +417,8 @@ CSettingsView.prototype.showNewScreenView = function (oParams)
 
 	if (oCurrentEntityData && oCurrentEntityData.oView)
 	{
-		if (oParams.Last === 'create')
+		var sCreateRequest = oCurrentEntityData.oView.oEntityData ? oCurrentEntityData.oView.oEntityData.CreateRequest : '';
+		if (oParams.Last === 'create' && Types.isNonEmptyString(sCreateRequest))
 		{
 			oCurrentEntityData.oView.openCreateForm();
 		}
@@ -390,6 +443,12 @@ CSettingsView.prototype.showNewTabView = function (sNewTabName, aTabParams)
 		if (oTab.view && _.isFunction(oTab.view.setAccessLevel))
 		{
 			oTab.view.setAccessLevel(this.currentEntityType(), this.currentEntitiesId()[this.currentEntityType()]);
+			_.each(oTab.view.aSettingsSections, function (oSection) {
+				if (_.isFunction(oSection.setAccessLevel))
+				{
+					oSection.setAccessLevel(this.currentEntityType(), this.currentEntitiesId()[this.currentEntityType()]);
+				}
+			}, this);
 		}
 	}, this));
 	

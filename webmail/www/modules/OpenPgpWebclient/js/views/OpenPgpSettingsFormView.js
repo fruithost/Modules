@@ -3,14 +3,14 @@
 var
 	_ = require('underscore'),
 	ko = require('knockout'),
-	
+
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
-	
+
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
-	
+
 	CAbstractSettingsFormView = ModulesManager.run('SettingsWebclient', 'getAbstractSettingsFormViewClass'),
-	
+
 	Popups = require('%PathToCoreWebclientModule%/js/Popups.js'),
 	ConfirmPopup = require('%PathToCoreWebclientModule%/js/popups/ConfirmPopup.js'),
 	GenerateKeyPopup = require('modules/%ModuleName%/js/popups/GenerateKeyPopup.js'),
@@ -18,7 +18,7 @@ var
 	ShowKeyArmorPopup = require('modules/%ModuleName%/js/popups/ShowKeyArmorPopup.js'),
 	ShowPublicKeysArmorPopup = require('modules/%ModuleName%/js/popups/ShowPublicKeysArmorPopup.js'),
 	VerifyPasswordPopup = require('modules/%ModuleName%/js/popups/VerifyPasswordPopup.js'),
-	
+
 	OpenPgp = require('modules/%ModuleName%/js/OpenPgp.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
@@ -29,18 +29,20 @@ var
 function COpenPgpSettingsFormView()
 {
 	CAbstractSettingsFormView.call(this, Settings.ServerModuleName);
-	
+
 	this.enableOpenPgp = ko.observable(Settings.enableOpenPgp());
-	
+	this.rememberPassphrase = Settings.rememberPassphrase;
+	this.isMailAvailable = ModulesManager.isModuleAvailable('Mail');
+
 	this.keys = ko.observableArray(OpenPgp.getKeys());
 	OpenPgp.getKeysObservable().subscribe(function () {
 		this.keys(OpenPgp.getKeys());
 	}, this);
-	
+
 	this.publicKeys = ko.computed(function () {
 		var
 			aPublicKeys = _.filter(this.keys(), function (oKey) {
-				return oKey.isPublic();
+				return oKey.isPublic() && !oKey.isExternal;
 			})
 		;
 		return _.map(aPublicKeys, function (oKey) {
@@ -50,11 +52,21 @@ function COpenPgpSettingsFormView()
 	this.privateKeys = ko.computed(function () {
 		var
 			aPrivateKeys = _.filter(this.keys(), function (oKey) {
-				return oKey.isPrivate();
+				return oKey.isPrivate()&&!oKey.isExternal;
 			})
 		;
 		return  _.map(aPrivateKeys, function (oKey) {
 			return {'user': oKey.getUser(), 'armor': oKey.getArmor(), 'key': oKey};
+		});
+	}, this);
+	this.externalPublicKeys = ko.computed(function () {
+		var
+			aPublicKeys = _.filter(this.keys(), function (oKey) {
+				return oKey.isPublic() && oKey.isExternal;
+			})
+		;
+		return _.map(aPublicKeys, function (oKey) {
+			return {'user': oKey.getUser(), 'armor': oKey.getArmor(), 'key': oKey, 'private': false};
 		});
 	}, this);
 }
@@ -65,15 +77,15 @@ COpenPgpSettingsFormView.prototype.ViewTemplate = '%ModuleName%_OpenPgpSettingsF
 
 COpenPgpSettingsFormView.prototype.exportAllPublicKeys = function ()
 {
-	var sArmors = '';
-	
-	_.each(this.publicKeys(), function (oKey) {
-		sArmors += oKey.armor;
-	});
-	
-	if (sArmors !== '')
+	var
+		aArmors = _.map(_.union(this.publicKeys(), this.externalPublicKeys()), function (oKey) {
+			return oKey.armor;
+		})
+	;
+
+	if (aArmors.length > 0)
 	{
-		Popups.showPopup(ShowPublicKeysArmorPopup, [sArmors]);
+		Popups.showPopup(ShowPublicKeysArmorPopup, [aArmors.join('\n')]);
 	}
 };
 
@@ -94,10 +106,10 @@ COpenPgpSettingsFormView.prototype.removeOpenPgpKey = function (oKey)
 {
 	var
 		sConfirm = '',
-		fRemove = _.bind(function (bRemove) {
+		fRemove = _.bind(async function (bRemove) {
 			if (bRemove)
 			{
-				var oRes = OpenPgp.deleteKey(oKey);
+				var oRes = await OpenPgp.deleteKey(oKey);
 				if (!oRes.result)
 				{
 					Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_DELETE_KEY'));
@@ -105,7 +117,7 @@ COpenPgpSettingsFormView.prototype.removeOpenPgpKey = function (oKey)
 			}
 		}, this)
 	;
-	
+
 	if (oKey)
 	{
 		sConfirm = TextUtils.i18n('%MODULENAME%/CONFIRM_DELETE_KEY', {'KEYEMAIL': oKey.getEmail()});
@@ -121,7 +133,7 @@ COpenPgpSettingsFormView.prototype.verifyPassword = function (oKey)
 	var fShowArmor = function () {
 		this.showArmor(oKey);
 	}.bind(this);
-	
+
 	Popups.showPopup(VerifyPasswordPopup, [oKey, fShowArmor]);
 };
 
@@ -136,19 +148,22 @@ COpenPgpSettingsFormView.prototype.showArmor = function (oKey)
 COpenPgpSettingsFormView.prototype.getCurrentValues = function ()
 {
 	return [
-		this.enableOpenPgp()
+		this.enableOpenPgp(),
+		this.rememberPassphrase()
 	];
 };
 
 COpenPgpSettingsFormView.prototype.revertGlobalValues = function ()
 {
 	this.enableOpenPgp(Settings.enableOpenPgp());
+	this.rememberPassphrase(Settings.rememberPassphrase());
 };
 
 COpenPgpSettingsFormView.prototype.getParametersForSave = function ()
 {
 	return {
-		'EnableModule': this.enableOpenPgp()
+		'EnableModule': this.enableOpenPgp(),
+		'RememberPassphrase': this.rememberPassphrase()
 	};
 };
 

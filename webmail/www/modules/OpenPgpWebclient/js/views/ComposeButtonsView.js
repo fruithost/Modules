@@ -35,6 +35,9 @@ function CComposeButtonsView()
 	this.disableHeadersEdit = this.pgpEncrypted;
 	this.disableBodyEdit = this.pgpSecured;
 	this.disableAutosave = this.pgpSecured;
+	this.disableFromEdit = ko.computed(function () {
+		return this.pgpEncrypted() || this.pgpSecured();
+	}, this); 
 	
 	this.visibleDoPgpButton = ko.computed(function () {
 		return this.enableOpenPgp() && (!this.pgpSecured() || this.pgpEncrypted() && this.fromDrafts());

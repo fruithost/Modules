@@ -8,6 +8,8 @@
 namespace Aurora\Modules\Facebook;
 
 /**
+ * Adds ability to work with Facebook.
+ * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
@@ -91,7 +93,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			);
 		}
 		
-		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::NormalUser)
+		if (!empty($oUser) && $oUser->isNormalOrTenant())
 		{
 			$oAccount = null;
 			$oOAuthIntegratorWebclientDecorator = \Aurora\Modules\OAuthIntegratorWebclient\Module::Decorator();

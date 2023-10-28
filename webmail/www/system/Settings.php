@@ -1,16 +1,16 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
  */
- 
+
 namespace Aurora\System;
 
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Api
  */
@@ -20,11 +20,11 @@ class Settings extends AbstractSettings
 	{
 		$this->aContainer = array(
 			'LicenseKey' => new SettingsProperty('LicenseKey', '', 'string'),
-			
+
 			'AdminLogin' =>  new SettingsProperty('AdminLogin', 'superadmin', 'string'),
 			'AdminPassword' => new SettingsProperty('AdminPassword', '', 'string'),
 			'AdminLanguage' => new SettingsProperty('AdminLanguage', 'English', 'string'),
-			
+
 			'DBType' => new SettingsProperty('DBType', Enums\DbType::MySQL, 'spec', '\Aurora\System\Enums\DbType'),
 			'DBPrefix' => new SettingsProperty('DBPrefix', 'au_', 'string'),
 			'DBHost' => new SettingsProperty('DBHost', '127.0.0.1', 'string'),
@@ -48,7 +48,7 @@ class Settings extends AbstractSettings
 			'LogFileName' => new SettingsProperty('LogFileName', 'log-{Y-m-d}.txt', 'string'),
 			'LogCustomFullPath' => new SettingsProperty('LogCustomFullPath', '', 'string'),
 			'LogPostView' => new SettingsProperty('LogPostView', false, 'bool'),
-			
+
 			'EnableMultiChannel' => new SettingsProperty('EnableMultiChannel', false, 'bool'),
 			'EnableMultiTenant' => new SettingsProperty('EnableMultiTenant', false, 'bool'),
 			'TenantGlobalCapa' => new SettingsProperty('TenantGlobalCapa', '', 'string'),
@@ -68,11 +68,14 @@ class Settings extends AbstractSettings
 			'XFrameOptions' => new SettingsProperty('XFrameOptions', '', 'string'),
 			'RemoveOldLogs' => new SettingsProperty('RemoveOldLogs', true, 'bool'),
 			'LogStackTrace' => new SettingsProperty('LogStackTrace', false, 'bool'),
-			'ExpireUserSessionsBefore' => new SettingsProperty('ExpireUserSessionsBefore', 0, 'int'),
-			
+			'ExpireUserSessionsBeforeTimestamp' => new SettingsProperty('ExpireUserSessionsBeforeTimestamp', 0, 'int'),
+
 			'PasswordMinLength' => new SettingsProperty('PasswordMinLength', 0, 'int'),
-			'PasswordMustBeComplex' => new SettingsProperty('PasswordMustBeComplex', false, 'bool')
-		);		
+			'PasswordMustBeComplex' => new SettingsProperty('PasswordMustBeComplex', false, 'bool'),
+
+			'StoreAuthTokenInDB' => new SettingsProperty('StoreAuthTokenInDB', false, 'bool'),
+			'AuthTokenExpirationLifetimeDays' => new SettingsProperty('ExpirationLifetimeDays', 0, 'int'),
+		);
 	}
 
 	/**
@@ -85,7 +88,20 @@ class Settings extends AbstractSettings
 		{
 			$this->Save();
 		}
-		
+
 		return parent::Load();
+	}
+
+	public function SyncConfigs()
+	{
+		$this->initDefaults();
+		$aContainer = $this->aContainer;
+		if (!\file_exists($this->sPath))
+		{
+			$this->Save();
+		}
+		parent::Load();
+		$this->aContainer = \array_merge($aContainer, $this->aContainer);
+		$this->Save();
 	}
 }

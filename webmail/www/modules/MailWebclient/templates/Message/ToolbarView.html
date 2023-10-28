@@ -13,17 +13,24 @@
 			<span class="icon" data-bind="customTooltip: '%MODULENAME%/ACTION_OPEN_PREV_MESSAGE'"></span>
 			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_OPEN_PREV_MESSAGE'}"></span>
 		</span>
-		
+
 		<!-- ko template: {name: '%ModuleName%_Message_ReplyButtonsView'} --><!-- /ko -->
-		
+
 		<span class="item resend" data-bind="command: resendCommand, visible: isVisibleResendTool">
 			<span class="icon" data-bind="customTooltip: '%MODULENAME%/ACTION_RESEND'"></span>
 			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_RESEND'}"></span>
 		</span>
-		
+
 		<!-- ko template: {name: '%ModuleName%_Message_ForwardButtonView'} --><!-- /ko -->
 
-		<a class="item new_window" href="javascript: void(0);" 
+		<!-- ko foreach: otherToolbarCommands -->
+			<span class="item" data-bind="command: Command, css: CssClass, visible: Visible">
+				<span class="icon" data-bind="customTooltip: Text"></span>
+				<span class="text" data-bind="text: Text"></span>
+			</span>
+		<!-- /ko -->
+
+		<a class="item new_window" href="javascript: void(0);"
 			data-bind="click: openInNewWindow, visible: !bNewTab">
 			<span class="icon" data-bind="customTooltip: '%MODULENAME%/ACTION_OPEN_IN_NEW_WINDOW'"></span>
 			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_OPEN_IN_NEW_WINDOW'}"></span>
@@ -48,7 +55,7 @@
 							<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_DOWNLOAD_EML'}"></span>
 						</span>
 
-						<span class="item forward" data-bind="command: forwardAsAttachment">
+						<span class="item forward" data-bind="command: forwardAsAttachment, visible: isVisibleForwardTool">
 							<span class="icon"></span>
 							<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_FORWARD_AS_ATTACHMENT'}"></span>
 						</span>
@@ -59,7 +66,7 @@
 						</span>
 
 						<!-- ko foreach: moreSectionCommands -->
-						<span class="item" data-bind="command: Command, css: CssClass">
+						<span class="item" data-bind="command: Command, css: CssClass, visible: Visible">
 							<span class="icon"></span>
 							<span class="text" data-bind="text: Text"></span>
 						</span>

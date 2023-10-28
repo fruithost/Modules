@@ -1,12 +1,14 @@
 <div class="panels">
-	<div class="panel compose">
+	<div class="panel compose" data-bind="css: {'compose-auto-encrypt': autoEncryptSignMessage}">
 		<div class="panel_content">
 			<div class="toolbar">
 				<span class="content">
 					<!-- ko template: {name: sPopupButtonsViewTemplate} --><!-- /ko -->
-					
+
 					<!-- ko foreach: toolbarControllers -->
-						<!-- ko template: { name: $data.ViewTemplate, data: $data} --><!-- /ko -->
+						<!-- ko if: !bSendButton -->
+							<!-- ko template: { name: $data.ViewTemplate, data: $data} --><!-- /ko -->
+						<!-- /ko -->
 					<!-- /ko -->
 				</span>
 			</div>
@@ -21,15 +23,30 @@
 									</span>
 
 									<div class="notice" data-bind="visible: bDemo, i18n: {'key': '%MODULENAME%/INFO_SEND_EMAIL_TO_DEMO_ONLY'}"></div>
+									<div class="notice notice-auto-encrypt" data-bind="visible: allowAtoEncryptSignMessage">
+										<div class="notice-auto-encrypt-icon"></div>
+										<div>
+											<label class="custom_checkbox" data-bind="css: {'checked': autoEncryptSignMessage}">
+												<span class="icon"></span>
+												<input type="checkbox" id="autoEncryptSignMessage" data-bind="checked: autoEncryptSignMessage" />
+											</label>
+											<label for="autoEncryptSignMessage" data-bind="i18n: {'key': '%MODULENAME%/INFO_AUTO_ENCRYPT_SIGN_MESSAGE'}"></label>
+										</div>
+										<div class="notice-auto-encrypt-info" data-bind="i18n: {'key': '%MODULENAME%/INFO_MESSAGE_WILL_BE_CONVERTED_TO_PLAIN'}"></div>
+									</div>
 									<table class="fields">
 										<tr class="from" data-bind="visible: visibleFrom() && !headersCompressed()">
 											<td class="label">
 												<span data-bind="i18n: {'key': '%MODULENAME%/LABEL_FROM'}"></span>:
 											</td>
 											<td class="value">
-												<select class="input" tabindex="1" data-bind="foreach: senderList, value: selectedSender">
-													<option data-bind="text: fullEmail, value: id"></option>
-												</select>
+												<div style="position: relative">
+													<div class="disable_mask" data-bind="visible: senderList().length > 1 && disableFromEdit()"></div>
+													<select class="input" tabindex="1" data-bind="visible: senderList().length > 1, foreach: senderList, value: selectedSender, disable: disableFromEdit">
+														<option data-bind="text: fullEmail, value: id"></option>
+													</select>
+													<span class="not_editable" data-bind="visible: senderList().length === 1, text: senderList()[0] ? senderList()[0].fullEmail : ''"></span>
+												</div>
 											</td>
 										</tr>
 										<tr class="to">
@@ -95,6 +112,11 @@
 													   data-bind="value: subject, hasfocus: subjectFocused, valueUpdate: 'afterkeydown'"/>
 											</td>
 										</tr>
+										<!-- ko if: !headersCompressed() -->
+											<!-- ko foreach: messageRowControllers -->
+												<!-- ko template: { name: $data.ViewTemplate, data: $data} --><!-- /ko -->
+											<!-- /ko -->
+										<!-- /ko -->
 									</table>
 								</div>
 								<div class="panel_center">

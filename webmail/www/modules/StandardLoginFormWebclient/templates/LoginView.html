@@ -11,17 +11,19 @@
 				<form class="form fields" action="#" autocomplete="on" onsubmit="return false;" data-bind="command: loginCommand">
 					<div class="fieldset">
 						<div class="row login" data-bind="css: {'focused': loginFocus(), 'filled': login().length > 0, shake: shake()}">
-							<label for="selenium_login_login" class="placeholder"></label>
+							<label for="login_login" class="placeholder"></label>
 							<span class="value">
-								<input id="selenium_login_login" tabindex="1" class="input" name="login" type="text" spellcheck="false"
-									   data-bind="value: login, hasfocus: loginFocus, valueUpdate: 'afterkeydown', i18n: {'key': 'COREWEBCLIENT/LABEL_LOGIN', 'type': 'placeholder'}" />
+								<input id="login_login" tabindex="1" class="input" name="login" type="text" spellcheck="false"
+									   data-bind="value: login, hasfocus: loginFocus, valueUpdate: 'afterkeydown', 
+										i18n: {'key': 'COREWEBCLIENT/LABEL_LOGIN', 'type': 'placeholder'}, initDom: loginDom" />
 							</span>
 						</div>
 						<div class="row password" data-bind="css: {'focused': passwordFocus(), 'filled': password().length > 0, shake: shake()}">
-							<label for="selenium_login_password" class="placeholder"></label>
+							<label for="login_password" class="placeholder"></label>
 							<span class="value">
-								<input id="selenium_login_password" tabindex="3" class="input" name="password" type="password" spellcheck="false"
-									   data-bind="value: password, hasfocus: passwordFocus, valueUpdate: 'afterkeydown', i18n: {'key': 'COREWEBCLIENT/LABEL_PASSWORD', 'type': 'placeholder'}" />
+								<input id="login_password" tabindex="3" class="input" name="password" type="password" spellcheck="false"
+									   data-bind="value: password, hasfocus: passwordFocus, valueUpdate: 'afterkeydown', 
+										i18n: {'key': 'COREWEBCLIENT/LABEL_PASSWORD', 'type': 'placeholder'}, initDom: passwordDom" />
 							</span>
 						</div>
 					</div>
@@ -30,7 +32,7 @@
 						<!-- ko template: { name: $data.ViewTemplate, data: $data} --><!-- /ko -->
 					<!-- /ko -->
 					<div class="row buttons">
-						<button type="submit" tabindex="5" class="button login" data-bind="text: signInButtonText, command: loginCommand" id="selenium_login_signin_button"></button>
+						<button type="submit" tabindex="5" class="button login" data-bind="text: signInButtonText, command: loginCommand"></button>
 					</div>
 					<div class="row signme" data-bind="visible: bUseSignMe">
 						<span>
@@ -52,7 +54,7 @@
 			<div class="clear"></div>
 			
 			<div class="languages demo" data-bind="visible: bAllowChangeLanguage && !bUseDropdownLanguagesView">
-				<div class="langs_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_SELECT_LANGUAGE'}"></div>
+				<div class="langs_heading" data-bind="text: headingSelectLanguage"></div>
 				<div data-bind="foreach: aLanguages">
 					<span class="item" data-bind="css: value + ($parent.currentLanguage() === value ? ' selected' : ''), click: function () { $parent.changeLanguage(value); }">
 						<span class="item_content">

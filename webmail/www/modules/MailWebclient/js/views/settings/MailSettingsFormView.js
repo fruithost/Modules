@@ -24,7 +24,7 @@ function CMailSettingsFormView()
 	CAbstractSettingsFormView.call(this, Settings.ServerModuleName);
 
 	this.bRtl = UserSettings.IsRTL;
-	this.bAllowMailto = Settings.AllowAppRegisterMailto && (Browser.firefox || Browser.chrome);
+	this.bAllowMailto = Settings.AllowAppRegisterMailto && MailUtils.isAvailableRegisterMailto();
 	this.bAllowShowMessagesCountInFolderList = Settings.AllowShowMessagesCountInFolderList;
 	this.bAllowHorizontalLayout = Settings.AllowHorizontalLayout;
 	

@@ -12,8 +12,6 @@ namespace Aurora\Modules\Core\Managers;
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
- * CApiChannelsManager class summary
- *
  * @package Channels
  */
 class Channels extends \Aurora\System\Managers\AbstractManager
@@ -97,7 +95,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param int $iChannelId
 	 *
-	 * @return Aurora\Modules\Core\Classes\Channel
+	 * @return \Aurora\Modules\Core\Classes\Channel
 	 */
 	public function getChannelById($iChannelId)
 	{
@@ -284,7 +282,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 				}
 			}
 
-			$bResult = $this->oEavManager->deleteEntity($oChannel->EntityId);
+			$bResult = $this->oEavManager->deleteEntity($oChannel->EntityId, \Aurora\Modules\Core\Classes\Channel::class);
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{

@@ -1,15 +1,17 @@
 <?php
-
-/*
- * Copyright 2004-2015, AfterLogic Corp.
- * Licensed under AGPLv3 license or AfterLogic license
+/**
+ * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
- * See the LICENSE file for a full license statement.
+ * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
  */
 
 namespace MailSo\Base;
 
 /**
+ * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
+ * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
+ *
  * @category MailSo
  * @package Base
  */
@@ -49,6 +51,10 @@ class DateTimeHelper
 	{
 		$sDateTime = \trim(\preg_replace('/ \([a-zA-Z0-9]+\)$/', '', \trim($sDateTime)));
 		$oDateTime = \DateTime::createFromFormat('D, d M Y H:i:s O', $sDateTime, \MailSo\Base\DateTimeHelper::GetUtcTimeZoneObject());
+		if (!$oDateTime)
+		{
+			$oDateTime = \DateTime::createFromFormat('d M Y H:i:s O', $sDateTime, \MailSo\Base\DateTimeHelper::GetUtcTimeZoneObject());
+		}
 		return $oDateTime ? $oDateTime->getTimestamp() : 0;
 	}
 
@@ -68,8 +74,7 @@ class DateTimeHelper
 			return \MailSo\Base\DateTimeHelper::ParseRFC2822DateString($sDateTime);
 		}
 
-		$oDateTime = \DateTime::createFromFormat('d-M-Y H:i:s O', $sDateTime, \MailSo\Base\DateTimeHelper::GetUtcTimeZoneObject());
-		return $oDateTime ? $oDateTime->getTimestamp() : 0;
+		return self::ParseDateStringType1($sDateTime);
 	}
 
 	/**
@@ -81,7 +86,11 @@ class DateTimeHelper
 	 */
 	public static function ParseDateStringType1($sDateTime)
 	{
-		$oDateTime = \DateTime::createFromFormat('Y-m-d H:i:s O', \trim($sDateTime), \MailSo\Base\DateTimeHelper::GetUtcTimeZoneObject());
+		$oDateTime = \DateTime::createFromFormat('d-M-Y H:i:s O', $sDateTime, \MailSo\Base\DateTimeHelper::GetUtcTimeZoneObject());
+		if (!$oDateTime)
+		{
+			$oDateTime = \DateTime::createFromFormat('d-M-Y H:i:s O T', $sDateTime, \MailSo\Base\DateTimeHelper::GetUtcTimeZoneObject());
+		}
 		return $oDateTime ? $oDateTime->getTimestamp() : 0;
 	}
 }

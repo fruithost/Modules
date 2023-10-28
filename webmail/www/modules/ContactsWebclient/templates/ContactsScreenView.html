@@ -1,4 +1,4 @@
-<div class="screen ContactsLayout" style="display: none;">
+<div class="screen ContactsLayout" style="display: none;" data-bind="css: 'storage_' + selectedStorage()">
 	<div class="panels" data-bind="splitterFlex: {name: 'contact_list', sizes: [20, 20, 60]}">
 		<div class="panel left_panel groups_panel" data-splitter="groups">
 			<div class="panel_content">
@@ -14,7 +14,7 @@
 				<div class="middle_bar" data-bind="template: {name: '%ModuleName%_ContactsView'}"></div>
 			</div>
 		</div>
-		<div class="panel item_viewer contact_viewer">
+		<div class="panel item_viewer contact_viewer" data-bind="css: 'contact_' + (selectedContact() && selectedContact().storage())">
 			<div class="panel_content">
 				<div class="middle_bar contact" data-bind="visible: selectedContact() && !selectedContact().edited(), with: selectedContact">
 					<!-- ko template: { name: '%ModuleName%_ContactView', data: $data} --><!-- /ko -->

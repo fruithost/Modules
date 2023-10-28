@@ -53,6 +53,17 @@ function CCommonSettingsPaneView()
 		return !!this.entityData() && !!this.entityData().UpdateRequest;
 	}, this);
 	
+	this.allowDelete = ko.computed(function () {
+		var
+			oEntityData = this.entityData(),
+			iCurrentEntityId = this.entityCreateView() && _.isFunction(this.entityCreateView().id) ? this.entityCreateView().id() : 0,
+			bAllowDelete = this.entityCreateView() && _.isFunction(this.entityCreateView().allowDelete) ? this.entityCreateView().allowDelete() : true,
+			sEntityType = oEntityData ? oEntityData.Type : '',
+			bCurrentEntity = sEntityType === 'User' && iCurrentEntityId === App.getUserId() || sEntityType === 'Tenant' && iCurrentEntityId === App.getTenantId()
+		;
+		return !!(oEntityData && oEntityData.DeleteRequest && !bCurrentEntity && bAllowDelete);
+	}, this);
+	
 	this.updateSavedState();
 }
 
@@ -86,7 +97,7 @@ CCommonSettingsPaneView.prototype.save = function (oParent)
 {
 	if (this.entityData().UpdateRequest && this.entityCreateView() && Types.isPositiveNumber(this.id()) && (!_.isFunction(this.entityCreateView().isValidSaveData) || this.entityCreateView().isValidSaveData()))
 	{
-		Ajax.send(this.entityData().ServerModuleName, this.entityData().UpdateRequest, {Type: this.type(), Data: this.entityCreateView() ? this.entityCreateView().getParametersForSave() : {}}, function (oResponse) {
+		Ajax.send(this.entityData().ServerModuleName, this.entityData().UpdateRequest, this.entityCreateView() ? this.entityCreateView().getParametersForSave() : {}, function (oResponse) {
 			if (oResponse.Result)
 			{
 				if (_.isFunction(this.entityCreateView().showAdvancedReport))
@@ -123,6 +134,12 @@ CCommonSettingsPaneView.prototype.requestEntityData = function ()
 				if (this.entityCreateView())
 				{
 					this.entityCreateView().parse(this.id(), oResponse.Result || {});
+					_.each(this.aSettingsSections, function (oSection) {
+						if (_.isFunction(oSection.parse))
+						{
+							oSection.parse(this.id(), oResponse.Result || {});
+						}
+					}, this);
 				}
 				this.updateSavedState();
 			}

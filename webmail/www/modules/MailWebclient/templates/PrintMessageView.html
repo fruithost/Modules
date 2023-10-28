@@ -82,7 +82,7 @@
 					</td>
 					<td class="wm_print_value" data-bind="text: subject" colspan="2"></td>
 				</tr>
-				<!-- ko if: $data.notInlineAttachments -->
+				<!-- ko if: $data.notInlineAttachmentsInString -->
 				<!-- View is used for message print in message pane. -->
 				<tr data-bind="visible: notInlineAttachments().length > 0">
 					<td class="wm_print_title">
@@ -93,14 +93,14 @@
 					</td>
 				</tr>
 				<!-- /ko -->
-				<!-- ko if: !$data.notInlineAttachments -->
+				<!-- ko if: !$data.notInlineAttachmentsInString -->
 				<!-- View is used for displaying of EML attachment from attachments list. -->
-				<tr data-bind="visible: attachments().length > 0">
+				<tr data-bind="visible: notInlineAttachments().length > 0">
 					<td class="wm_print_title">
 						<span data-bind="i18n: {'key': '%MODULENAME%/LABEL_ATTACHMENTS'}"></span>: 
 					</td>
 					<td class="wm_print_value" colspan="2">
-						<!-- ko foreach: attachments -->
+						<!-- ko foreach: notInlineAttachments -->
 							<span class="comma">, </span>
 							<a href="javascript: void(0);" data-bind="text: fileName, 
 							   attr: {'data-hash': 'download-' + hash()}"></a>

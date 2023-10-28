@@ -49,6 +49,7 @@
 						<span class="data fadeout">
 							<span class="group" data-bind="visible: $parent.selectedStorage() === 'all' || $parent.selectedStorage() === 'group', css: sStorage"></span>
 							<span class="me" data-bind="visible: ItsMe(), i18n: {'key': '%MODULENAME%/LABEL_ITS_ME'}"></span>
+							<span class="key" data-bind="visible: isOpenPgpEnabled() && HasPgpPublicKey()"></span>
 							<span class="name" data-bind="text: Name(), visible: !!Name()"></span>
 							<span class="name" data-bind="i18n: {'key': '%MODULENAME%/LABEL_NO_NAME'}, visible: Name() === ''"></span>
 							<span class="email" data-bind="text: Email(), visible: !!Email()"></span>

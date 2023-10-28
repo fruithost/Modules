@@ -2,7 +2,7 @@
 /*
  * oauth_client.php
  *
- * @(#) $Id: oauth_client.php,v 1.165 2017/08/20 09:30:30 mlemos Exp $
+ * @(#) $Id: oauth_client.php,v 1.166 2018/08/16 07:12:24 mlemos Exp $
  *
  */
 
@@ -28,8 +28,8 @@ class oauth_session_value_class
 
 	<package>net.manuellemos.oauth</package>
 
-	<version>@(#) $Id: oauth_client.php,v 1.165 2017/08/20 09:30:30 mlemos Exp $</version>
-	<copyright>Copyright © (C) Manuel Lemos 2012</copyright>
+	<version>@(#) $Id: oauth_client.php,v 1.166 2018/08/16 07:12:24 mlemos Exp $</version>
+	<copyright>Copyright ï¿½ (C) Manuel Lemos 2012</copyright>
 	<title>OAuth client</title>
 	<author>Manuel Lemos</author>
 	<authoraddress>mlemos-at-acm.org</authoraddress>
@@ -320,6 +320,7 @@ class oauth_client_class
 				<stringvalue>Xero</stringvalue>,
 				<stringvalue>XING</stringvalue>,
 				<stringvalue>Yahoo</stringvalue>,
+				<stringvalue>Yahoo2</stringvalue>,
 				<stringvalue>Yammer</stringvalue> and
 				<stringvalue>Yandex</stringvalue>. Please contact the author if you
 				would like to ask to add built-in support for other types of OAuth
@@ -1182,7 +1183,7 @@ class oauth_client_class
 {/metadocument}
 */
 	var $http_arguments = array();
-	var $oauth_user_agent = 'PHP-OAuth-API (http://www.phpclasses.org/oauth-api $Revision: 1.165 $)';
+	var $oauth_user_agent = 'PHP-OAuth-API (http://www.phpclasses.org/oauth-api $Revision: 1.166 $)';
 
 	var $response_time = 0;
 	var $session = '';
@@ -1354,7 +1355,7 @@ class oauth_client_class
 		if(strlen($this->redirect_uri))
 			$redirect_uri = $this->redirect_uri;
 		else
-			$redirect_uri = (IsSet($_SERVER['HTTPS']) ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+			$redirect_uri = (\Aurora\System\Api::isHttps() ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 		return true;
 	}
 
@@ -1749,7 +1750,7 @@ class oauth_client_class
 		else
 		{
 			$post_values = $parameters;
-			if(count($parameters))
+			if(is_array($parameters) && count($parameters))
 			{
 				switch($request_content_type)
 				{
@@ -3120,6 +3121,29 @@ class oauth_client_class
 		if($token_type_hint === 'access_token')
 			return $this->ResetAccessToken();
 		return true;
+	}
+
+	function RefreshToken($refresh_token)
+	{
+		$values = array(
+			'refresh_token'=>$refresh_token,
+			'grant_type'=>'refresh_token'
+		);
+
+		$options = array(
+			'Resource'=>'OAuth refresh token',
+			'ConvertObjects'=>true
+		);
+		$values['client_id'] = $this->client_id;
+		$values['client_secret'] = $this->client_secret;
+		if(!$this->GetAccessTokenURL($access_token_url))
+			return false;
+		if(strlen($this->access_token_content_type))
+			$options['ResponseContentType'] = $this->access_token_content_type;
+		if(!$this->SendAPIRequest($access_token_url, 'POST', $values, null, $options, $response))
+			return false;
+
+		return $response;
 	}
 /*
 {metadocument}

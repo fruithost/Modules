@@ -99,7 +99,14 @@ CContactsCache.prototype.onGetContactsByEmailsResponse = function (oResponse, oR
 			if (oContact)
 			{
 				oContact.parse(oRawContact);
-				this.oContacts[oContact.email()] = oContact;
+				if (!this.oContacts[oContact.email()])
+				{
+					this.oContacts[oContact.email()] = oContact;
+				}
+				else if (!oContact.pgpSettingsEmpty())
+				{
+					this.oContacts[oContact.email()] = oContact;
+				}
 			}
 		}, this));
 	}
@@ -151,6 +158,21 @@ CContactsCache.prototype.markVcardsExistentByFile = function (sFile)
 			oVcard.exists(true);
 		}
 	});
+};
+
+/**
+ * @param {string} sFile
+ * @param {string} sUid
+ */
+CContactsCache.prototype.updateVcardUid = function (sFile, sUid)
+{
+	var oVcard = _.find(this.aVcardAttachments, function (oVcard) {
+		return oVcard.file() === sFile;
+	});
+	if (oVcard)
+	{
+		oVcard.uid(sUid);
+	}
 };
 
 /**

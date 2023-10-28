@@ -11,12 +11,20 @@
 		true,
 		"bool"
 	],
+    "AllowChangeMailQuotaOnMailServer": [
+        false,
+        "bool"
+	],
 	"AllowDefaultAccountForUser": [
 		false,
 		"bool"
 	],
 	"AllowIdentities": [
 		true,
+		"bool"
+	],
+	"OnlyUserEmailsInIdentities": [
+		false,
 		"bool"
 	],
 	"AllowFilters": [
@@ -29,6 +37,10 @@
 	],
 	"AllowAutoresponder": [
 		true,
+		"bool"
+	],
+	"EnableAllowBlockLists": [
+		false,
 		"bool"
 	],
 	"AllowInsertImage": [
@@ -46,6 +58,14 @@
 	"AllowTemplateFolders": [
 		false,
 		"bool"
+	],
+	"AllowInsertTemplateOnCompose": [
+		false,
+		"bool"
+	],
+	"MaxTemplatesCountOnCompose": [
+		100,
+		"int"
 	],
 	"AllowAlwaysRefreshFolders": [
 		false,
@@ -83,8 +103,8 @@
         "utf-8",
         "string"
     ],
-    "SieveHost": [
-        "127.0.0.1",
+    "OverriddenSieveHost": [
+        "",
         "string"
     ],
 	"SievePort": [
@@ -96,10 +116,6 @@
 		"bool"
 	],
 	"UseDateFromHeaders": [
-		false,
-		"bool"
-	],
-	"UseSortImapForDateMode": [
 		false,
 		"bool"
 	],
@@ -135,11 +151,53 @@
         true,
         "bool"
     ],
-	"XOriginatingIP": [
+	"XOriginatingIPHeaderName": [
+		"X-Original-IP",
+		"string"
+	],
+	"DoImapLoginOnAccountCreate": [
+		true,
+		"bool"
+    ],
+	"MessagesSortBy": [
+		{
+			"Allow": false,
+			"List": [
+				{
+					"SortBy": "arrival",
+					"LangConst": "LABEL_SORT_BY_DATE"
+				},
+				{
+					"SortBy": "from",
+					"LangConst": "LABEL_SORT_BY_FROM"
+				},
+				{
+					"SortBy": "to",
+					"LangConst": "LABEL_SORT_BY_TO"
+				}
+			],
+			"DefaultSortBy": "arrival",
+			"DefaultSortOrder": "desc"
+		},
+		"array"
+	],
+	"CreateHtmlLinksFromTextLinksInDOM": [
+		false,
+		"bool"
+    ],
+	"SieveCheckScript": [
 		false,
 		"bool"
 	],
-	"DoImapLoginOnAccountCreate": [
+	"MessagesInfoChunkSize": [
+		1000,
+		"int"
+	],
+	"ExpiredLinkLifetimeMinutes": [
+		30,
+		"int"
+	],
+	"AllowUnifiedInbox": [
 		true,
 		"bool"
 	]

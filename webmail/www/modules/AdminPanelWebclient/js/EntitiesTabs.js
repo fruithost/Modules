@@ -22,11 +22,11 @@ function CEntitiesTabs()
 				EditView: require('modules/%ModuleName%/js/views/EditTenantView.js'),
 				
 				ServerModuleName: Settings.ServerModuleName,
-				GetListRequest: 'GetEntityList',
-				GetRequest: 'GetEntity',
+				GetListRequest: 'GetTenants',
+				GetRequest: 'GetTenant',
 				CreateRequest: 'CreateTenant',
-				UpdateRequest: 'UpdateEntity',
-				DeleteRequest: 'DeleteEntities',
+				UpdateRequest: 'UpdateTenant',
+				DeleteRequest: 'DeleteTenants',
 				
 				NoEntitiesFoundText: TextUtils.i18n('%MODULENAME%/INFO_NO_ENTITIES_FOUND_TENANT'),
 				ActionCreateText: TextUtils.i18n('%MODULENAME%/ACTION_CREATE_ENTITY_TENANT'),
@@ -51,11 +51,11 @@ function CEntitiesTabs()
 			EditView: require('modules/%ModuleName%/js/views/EditUserView.js'),
 			
 			ServerModuleName: Settings.ServerModuleName,
-			GetListRequest: 'GetEntityList',
-			GetRequest: 'GetEntity',
+			GetListRequest: 'GetUsers',
+			GetRequest: 'GetUser',
 			CreateRequest: 'CreateUser',
-			UpdateRequest: 'UpdateEntity',
-			DeleteRequest: 'DeleteEntities',
+			UpdateRequest: 'UpdateUser',
+			DeleteRequest: 'DeleteUsers',
 			
 			NoEntitiesFoundText: TextUtils.i18n('%MODULENAME%/INFO_NO_ENTITIES_FOUND_USER'),
 			ActionCreateText: TextUtils.i18n('%MODULENAME%/ACTION_CREATE_ENTITY_USER'),
@@ -67,7 +67,8 @@ function CEntitiesTabs()
 			ActionDeleteText: TextUtils.i18n('%MODULENAME%/ACTION_DELETE_USER'),
 			ConfirmDeleteLangConst: '%MODULENAME%/CONFIRM_DELETE_USER_PLURAL',
 			ReportSuccessDeleteLangConst: '%MODULENAME%/REPORT_DELETE_ENTITIES_USER_PLURAL',
-			ErrorDeleteLangConst: '%MODULENAME%/ERROR_DELETE_ENTITIES_USER_PLURAL'
+			ErrorDeleteLangConst: '%MODULENAME%/ERROR_DELETE_ENTITIES_USER_PLURAL',
+			EntitiesCountText: TextUtils.i18n('%MODULENAME%/LABEL_USERS_COUNT')
 		}
 	);
 
@@ -112,7 +113,14 @@ CEntitiesTabs.prototype.changeEntityData = function (oEntityData)
 	if (oData)
 	{
 		_.each(oEntityData, function (mValue, sKey) {
-			oData[sKey] = mValue;
+			if (sKey === 'Filters' && _.isArray(oData[sKey]) && _.isArray(mValue))
+			{
+				oData[sKey] = oData[sKey].concat(mValue);
+			}
+			else
+			{
+				oData[sKey] = mValue;
+			}
 		});
 	}
 };

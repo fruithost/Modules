@@ -108,6 +108,10 @@ CSignatureSettingsFormView.prototype.getParametersForSave = function ()
 		{
 			_.extendOwn(oParameters, { 'FetcherId': this.fetcherOrIdentity().id() });
 		}
+		else if (this.fetcherOrIdentity().ALIAS)
+		{
+			_.extendOwn(oParameters, { 'AliasId': this.fetcherOrIdentity().id() });
+		}
 		else if (!this.fetcherOrIdentity().bAccountPart)
 		{
 			_.extendOwn(oParameters, { 'IdentityId': this.fetcherOrIdentity().id() });
@@ -125,6 +129,10 @@ CSignatureSettingsFormView.prototype.applySavedValues = function (oParameters)
 	if (oParameters.FetcherId)
 	{
 		AccountList.populateFetchers();
+	}
+	else if (oParameters.AliasId)
+	{
+		AccountList.populateAliases();
 	}
 	else if (!oParameters.IdentityId)
 	{
@@ -194,6 +202,10 @@ CSignatureSettingsFormView.prototype.save = function ()
 	if (this.fetcherOrIdentity() && this.fetcherOrIdentity().FETCHER)
 	{
 		CoreAjax.send(Settings.FetchersServerModuleName, 'UpdateSignature', this.getParametersForSave(), this.onResponse, this);
+	}
+	else if (this.fetcherOrIdentity() && this.fetcherOrIdentity().ALIAS)
+	{
+		CoreAjax.send(Settings.AliasesServerModuleName, 'UpdateSignature', this.getParametersForSave(), this.onResponse, this);
 	}
 	else
 	{

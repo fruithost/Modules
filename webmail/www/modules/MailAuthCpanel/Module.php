@@ -8,6 +8,8 @@
 namespace Aurora\Modules\MailAuthCpanel;
 
 /**
+ * This module allows cPanel user to Access Webmail from Email Accounts screen.
+ * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
@@ -137,13 +139,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 				if ($bResult)
 				{
-					$mResult = array(
-						'token' => 'auth',
-						'sign-me' => $aArgs['SignMe'],
-						'id' => $oAccount->IdUser,
-						'account' => $oAccount->EntityId,
-						'account_type' => $oAccount->getName()
-					);
+					$mResult = \Aurora\System\UserSession::getTokenData($oAccount, $aArgs['SignMe']);
 				}
 			}
 			catch (\Aurora\System\Exceptions\ApiException $oException)

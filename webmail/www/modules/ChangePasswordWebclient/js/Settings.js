@@ -7,8 +7,11 @@ var
 ;
 
 module.exports = {
-	// If true and there is only one mail account show change password button in common settings, not in mail account properties screen.
+	// If true show change password button in common settings, not in mail account properties screen.
 	ShowSingleMailChangePasswordInCommonSettings: false,
+
+	// If true show change password button in security settings, not in mail account properties screen or in common settings.
+	ShowSingleMailChangePasswordInSecuritySettings: false,
 	
 	/**
 	 * Initializes settings from AppData object sections.
@@ -22,6 +25,7 @@ module.exports = {
 		if (!_.isEmpty(oAppDataSection))
 		{
 			this.ShowSingleMailChangePasswordInCommonSettings = Types.pBool(oAppDataSection.ShowSingleMailChangePasswordInCommonSettings, this.ShowSingleMailChangePasswordInCommonSettings);
+			this.ShowSingleMailChangePasswordInSecuritySettings = Types.pBool(oAppDataSection.ShowSingleMailChangePasswordInSecuritySettings, this.ShowSingleMailChangePasswordInSecuritySettings);
 		}
 	}
 };

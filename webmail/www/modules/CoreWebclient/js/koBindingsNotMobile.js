@@ -165,9 +165,13 @@ ko.bindingHandlers.draggable = {
 };
 
 ko.bindingHandlers.draggablePlace = {
-	'init': function (oElement, fValueAccessor, fAllBindingsAccessor, oViewModel, bindingContext) {
+	'update': function (oElement, fValueAccessor, fAllBindingsAccessor, oViewModel, bindingContext) {
 		if (fValueAccessor() === null)
 		{
+			if ($(oElement).draggable())
+			{
+				$(oElement).draggable('destroy');
+			}
 			return null;
 		}
 
@@ -188,24 +192,29 @@ ko.bindingHandlers.draggablePlace = {
 };
 
 ko.bindingHandlers.droppable = {
-	'init': function (oElement, fValueAccessor) {
+	'update': function (oElement, fValueAccessor) {
 		var
 			oOptions = fValueAccessor(),
 			fValueFunc = oOptions.valueFunc,
 			fSwitchObserv = oOptions.switchObserv
 		;
-		
-		if (false !== fValueFunc)
+		if (!_.isFunction(fValueFunc))
 		{
-			$(oElement).droppable({
-				'hoverClass': 'droppableHover',
-				'drop': function (oEvent, oUi) {
-					fValueFunc(oEvent, oUi);
-				}
-			});
+			if ($(oElement).droppable())
+			{
+				$(oElement).droppable('destroy');
+			}
+			return;
 		}
 		
-		if (fSwitchObserv && fValueFunc !== false)
+		$(oElement).droppable({
+			'hoverClass': 'droppableHover',
+			'drop': function (oEvent, oUi) {
+				fValueFunc(oEvent, oUi);
+			}
+		});
+		
+		if (fSwitchObserv)
 		{
 			fSwitchObserv.subscribe(function (bIsSelected) {
 				if($(oElement).data().droppable)
@@ -441,6 +450,19 @@ ko.bindingHandlers.autocompleteSimple = {
 					fDelete();
 				}
 			});
+			var oAutocomplete = jqEl.data('customAutocomplete') || jqEl.data('uiAutocomplete') || jqEl.data('autocomplete') || jqEl.data('ui-autocomplete');
+			if (oAutocomplete)
+			{
+				if (_.isFunction(oOptions.renderItem))
+				{
+					oAutocomplete._renderItem = oOptions.renderItem;
+				}
+				oAutocomplete._resizeMenu = function () {
+					var oUl = this.menu.element;
+					oUl.outerWidth(this.element.outerWidth());
+				};
+			}
+			jqEl.autocomplete('widget').addClass('autocomplete-simple');
 		}
 	}
 };

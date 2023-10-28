@@ -5,28 +5,63 @@
 		<span class="popup_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_IMPORT_KEY'}"></span>
 
 		<div class="fields">
-			<div class="row" data-bind="visible: keys().length === 0">
+			<div class="row" data-bind="visible: !keysChecked()">
 				<textarea class="input import_pgp_key_area" data-bind="value: keyArmor, hasfocus: keyArmorFocused"></textarea>
 			</div>
-			<div class="row import_pgp_key_area" data-bind="visible: keys().length > 0">
-				<div class="headline" data-bind="text: headlineText"></div>
-				<div data-bind="foreach: keys">
-					<div class="key_item" data-bind="css: {'disabled': disabled}">
-						<label data-bind="css: {'checked': needToImport, 'disabled': disabled}" class="custom_checkbox checked">
+			
+			<div class="row import_pgp_key_area" data-bind="visible: keysChecked">
+				<div class="headline" data-bind="i18n: {'key': '%MODULENAME%/INFO_TEXT_CONTAINS_NO_KEYS_TO_IMPORT'}, visible: keysToImport().length === 0"></div>
+				<div class="headline" data-bind="i18n: {'key': '%MODULENAME%/INFO_TEXT_CONTAINS_KEYS_FOR_IMPORT'},  visible: keysToImport().length > 0"></div>
+				<div data-bind="foreach: keysToImport">
+					<div class="key_item">
+						<label data-bind="css: {'checked': needToImport}" class="custom_checkbox checked">
 							<span class="icon"></span>
-							<input type="checkbox" data-bind="checked: needToImport, attr: {'id': 'need_to_import_' + id}, disable: disabled">
+							<input type="checkbox" data-bind="checked: needToImport, attr: {'id': 'need_to_import_' + id}">
 						</label>
 						<label data-bind="attr: {'for': 'need_to_import_' + id}">
 							<span class="key_email" data-bind="text: email"></span>
 							<span data-bind="text: addInfo"></span>
+							<span data-bind="text: '(external)', visible: isExternal"></span>
 						</label>
 					</div>
 				</div>
-				<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/INFO_EXISTING_KEYS_GREYED'}, visible: hasExistingKeys"></div>
+				
+				<div class="headline" data-bind="i18n: {'key': '%MODULENAME%/INFO_TEXT_CONTAINS_KEYS_ALREADY_IN_SYSTEM'},  visible: keysAlreadyThere().length > 0"></div>
+				<div data-bind="foreach: keysAlreadyThere">
+					<div class="key_item disabled">
+						<label>
+							<span class="key_email" data-bind="text: email"></span>
+							<span data-bind="text: addInfo"></span>
+							<span data-bind="text: '(external)', visible: isExternal"></span>
+						</label>
+					</div>
+				</div>
+				
+				<div class="headline" data-bind="i18n: {'key': '%MODULENAME%/INFO_TEXT_CONTAINS_KEYS_EXTERNAL_PRIVATE'},  visible: keysPrivateExternal().length > 0"></div>
+				<div data-bind="foreach: keysPrivateExternal">
+					<div class="key_item disabled">
+						<label>
+							<span class="key_email" data-bind="text: email"></span>
+							<span data-bind="text: addInfo"></span>
+							<span data-bind="text: '(external)', visible: isExternal"></span>
+						</label>
+					</div>
+				</div>
+				
+				<div class="headline" data-bind="i18n: {'key': '%MODULENAME%/INFO_TEXT_CONTAINS_KEYS_WITH_NO_EMAIL'},  visible: keysBroken().length > 0"></div>
+				<div data-bind="foreach: keysBroken">
+					<div class="key_item disabled">
+						<label style="color: red;">
+							<span class="key_email" data-bind="text: email"></span>
+							<span data-bind="text: addInfo"></span>
+							<span data-bind="text: '(external)', visible: isExternal"></span>
+						</label>
+					</div>
+				</div>
 			</div>
 			<div class="buttons">
-				<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_CHECK'}, click: checkArmor, visible: keys().length === 0"></span>
-				<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_IMPORT_KEYS'}, click: importKey, visible: keys().length > 0"></span>
+				<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_CHECK'}, click: checkArmor, visible: !keysChecked()"></span>
+				<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_IMPORT_KEYS'}, click: importKey, visible: keysToImport().length > 0"></span>
 				<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: cancelPopup"></span>
 			</div>
 		</div>

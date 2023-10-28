@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link type="text/css" rel="stylesheet" href="./static/styles/themes/{{Theme}}/styles.css" />
+		<style>
+			html {
+				height: auto; 
+				min-width: auto; 
+				min-height: auto; 
+			}
+			body {
+				background-size: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="screen LoginLayout">
+			<div class="login_panel" style="width: auto;">
+				<div class="header">
+					<span class="icon"></span>
+				</div>
+				<div class="welcome welcome-reset-password">
+					<div id="description">{{Description}}</div>
+					<div id="wait_img" style="margin-top: 10px;"><img src="./static/styles/images/wait.gif" /></div>
+					<div class="buttons"  style="margin-top: 30px; text-align: center;">
+						<a href="#" class="button" id="attestation_link" style="display: none;">Continue</a>
+						<a href="javascript: window.close()" class="button" id="cancel_button">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			function base64ToArrayBuffer (sBase64)
+			{
+				var
+					sBinary = window.atob(sBase64),
+					iLen = sBinary.length,
+					oBytes = new Uint8Array(iLen)
+				;
+				for (var i = 0; i < iLen; i++)
+				{
+					oBytes[i] = sBinary.charCodeAt(i);
+				}
+				return oBytes.buffer;
+			}
+			
+			function arrayBufferToBase64 (buffer)
+			{
+				var
+					sBinary = '',
+					oBytes = new Uint8Array(buffer),
+					iLen = oBytes.byteLength
+				;
+				for (var i = 0; i < iLen; i++)
+				{
+					sBinary += String.fromCharCode(oBytes[ i ]);
+				}
+				return window.btoa(sBinary);
+			}
+			
+			function returnAttestation (sAttestation)
+			{
+				if (sPackageName)
+				{
+					var elem = document.getElementById('attestation_link');
+					elem.style.display = 'inline';
+					elem.href = sPackageName + '://u2f?attestation=' + encodeURIComponent(JSON.stringify(sAttestation));
+					document.getElementById('wait_img').style.display = 'none';
+					if (!sAttestation.error) {
+						document.getElementById('description').innerHTML = 'You are successfully authorised, please press the button below to switch to the app.';
+					} else {
+						document.getElementById('description').innerHTML = 'Something went wrong, please press the button below to switch to the app.';
+					}
+				}
+				else
+				{
+					window.Attestation = sAttestation;
+				}
+			}
+
+
+			var
+				bSecurityKeysNotSupportedError = !(navigator.credentials && navigator.credentials.get),
+				bIsHttps = window.location.protocol === 'https:'
+			;
+			if (!bIsHttps || bSecurityKeysNotSupportedError)
+			{
+				returnAttestation({
+					error: {
+						https: !bIsHttps,
+						support: bSecurityKeysNotSupportedError
+					}
+				});
+			}
+			else
+			{
+				var oGetArgs = {{GetArgs}};
+				var sPackageName = '{{PackageName}}';
+				var sError = '{{Error}}';
+				if (oGetArgs)
+				{
+					oGetArgs.publicKey.challenge = base64ToArrayBuffer(oGetArgs.publicKey.challenge);
+					oGetArgs.publicKey.allowCredentials.forEach(element => {
+						element.id = base64ToArrayBuffer(element.id);
+					});
+					navigator.credentials.get(oGetArgs)
+						.then((oCreds) => {
+							var oCredsResponse = oCreds && oCreds.response;
+							returnAttestation({
+								id: oCreds && oCreds.rawId ? arrayBufferToBase64(oCreds.rawId) : null,
+								clientDataJSON: oCredsResponse && oCredsResponse.clientDataJSON  ? arrayBufferToBase64(oCredsResponse.clientDataJSON) : null,
+								authenticatorData: oCredsResponse && oCredsResponse.authenticatorData ? arrayBufferToBase64(oCredsResponse.authenticatorData) : null,
+								signature : oCredsResponse && oCredsResponse.signature ? arrayBufferToBase64(oCredsResponse.signature) : null
+							});
+						})
+						.catch((err) => {
+							returnAttestation({
+								error: {
+									cancel: true,
+									message: err.message
+								}
+							});
+						});
+				}
+				else
+				{
+					returnAttestation({
+						error: {
+							message: sError
+						}
+					});
+				}
+			}
+		</script>
+	</body>
+</html>

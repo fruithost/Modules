@@ -1,37 +1,56 @@
 'use strict';
 
+function AddQuotaSettingsView(Settings, ModulesManager, TextUtils)
+{
+	if (Settings.AllowChangeMailQuotaOnMailServer)
+	{
+		ModulesManager.run('AdminPanelWebclient', 'registerAdminPanelTab', [
+			function(resolve) {
+				require.ensure(
+					['modules/%ModuleName%/js/views/settings/MailQuotaAdminSettingsFormView.js'],
+					function() {
+						resolve(require('modules/%ModuleName%/js/views/settings/MailQuotaAdminSettingsFormView.js'));
+					},
+					'admin-bundle'
+				);
+			},
+			Settings.HashModuleName + '-quota',
+			TextUtils.i18n('%MODULENAME%/LABEL_SETTINGS_TAB')
+		]);
+	}
+}
+
 module.exports = function (oAppData) {
 	require('modules/%ModuleName%/js/enums.js');
-	
+
 	var
 		_ = require('underscore'),
 		ko = require('knockout'),
 
 		TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
-		
+
 		App = require('%PathToCoreWebclientModule%/js/App.js'),
 		ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
 
 		bAdminUser = App.getUserRole() === Enums.UserRole.SuperAdmin,
-		bNormalUser = App.getUserRole() === Enums.UserRole.NormalUser,
 
 		AccountList = null,
 		ComposeView = null,
-		
+
 		HeaderItemView = null
 	;
-	
+
 	Settings.init(oAppData);
-	
+
 	if (!ModulesManager.isModuleAvailable(Settings.ServerModuleName))
 	{
 		return null;
 	}
-	
+
 	AccountList = require('modules/MailWebclient/js/AccountList.js');
-	
+
 	if (bAdminUser)
 	{
 		return {
@@ -43,7 +62,7 @@ module.exports = function (oAppData) {
 							function() {
 								resolve(require('modules/%ModuleName%/js/views/settings/ServersAdminSettingsPaneView.js'));
 							},
-							"admin-bundle"
+							'admin-bundle'
 						);
 					},
 					Settings.HashModuleName + '-servers',
@@ -56,12 +75,13 @@ module.exports = function (oAppData) {
 							function() {
 								resolve(require('modules/%ModuleName%/js/views/settings/MailAdminSettingsFormView.js'));
 							},
-							"admin-bundle"
+							'admin-bundle'
 						);
 					},
 					Settings.HashModuleName,
 					TextUtils.i18n('%MODULENAME%/LABEL_SETTINGS_TAB')
 				]);
+				AddQuotaSettingsView(Settings, ModulesManager, TextUtils);
 			},
 			getAccountList: function () {
 				return AccountList;
@@ -71,11 +91,11 @@ module.exports = function (oAppData) {
 			}
 		};
 	}
-	else if (bNormalUser)
+	else if (App.isUserNormalOrTenant())
 	{
 		var Cache = require('modules/%ModuleName%/js/Cache.js');
 		Cache.init();
-		
+
 		if (App.isNewTab())
 		{
 			var GetComposeView = function() {
@@ -105,6 +125,17 @@ module.exports = function (oAppData) {
 					var ComposeView = GetComposeView();
 					ComposeView.registerToolbarController(oController);
 				},
+				registerComposeMessageRowController: function (oController) {
+					var ComposeView = GetComposeView();
+					ComposeView.registerMessageRowController(oController);
+				},
+				getComposeMessageWithData: function () {
+					var
+						bAllowSendMail = true,
+						ComposeUtils = require('modules/%ModuleName%/js/utils/Compose.js')
+					;
+					return bAllowSendMail ? ComposeUtils.composeMessageWithData : false;
+				},
 				getComposeMessageToAddresses: function () {
 					var
 						bAllowSendMail = true,
@@ -122,6 +153,18 @@ module.exports = function (oAppData) {
 				getSearchMessagesInCurrentFolder: function () {
 					var MainTab = window.opener && window.opener.MainTabMailMethods;
 					return MainTab ? _.bind(MainTab.searchMessagesInCurrentFolder, MainTab) : false;
+				},
+				getCurrentMessage: function () {
+					return Cache.currentMessage();
+				},
+				getCurrentFolderList: function () {
+					return Cache.folderList();
+				},
+				syncFolders: function () {
+					return Cache.getFolderList(Cache.currentAccountId());
+				},
+				removeMessageFromCurrentList: function (iAccountId, sFolder, sUid) {
+					return Cache.removeMessageFromCurrentList(iAccountId, sFolder, sUid);
 				}
 			};
 		}
@@ -135,6 +178,13 @@ module.exports = function (oAppData) {
 						ComposeUtils = require('modules/%ModuleName%/js/utils/Compose.js')
 					;
 					return bAllowSendMail ? ComposeUtils.composeMessageToAddresses : false;
+				},
+				getComposeMessageWithData: function () {
+					var
+						bAllowSendMail = true,
+						ComposeUtils = require('modules/%ModuleName%/js/utils/Compose.js')
+					;
+					return bAllowSendMail ? ComposeUtils.composeMessageWithData : false;
 				},
 				getComposeMessageWithAttachments: function () {
 					var
@@ -150,6 +200,10 @@ module.exports = function (oAppData) {
 					var ComposePopup = require('modules/%ModuleName%/js/popups/ComposePopup.js');
 					ComposePopup.registerToolbarController(oController);
 				},
+				registerComposeMessageRowController: function (oController) {
+					var ComposePopup = require('modules/%ModuleName%/js/popups/ComposePopup.js');
+					ComposePopup.registerMessageRowController(oController);
+				},
 				getSearchMessagesInInbox: function () {
 					return _.bind(Cache.searchMessagesInInbox, Cache);
 				},
@@ -158,6 +212,25 @@ module.exports = function (oAppData) {
 				},
 				getSearchMessagesInCurrentFolder: function () {
 					return _.bind(Cache.searchMessagesInCurrentFolder, Cache);
+				},
+				getMessage: function (sFullName, sUid, fResponseHandler) {
+					return Cache.getMessage(Cache.currentAccountId(), sFullName, sUid, fResponseHandler, Cache);
+				},
+				getCurrentMessage: function () {
+					return Cache.currentMessage();
+				},
+				getCurrentFolderList: function () {
+					return Cache.folderList();
+				},
+				syncFolders: function () {
+					return Cache.getFolderList(Cache.currentAccountId());
+				},
+				removeMessageFromCurrentList: function (iAccountId, sFolder, sUid) {
+					return Cache.removeMessageFromCurrentList(iAccountId, sFolder, sUid);
+				},
+				deleteMessages: function (iAccountId, sFolderFullName, aUids) {
+					var oFolder = Cache.getFolderByFullName(iAccountId, sFolderFullName);
+					Cache.deleteMessagesFromFolder(oFolder, aUids);
 				},
 				getAllAccountsFullEmails: function () {
 					return AccountList.getAllFullEmails();
@@ -170,7 +243,7 @@ module.exports = function (oAppData) {
 						Routing = require('%PathToCoreWebclientModule%/js/Routing.js'),
 						LinksUtils = require('modules/%ModuleName%/js/utils/Links.js')
 					;
-					Routing.setHash(LinksUtils.getMailbox(sFolder, iPage, sUid, sSearch, sFilters, sCustom));
+					Routing.setHash(LinksUtils.getMailbox(sFolder, iPage, sUid, sSearch, sFilters, Settings.MessagesSortBy.DefaultSortBy, Settings.MessagesSortBy.DefaultSortOrder, sCustom));
 				}
 			};
 
@@ -224,6 +297,11 @@ module.exports = function (oAppData) {
 							Settings.userMailAccountsCount(aAuthAcconts.length);
 							Settings.mailAccountsEmails(aAuthAccountsEmails);
 						}, this);
+
+						if (App.getUserRole() === Enums.UserRole.TenantAdmin)
+						{
+							AddQuotaSettingsView(Settings, ModulesManager, TextUtils);
+						}
 					},
 					getScreens: function () {
 						var oScreens = {};
@@ -238,7 +316,7 @@ module.exports = function (oAppData) {
 						{
 							HeaderItemView = require('modules/%ModuleName%/js/views/HeaderItemView.js');
 						}
-						
+
 						return {
 							item: HeaderItemView,
 							name: Settings.HashModuleName
@@ -253,6 +331,6 @@ module.exports = function (oAppData) {
 			return oMethods;
 		}
 	}
-	
+
 	return null;
 };

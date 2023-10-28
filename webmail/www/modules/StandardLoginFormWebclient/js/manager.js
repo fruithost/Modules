@@ -47,6 +47,13 @@ module.exports = function (oAppData) {
 		{
 			return {
 				/**
+				 * Returns login view screen as is.
+				 */
+				getLoginScreenView: function () {
+					return require('modules/%ModuleName%/js/views/LoginView.js');
+				},
+				
+				/**
 				 * Returns login view screen.
 				 */
 				getScreens: function () {

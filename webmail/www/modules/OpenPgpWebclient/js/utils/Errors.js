@@ -160,9 +160,18 @@ ErrorsUtils.showPgpErrorByCode = function (oRes, sPgpAction, sDefaultError)
 				sError = TextUtils.i18n('%MODULENAME%/ERROR_SIGN');
 				break;
 		}
+	}
+
+	if (sError === '' && sDefaultError)
+	{
 		sError = sDefaultError;
 	}
 	
+	if (sError === '')
+	{
+		sError = TextUtils.i18n('COREWEBCLIENT/ERROR_UNKNOWN');
+	}
+
 	if (sError !== '')
 	{
 		Screens.showError(sError);

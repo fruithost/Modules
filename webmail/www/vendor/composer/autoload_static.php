@@ -4,31 +4,39 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
+class ComposerStaticInite72fdd2d810050651b32d46aa87962bb
 {
     public static $files = array (
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '383eaff206634a77a1be54e64e6459c7' => __DIR__ . '/..' . '/sabre/uri/lib/functions.php',
+        '3569eecfeed3bcf0bad3c998a494ecb8' => __DIR__ . '/..' . '/sabre/xml/lib/Deserializer/functions.php',
+        '93aa591bc4ca510c520999e34229ee79' => __DIR__ . '/..' . '/sabre/xml/lib/Serializer/functions.php',
         '2b9d0f43f9552984cfa82fee95491826' => __DIR__ . '/..' . '/sabre/event/lib/coroutine.php',
         'd81bab31d3feb45bfe2f283ea3c8fdf7' => __DIR__ . '/..' . '/sabre/event/lib/Loop/functions.php',
         'a1cce3d26cc15c00fcd0b3354bd72c88' => __DIR__ . '/..' . '/sabre/event/lib/Promise/functions.php',
-        '3569eecfeed3bcf0bad3c998a494ecb8' => __DIR__ . '/..' . '/sabre/xml/lib/Deserializer/functions.php',
-        '93aa591bc4ca510c520999e34229ee79' => __DIR__ . '/..' . '/sabre/xml/lib/Serializer/functions.php',
+        '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
+        'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
+        'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        '7ba3c774c30c8399e359b5ff7f3b943e' => __DIR__ . '/..' . '/tightenco/collect/src/Illuminate/Support/helpers.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'ebdb698ed4152ae445614b69b5e4bb6a' => __DIR__ . '/..' . '/sabre/http/lib/functions.php',
-        '7ba3c774c30c8399e359b5ff7f3b943e' => __DIR__ . '/..' . '/tightenco/collect/src/Illuminate/Support/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'W' => 
+        'Z' => 
         array (
-            'Wikimedia\\Composer\\' => 19,
+            'ZipStream\\' => 10,
         ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Php80\\' => 23,
+            'Symfony\\Polyfill\\Php72\\' => 23,
+            'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
+            'Symfony\\Polyfill\\Intl\\Idn\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\Filesystem\\' => 29,
@@ -42,12 +50,19 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
             'Sabre\\CardDAV\\' => 14,
             'Sabre\\CalDAV\\' => 13,
         ),
+        'R' => 
+        array (
+            'ReCaptcha\\' => 10,
+            'Rakit\\Validation\\' => 17,
+        ),
         'P' => 
         array (
             'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Cache\\' => 10,
+            'PragmaRX\\Recovery\\' => 18,
+            'PragmaRX\\Random\\' => 16,
             'PHPixie\\Tests\\' => 14,
             'PHPixie\\' => 8,
         ),
@@ -58,6 +73,7 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         'K' => 
         array (
             'Kunnu\\Dropbox\\' => 14,
+            'Knp\\Snappy\\' => 11,
         ),
         'I' => 
         array (
@@ -77,9 +93,25 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
     );
 
     public static $prefixDirsPsr4 = array (
-        'Wikimedia\\Composer\\' => 
+        'ZipStream\\' => 
         array (
-            0 => __DIR__ . '/..' . '/wikimedia/composer-merge-plugin/src',
+            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
+        ),
+        'Symfony\\Polyfill\\Php80\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
+        ),
+        'Symfony\\Polyfill\\Php72\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php72',
+        ),
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
+        ),
+        'Symfony\\Polyfill\\Intl\\Idn\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
         ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
@@ -129,6 +161,14 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         array (
             0 => __DIR__ . '/..' . '/sabre/dav/lib/CalDAV',
         ),
+        'ReCaptcha\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/google/recaptcha/src/ReCaptcha',
+        ),
+        'Rakit\\Validation\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/rakit/validation/src',
+        ),
         'Psr\\SimpleCache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
@@ -145,17 +185,25 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         array (
             0 => __DIR__ . '/..' . '/psr/cache/src',
         ),
+        'PragmaRX\\Recovery\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/pragmarx/recovery/src',
+        ),
+        'PragmaRX\\Random\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/pragmarx/random/src',
+        ),
         'PHPixie\\Tests\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpixie/cache/tests/PHPixie/Tests',
+            0 => __DIR__ . '/..' . '/phpixie/slice/tests/PHPixie/Tests',
             1 => __DIR__ . '/..' . '/phpixie/filesystem/tests/PHPixie/Tests',
-            2 => __DIR__ . '/..' . '/phpixie/slice/tests/PHPixie/Tests',
+            2 => __DIR__ . '/..' . '/phpixie/cache/tests/PHPixie/Tests',
         ),
         'PHPixie\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpixie/cache/src/PHPixie',
+            0 => __DIR__ . '/..' . '/phpixie/slice/src/PHPixie',
             1 => __DIR__ . '/..' . '/phpixie/filesystem/src/PHPixie',
-            2 => __DIR__ . '/..' . '/phpixie/slice/src/PHPixie',
+            2 => __DIR__ . '/..' . '/phpixie/cache/src/PHPixie',
         ),
         'OomphInc\\ComposerInstallersExtender\\' => 
         array (
@@ -164,6 +212,10 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         'Kunnu\\Dropbox\\' => 
         array (
             0 => __DIR__ . '/..' . '/kunalvarma05/dropbox-php-sdk/src/Dropbox',
+        ),
+        'Knp\\Snappy\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/knplabs/knp-snappy/src/Knp/Snappy',
         ),
         'Intervention\\Image\\' => 
         array (
@@ -199,13 +251,6 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
                 0 => __DIR__ . '/..' . '/tijsverkoyen/css-to-inline-styles',
             ),
         ),
-        'P' => 
-        array (
-            'PEAR' => 
-            array (
-                0 => __DIR__ . '/..' . '/pear/pear_exception',
-            ),
-        ),
         'N' => 
         array (
             'Net' => 
@@ -220,13 +265,6 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
                 0 => __DIR__ . '/..' . '/afterlogic/mailso/lib',
             ),
         ),
-        'K' => 
-        array (
-            'Knp\\Snappy' => 
-            array (
-                0 => __DIR__ . '/..' . '/knplabs/knp-snappy/src',
-            ),
-        ),
         'G' => 
         array (
             'Gufy\\CpanelPhp\\' => 
@@ -237,6 +275,7 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
     );
 
     public static $classMap = array (
+        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Aurora\\Api' => __DIR__ . '/../..' . '/system/ApiAlias.php',
         'Aurora\\Installer' => __DIR__ . '/../..' . '/system/Installer.php',
         'Aurora\\System\\AbstractContainer' => __DIR__ . '/../..' . '/system/AbstractContainer.php',
@@ -244,6 +283,7 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         'Aurora\\System\\Api' => __DIR__ . '/../..' . '/system/Api.php',
         'Aurora\\System\\Application' => __DIR__ . '/../..' . '/system/Application.php',
         'Aurora\\System\\Classes\\AbstractAccount' => __DIR__ . '/../..' . '/system/Classes/AbstractAccount.php',
+        'Aurora\\System\\Classes\\AuthToken' => __DIR__ . '/../..' . '/system/Classes/AuthToken.php',
         'Aurora\\System\\Db\\AbstractCommandCreator' => __DIR__ . '/../..' . '/system/Db/AbstractCommandCreator.php',
         'Aurora\\System\\Db\\Creator' => __DIR__ . '/../..' . '/system/Db/Creator.php',
         'Aurora\\System\\Db\\Field' => __DIR__ . '/../..' . '/system/Db/Field.php',
@@ -262,6 +302,7 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         'Aurora\\System\\Db\\Table' => __DIR__ . '/../..' . '/system/Db/Table.php',
         'Aurora\\System\\EAV\\Attribute' => __DIR__ . '/../..' . '/system/EAV/Attribute.php',
         'Aurora\\System\\EAV\\Entity' => __DIR__ . '/../..' . '/system/EAV/Entity.php',
+        'Aurora\\System\\EAV\\Query' => __DIR__ . '/../..' . '/system/EAV/Query.php',
         'Aurora\\System\\Enums\\AbstractEnumeration' => __DIR__ . '/../..' . '/system/Enums/AbstractEnumeration.php',
         'Aurora\\System\\Enums\\Capa' => __DIR__ . '/../..' . '/system/Enums/Capa.php',
         'Aurora\\System\\Enums\\DateFormat' => __DIR__ . '/../..' . '/system/Enums/DateFormat.php',
@@ -286,6 +327,7 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         'Aurora\\System\\Exceptions\\StorageException' => __DIR__ . '/../..' . '/system/Exceptions/StorageException.php',
         'Aurora\\System\\Exceptions\\ValidationException' => __DIR__ . '/../..' . '/system/Exceptions/ValidationException.php',
         'Aurora\\System\\Ints' => __DIR__ . '/../..' . '/system/Utils.php',
+        'Aurora\\System\\Logger' => __DIR__ . '/../..' . '/system/Logger.php',
         'Aurora\\System\\Managers\\AbstractManager' => __DIR__ . '/../..' . '/system/Managers/AbstractManager.php',
         'Aurora\\System\\Managers\\AbstractManagerWithStorage' => __DIR__ . '/../..' . '/system/Managers/AbstractManagerWithStorage.php',
         'Aurora\\System\\Managers\\AbstractStorage' => __DIR__ . '/../..' . '/system/Managers/AbstractStorage.php',
@@ -304,6 +346,7 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         'Aurora\\System\\Managers\\Filecache\\Storage' => __DIR__ . '/../..' . '/system/Managers/Filecache/Storage.php',
         'Aurora\\System\\Managers\\Integrator' => __DIR__ . '/../..' . '/system/Managers/Integrator.php',
         'Aurora\\System\\Managers\\Response' => __DIR__ . '/../..' . '/system/Managers/Response.php',
+        'Aurora\\System\\Managers\\Thumb' => __DIR__ . '/../..' . '/system/Managers/Thumb.php',
         'Aurora\\System\\Module\\AbstractLicensedModule' => __DIR__ . '/../..' . '/system/Module/AbstractLicensedModule.php',
         'Aurora\\System\\Module\\AbstractModule' => __DIR__ . '/../..' . '/system/Module/AbstractModule.php',
         'Aurora\\System\\Module\\AbstractWebclientModule' => __DIR__ . '/../..' . '/system/Module/AbstractWebclientModule.php',
@@ -325,8 +368,10 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         'Aurora\\System\\Utils\\ImageThumb' => __DIR__ . '/../..' . '/system/Utils/ImageThumb.php',
         'Aurora\\System\\Utils\\Ldap' => __DIR__ . '/../..' . '/system/Utils/Ldap.php',
         'Aurora\\System\\Utils\\Validate' => __DIR__ . '/../..' . '/system/Utils/Validate.php',
+        'Aurora\\System\\Validator' => __DIR__ . '/../..' . '/system/Validator.php',
         'Aurora\\System\\Xml\\Document' => __DIR__ . '/../..' . '/system/Xml/Document.php',
         'Aurora\\System\\Xml\\Node' => __DIR__ . '/../..' . '/system/Xml/Node.php',
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Generic_Sniffs_Arrays_DisallowLongArraySyntaxSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/Generic/Sniffs/Arrays/DisallowLongArraySyntaxSniff.php',
         'Generic_Sniffs_Arrays_DisallowShortArraySyntaxSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/Generic/Sniffs/Arrays/DisallowShortArraySyntaxSniff.php',
         'Generic_Sniffs_Classes_DuplicateClassNameSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/Generic/Sniffs/Classes/DuplicateClassNameSniff.php',
@@ -3967,6 +4012,8 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         'MySource_Sniffs_PHP_GetRequestDataSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/MySource/Sniffs/PHP/GetRequestDataSniff.php',
         'MySource_Sniffs_PHP_ReturnFunctionValueSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/MySource/Sniffs/PHP/ReturnFunctionValueSniff.php',
         'MySource_Sniffs_Strings_JoinStringsSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/MySource/Sniffs/Strings/JoinStringsSniff.php',
+        'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+        'PEAR_Exception' => __DIR__ . '/..' . '/pear/pear_exception/PEAR/Exception.php',
         'PEAR_Sniffs_Classes_ClassDeclarationSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/PEAR/Sniffs/Classes/ClassDeclarationSniff.php',
         'PEAR_Sniffs_Commenting_ClassCommentSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/PEAR/Sniffs/Commenting/ClassCommentSniff.php',
         'PEAR_Sniffs_Commenting_FileCommentSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/PEAR/Sniffs/Commenting/FileCommentSniff.php',
@@ -4139,6 +4186,9 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
         'Squiz_Sniffs_WhiteSpace_ScopeKeywordSpacingSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/Squiz/Sniffs/WhiteSpace/ScopeKeywordSpacingSniff.php',
         'Squiz_Sniffs_WhiteSpace_SemicolonSpacingSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/Squiz/Sniffs/WhiteSpace/SemicolonSpacingSniff.php',
         'Squiz_Sniffs_WhiteSpace_SuperfluousWhitespaceSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/Squiz/Sniffs/WhiteSpace/SuperfluousWhitespaceSniff.php',
+        'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
+        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
+        'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
         'Zend_Sniffs_Debug_CodeAnalyzerSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/Zend/Sniffs/Debug/CodeAnalyzerSniff.php',
         'Zend_Sniffs_Files_ClosingTagSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/Zend/Sniffs/Files/ClosingTagSniff.php',
         'Zend_Sniffs_NamingConventions_ValidVariableNameSniff' => __DIR__ . '/..' . '/squizlabs/php_codesniffer/CodeSniffer/Standards/Zend/Sniffs/NamingConventions/ValidVariableNameSniff.php',
@@ -4147,10 +4197,10 @@ class ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit41005a5ec70823b43ec366d5c43bd3f9::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInite72fdd2d810050651b32d46aa87962bb::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInite72fdd2d810050651b32d46aa87962bb::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInite72fdd2d810050651b32d46aa87962bb::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInite72fdd2d810050651b32d46aa87962bb::$classMap;
 
         }, null, ClassLoader::class);
     }

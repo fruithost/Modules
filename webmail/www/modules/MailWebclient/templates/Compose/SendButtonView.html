@@ -1,5 +1,28 @@
-<span class="item buttons">
-	<span class="button" data-bind="command: sendCommand" id="selenium_compose_send_button">
-		<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_SEND'}"></span>
+<span class="group buttons buttons_send_group" data-bind="dropdown: {}">
+	<span class="item" data-bind="attr: {'style': (toolbarControllers().length > 0 ? 'padding-left:0;': '')}" >
+		<span class="button" data-bind="command: sendCommand">
+			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_SEND'}"></span>
+		</span>
 	</span>
+
+	<!-- ko if: toolbarControllers().length > 0 -->
+		<span class="item control buttons_send_arrow">
+			<span class="button">
+				<span class="icon arrow" style="display: block;"></span>
+			</span>
+		</span>
+
+		<span class="dropdown">
+			<span class="dropdown_helper">
+				<!-- <span class="dropdown_arrow">
+					<span></span>
+				</span> -->
+				<span class="dropdown_content">
+					<!-- ko foreach: toolbarControllers -->
+					<!-- ko template: { name: $data.ViewTemplate, data: $data} --><!-- /ko -->
+					<!-- /ko -->
+				</span>
+			</span>
+		</span>
+	<!-- /ko -->
 </span>

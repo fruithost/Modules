@@ -57,7 +57,7 @@ CAddressListModel.prototype.excludeCollection = function (aCollection)
 {
 	_.each(aCollection, function (oAddress) {
 		this.aCollection = _.filter(this.aCollection, function (oThisAddress) {
-			return oAddress.sEmail !== oThisAddress.sEmail;
+			return oAddress.sEmail.toLowerCase() !== oThisAddress.sEmail.toLowerCase();
 		});
 	}, this);
 };

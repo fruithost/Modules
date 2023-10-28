@@ -8,6 +8,8 @@
 namespace Aurora\Modules\MailTnefWebclientPlugin;
 
 /**
+ * Adds Expand button on TNEF-attachment and shows its content.
+ * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.

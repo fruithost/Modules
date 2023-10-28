@@ -1,0 +1,10 @@
+{
+    "Disabled": [
+		false,
+		"bool"
+	],
+	"Password": [
+	"",
+	"string"
+	]
+}

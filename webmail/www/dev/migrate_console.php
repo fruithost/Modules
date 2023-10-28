@@ -16,6 +16,11 @@
 $sP7ProductPath = "PATH_TO_YOUR_WEBMAIL_V7_INSTALLATION";
 $sP7ApiPath = $sP7ProductPath . '/libraries/afterlogic/api.php';
 
+if (PHP_SAPI !== 'cli')
+{
+	exit("Use console");
+}
+
 $aLongopts = [
 	"user_list",
 	"skip_sabredav",
@@ -39,6 +44,7 @@ class P7ToP8Migration
 	//Number of unsuccessful attempts after which user will be skipped
 	const ATTEMPTS_MAX_NUMBER = 3;
 	const QUOTA_KILO_MULTIPLIER = 1024;
+	const PHP_EXEC = "php";
 
 	public $oP7Settings = false;
 	public $oP7PDO = false;
@@ -58,6 +64,7 @@ class P7ToP8Migration
 	public $oP8OAuthIntegratorWebclientModule = null;
 	public $oP8CalendarModuleDecorator = null;
 	public $oP8MtaConnectorModule = null;
+	public $oP8MtaConnectorModuleDecorator = null;
 
 	public $sMigrationLogFile = null;
 	public $sUserListFile = null;
@@ -121,7 +128,9 @@ class P7ToP8Migration
 		$this->oP8CalendarModuleDecorator = \Aurora\System\Api::GetModuleDecorator('Calendar');
 		if (isset($aOptions["mta_mode"]))
 		{
-			$this->oP8MtaConnectorModule = \Aurora\System\Api::GetModule("MtaConnector");
+			$oP8MtaConnectorModule = \Aurora\System\Api::GetModule("MtaConnector");
+			$this->oP8MtaConnectorModule = $oP8MtaConnectorModule;
+			$this->oP8MtaConnectorModuleDecorator = $oP8MtaConnectorModule::Decorator();
 		}
 
 		if (!$this->oP8MailModule instanceof Aurora\Modules\Mail\Module)
@@ -340,11 +349,19 @@ class P7ToP8Migration
 				}
 				\Aurora\System\Api::Log("  Settings migrated successfully ", \Aurora\System\Enums\LogLevel::Full, 'migration-');
 				//DOMAIN
-				$oServer = !$oP7Account->Domain->IsDefaultDomain ? $this->GetServerByName($oP7Account->Domain->Name) : false;
-				if (!$oP7Account->Domain->IsDefaultDomain && !$oServer)
+				$sDomainName = $oP7Account->Domain->IdDomain === 0 ? $oP7Account->Domain->IncomingMailServer : $oP7Account->Domain->Name;
+				$oP7DefaultDomain = $this->oP7ApiDomainsManager->getDefaultDomain();
+				$oServer = $this->GetServerByName($sDomainName);
+				$bServerOwnerIsAccount = $oP7Account->Domain->IdDomain === 0 &&
+					($oP7Account->IncomingMailServer !== $oP7DefaultDomain->IncomingMailServer ||
+					$oP7Account->OutgoingMailServer !== $oP7DefaultDomain->OutgoingMailServer);
+				$oServer = $bServerOwnerIsAccount ? null : $oServer;
+				if (!$oServer && !$bServerOwnerIsAccount)
 				{
-					//create server if not exists and not default
-					$iServerId = $this->DomainP7ToP8($this->oP7ApiDomainsManager->getDomainById($oP7Account->Domain->IdDomain));
+					$oP7Domain = $oP7Account->Domain->IdDomain === 0 ?
+						$oP7DefaultDomain :
+						$this->oP7ApiDomainsManager->getDomainById($oP7Account->Domain->IdDomain);
+					$iServerId = $this->DomainP7ToP8($oP7Domain);
 					if (!$iServerId)
 					{
 						\Aurora\System\Api::Log("Error while Server creation: " . $oP7Account->Domain->Name, \Aurora\System\Enums\LogLevel::Full, 'migration-');
@@ -461,6 +478,7 @@ class P7ToP8Migration
 				$sTargetPath = $this->sP7UserFiles . "/" . $sP7UserEmail;
 				if ($sP7UserEmail !== '' && is_dir($sTargetPath))
 				{
+					\Aurora\System\Api::Log("	Started copying user files for " . $sP7UserEmail, \Aurora\System\Enums\LogLevel::Full, 'migration-');
 					$sDestinationPath = $this->sP8UserFiles . "/" . $oP8User->UUID;
 					if ($this->oP8MtaConnectorModule)
 					{
@@ -471,6 +489,7 @@ class P7ToP8Migration
 					{
 						$this->CopyDir($sTargetPath, $sDestinationPath);
 					}
+					\Aurora\System\Api::Log("	File copying complete", \Aurora\System\Enums\LogLevel::Full, 'migration-');
 				}
 
 				//add user to migrated-users file
@@ -569,7 +588,11 @@ class P7ToP8Migration
 			return true;
 		}
 
-		if (!$oServer || $oP7Account->Domain->IdDomain === 0)
+		$oP7DefaultDomain = $this->oP7ApiDomainsManager->getDefaultDomain();
+		$bServerOwnerIsAccount = $oP7Account->Domain->IdDomain === 0 &&
+			($oP7Account->IncomingMailServer !== $oP7DefaultDomain->IncomingMailServer ||
+			$oP7Account->OutgoingMailServer !== $oP7DefaultDomain->OutgoingMailServer);
+		if (!$oServer || $bServerOwnerIsAccount)
 		{
 			$oP7Account->Domain->IncomingMailServer	= $oP7Account->IncomingMailServer;
 			$oP7Account->Domain->IncomingMailPort		= $oP7Account->IncomingMailPort;
@@ -580,7 +603,10 @@ class P7ToP8Migration
 			$oP7Account->Domain->OutgoingMailUseSSL	= $oP7Account->OutgoingMailUseSSL;
 			$oP7Account->Domain->OutgoingMailAuth		= $oP7Account->OutgoingMailAuth;
 
-			$iServerId = $this->DomainP7ToP8($oP7Account->Domain);
+			$iServerId = $this->DomainP7ToP8(
+				$oP7Account->Domain,
+				$bServerOwnerIsAccount ? \Aurora\Modules\Mail\Enums\ServerOwnerType::Account : \Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin
+			);
 			if (!$iServerId)
 			{
 				\Aurora\System\Api::Log("Error while Server creation: " . $oP7Account->Domain->IncomingMailServer, \Aurora\System\Enums\LogLevel::Full, 'migration-');
@@ -922,18 +948,16 @@ class P7ToP8Migration
 
 	public function GetServerByName($sServerName)
 	{
-		$aServers = $this->oP8MailModuleDecorator->GetServers();
-		foreach ($aServers as $oServer)
-		{
-			if ($oServer->Name === $sServerName)
-			{
-				return $oServer;
-			}
-		}
-		return false;
+		$aFilters = ['$AND' => [
+			'Name' => [$sServerName, '='],
+			'OwnerType' => [\Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin, '=']
+		]];
+
+		$oServer = $this->oP8MailModule->getServersManager()->getServerByFilter($aFilters);
+		return $oServer;
 	}
 
-	public function DomainP7ToP8(\CDomain $oDomain)
+	public function DomainP7ToP8(\CDomain $oDomain, $sOwnerType = \Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin)
 	{
 		$iSievePort = (int) \CApi::GetConf('sieve.config.port', 2000);
 		$aSieveDomains = \CApi::GetConf('sieve.config.domains', array());
@@ -942,7 +966,7 @@ class P7ToP8Migration
 		$bSieveEnabled = \CApi::GetConf('sieve', false) && in_array($oDomain->IncomingMailServer, $aSieveDomains);
 
 		$oServer = new \Aurora\Modules\Mail\Classes\Server(\Aurora\Modules\Mail\Module::GetName());
-		$oServer->OwnerType = $oDomain->IdDomain === 0 ? \Aurora\Modules\Mail\Enums\ServerOwnerType::Account : \Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin;
+		$oServer->OwnerType = $sOwnerType;
 		$oServer->TenantId = 0;
 		$oServer->Name = $oDomain->IdDomain === 0 ? $oDomain->IncomingMailServer : $oDomain->Name;
 		$oServer->IncomingServer = $oDomain->IncomingMailServer;
@@ -966,24 +990,24 @@ class P7ToP8Migration
 
 	public function UpgradeDB()
 	{
-		$oP7DBPrefix = $this->oP7Settings->GetConf('Common/DBPrefix');
+		$sP7DBPrefix = $this->oP7Settings->GetConf('Common/DBPrefix');
 
-		$oP8DBLogin = $this->oP8Settings->DBLogin;
-		$oP8DBPassword = $this->oP8Settings->DBPassword;
-		$oP8DBName = $this->oP8Settings->DBName;
-		$oP8DBPrefix = $this->oP8Settings->DBPrefix;
-		$oP8DBHost = $this->oP8Settings->DBHost;
+		$sP8DBLogin = $this->oP8Settings->DBLogin;
+		$sP8DBPassword = $this->oP8Settings->DBPassword;
+		$sP8DBName = $this->oP8Settings->DBName;
+		$sP8DBPrefix = $this->oP8Settings->DBPrefix;
+		$sP8DBHost = $this->oP8Settings->DBHost;
 
 		//Check if DB exists
 		$sCheckTablesQuery = "SELECT count(*) FROM INFORMATION_SCHEMA.TABLES
-			WHERE table_schema = '{$oP8DBName}'
+			WHERE table_schema = '{$sP8DBName}'
 			AND (
-			   table_name LIKE '{$oP8DBPrefix}eav_entities'
-			  OR table_name LIKE '{$oP8DBPrefix}eav_attributes_text'
-			  OR table_name LIKE '{$oP8DBPrefix}eav_attributes_bool'
-			  OR table_name LIKE '{$oP8DBPrefix}eav_attributes_datetime'
-			  OR table_name LIKE '{$oP8DBPrefix}eav_attributes_int'
-			  OR table_name LIKE '{$oP8DBPrefix}eav_attributes_string'
+			   table_name LIKE '{$sP8DBPrefix}eav_entities'
+			  OR table_name LIKE '{$sP8DBPrefix}eav_attributes_text'
+			  OR table_name LIKE '{$sP8DBPrefix}eav_attributes_bool'
+			  OR table_name LIKE '{$sP8DBPrefix}eav_attributes_datetime'
+			  OR table_name LIKE '{$sP8DBPrefix}eav_attributes_int'
+			  OR table_name LIKE '{$sP8DBPrefix}eav_attributes_string'
 			)";
 		try
 		{
@@ -996,7 +1020,7 @@ class P7ToP8Migration
 				$this->Output("The integrity of the database is broken");
 				return false;
 			}
-			$sTablesListQuery = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '{$oP8DBName}' ";
+			$sTablesListQuery = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '{$sP8DBName}' ";
 			$stmt = $this->oP8PDO->prepare($sTablesListQuery);
 			$stmt->execute();
 			$sTablesList = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -1011,21 +1035,21 @@ class P7ToP8Migration
 		if (!$this->bSkipSabredav)
 		{
 			//Delete tables in P8
-			$sDelTableQuery = "DROP TABLE IF EXISTS `{$oP8DBPrefix}adav_addressbookchanges`,
-				`{$oP8DBPrefix}adav_addressbooks`,
-				`{$oP8DBPrefix}adav_cache`,
-				`{$oP8DBPrefix}adav_calendarchanges`,
-				`{$oP8DBPrefix}adav_calendarobjects`,
-				`{$oP8DBPrefix}adav_calendars`,
-				`{$oP8DBPrefix}adav_calendarsubscriptions`,
-				`{$oP8DBPrefix}adav_cards`,
-				`{$oP8DBPrefix}adav_groupmembers`,
-				`{$oP8DBPrefix}adav_locks`,
-				`{$oP8DBPrefix}adav_principals`,
-				`{$oP8DBPrefix}adav_propertystorage`,
-				`{$oP8DBPrefix}adav_reminders`,
-				`{$oP8DBPrefix}adav_schedulingobjects`,
-				`{$oP8DBPrefix}adav_calendarinstances`
+			$sDelTableQuery = "DROP TABLE IF EXISTS `{$sP8DBPrefix}adav_addressbookchanges`,
+				`{$sP8DBPrefix}adav_addressbooks`,
+				`{$sP8DBPrefix}adav_cache`,
+				`{$sP8DBPrefix}adav_calendarchanges`,
+				`{$sP8DBPrefix}adav_calendarobjects`,
+				`{$sP8DBPrefix}adav_calendars`,
+				`{$sP8DBPrefix}adav_calendarsubscriptions`,
+				`{$sP8DBPrefix}adav_cards`,
+				`{$sP8DBPrefix}adav_groupmembers`,
+				`{$sP8DBPrefix}adav_locks`,
+				`{$sP8DBPrefix}adav_principals`,
+				`{$sP8DBPrefix}adav_propertystorage`,
+				`{$sP8DBPrefix}adav_reminders`,
+				`{$sP8DBPrefix}adav_schedulingobjects`,
+				`{$sP8DBPrefix}adav_calendarinstances`
 			";
 
 			try
@@ -1042,7 +1066,7 @@ class P7ToP8Migration
 
 			try
 			{
-				$sTablesListQuery = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '{$oP8DBName}' ";
+				$sTablesListQuery = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE table_schema = '{$sP8DBName}' ";
 				$stmt = $this->oP8PDO->prepare($sTablesListQuery);
 				$stmt->execute();
 				$sTablesList = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -1059,15 +1083,15 @@ class P7ToP8Migration
 			$this->MoveTables();
 
 			//Rename tables before upgrading
-			$sRenameTablesQuery = "RENAME TABLE {$oP7DBPrefix}adav_addressbooks TO addressbooks,
-				{$oP7DBPrefix}adav_cache TO cache,
-				{$oP7DBPrefix}adav_calendarobjects TO calendarobjects,
-				{$oP7DBPrefix}adav_calendars TO calendars,
-				{$oP7DBPrefix}adav_cards TO cards,
-				{$oP7DBPrefix}adav_groupmembers TO groupmembers,
-				{$oP7DBPrefix}adav_locks TO locks,
-				{$oP7DBPrefix}adav_principals TO principals,
-				{$oP7DBPrefix}adav_reminders TO reminders";
+			$sRenameTablesQuery = "RENAME TABLE {$sP7DBPrefix}adav_addressbooks TO addressbooks,
+				{$sP7DBPrefix}adav_cache TO cache,
+				{$sP7DBPrefix}adav_calendarobjects TO calendarobjects,
+				{$sP7DBPrefix}adav_calendars TO calendars,
+				{$sP7DBPrefix}adav_cards TO cards,
+				{$sP7DBPrefix}adav_groupmembers TO groupmembers,
+				{$sP7DBPrefix}adav_locks TO locks,
+				{$sP7DBPrefix}adav_principals TO principals,
+				{$sP7DBPrefix}adav_reminders TO reminders";
 
 			try
 			{
@@ -1088,11 +1112,11 @@ class P7ToP8Migration
 			}
 			$sUnixSocket = '';
 			$sDbPort = '';
-			$iPos = strpos($oP8DBHost, ':');
+			$iPos = strpos($sP8DBHost, ':');
 			if (false !== $iPos && 0 < $iPos)
 			{
-				$sAfter = substr($oP8DBHost, $iPos + 1);
-				$oP8DBHost = substr($oP8DBHost, 0, $iPos);
+				$sAfter = substr($sP8DBHost, $iPos + 1);
+				$sP8DBHost = substr($sP8DBHost, 0, $iPos);
 				if (is_numeric($sAfter))
 				{
 					$sDbPort = $sAfter;
@@ -1105,10 +1129,10 @@ class P7ToP8Migration
 			//Upgrade sabredav data from 1.8 to 3.0 version
 			$aOutput = null;
 			$iStatus = null;
-			$sUpgrade18To20 = "php ../vendor/sabre/dav/bin/migrateto20.php \"mysql:host={$oP8DBHost}".
+			$sUpgrade18To20 = self::PHP_EXEC . " ../vendor/sabre/dav/bin/migrateto20.php \"mysql:host={$sP8DBHost}".
 				(empty($sDbPort) ? '' : ';port='.$sDbPort).
 				(empty($sUnixSocket) ? '' : ';unix_socket='.$sUnixSocket).
-				";dbname={$oP8DBName}\" {$oP8DBLogin}" . ($oP8DBPassword ? " {$oP8DBPassword}" : "");
+				";dbname={$sP8DBName}\" {$sP8DBLogin}" . ($sP8DBPassword ? " '{$sP8DBPassword}'" : "");
 			exec($sUpgrade18To20, $aOutput, $iStatus);
 			if ($iStatus !== 0)
 			{
@@ -1121,10 +1145,10 @@ class P7ToP8Migration
 
 			unset($aOutput);
 			unset($iStatus);
-			$sUpgrade20To21 = "php ../vendor/sabre/dav/bin/migrateto21.php \"mysql:host={$oP8DBHost}".
+			$sUpgrade20To21 = self::PHP_EXEC . " ../vendor/sabre/dav/bin/migrateto21.php \"mysql:host={$sP8DBHost}".
 				(empty($sDbPort) ? '' : ';port='.$sDbPort).
 				(empty($sUnixSocket) ? '' : ';unix_socket='.$sUnixSocket).
-				";dbname={$oP8DBName}\" {$oP8DBLogin}" . ($oP8DBPassword ? " {$oP8DBPassword}" : "");
+				";dbname={$sP8DBName}\" {$sP8DBLogin}" . ($sP8DBPassword ? " '{$sP8DBPassword}'" : "");
 			exec($sUpgrade20To21, $aOutput, $iStatus);
 			if ($iStatus !== 0)
 			{
@@ -1137,10 +1161,10 @@ class P7ToP8Migration
 
 			unset($aOutput);
 			unset($iStatus);
-			$sUpgrade21To30 = "php ../vendor/sabre/dav/bin/migrateto30.php \"mysql:host={$oP8DBHost}".
+			$sUpgrade21To30 = self::PHP_EXEC . " ../vendor/sabre/dav/bin/migrateto30.php \"mysql:host={$sP8DBHost}".
 				(empty($sDbPort) ? '' : ';port='.$sDbPort).
 				(empty($sUnixSocket) ? '' : ';unix_socket='.$sUnixSocket).
-				";dbname={$oP8DBName}\" {$oP8DBLogin}" . ($oP8DBPassword ? " {$oP8DBPassword}" : "");
+				";dbname={$sP8DBName}\" {$sP8DBLogin}" . ($sP8DBPassword ? " '{$sP8DBPassword}'" : "");
 			exec($sUpgrade21To30, $aOutput, $iStatus);
 			if ($iStatus !== 0)
 			{
@@ -1153,10 +1177,10 @@ class P7ToP8Migration
 
 			unset($aOutput);
 			unset($iStatus);
-			$sUpgrade30To32 = "php ../vendor/afterlogic/dav/bin/migrateto32.php \"mysql:host={$oP8DBHost}".
+			$sUpgrade30To32 = self::PHP_EXEC . " ../vendor/afterlogic/dav/bin/migrateto32.php \"mysql:host={$sP8DBHost}".
 				(empty($sDbPort) ? '' : ';port='.$sDbPort).
 				(empty($sUnixSocket) ? '' : ';unix_socket='.$sUnixSocket).
-				";dbname={$oP8DBName}\" \"\" {$oP8DBLogin}" . ($oP8DBPassword ? " {$oP8DBPassword}" : "");
+				";dbname={$sP8DBName}\" \"\" {$sP8DBLogin}" . ($sP8DBPassword ? " '{$sP8DBPassword}'" : "");
 			exec($sUpgrade30To32, $aOutput, $iStatus);
 			if ($iStatus !== 0)
 			{
@@ -1170,13 +1194,14 @@ class P7ToP8Migration
 
 		try
 		{
+			$sP8DBHost = $this->oP8Settings->DBHost;
 			$sDbPort = '';
 			$sUnixSocket = '';
-			$iPos = strpos($oP8DBHost, ':');
+			$iPos = strpos($sP8DBHost, ':');
 			if (false !== $iPos && 0 < $iPos)
 			{
-				$sAfter = substr($oP8DBHost, $iPos + 1);
-				$sP8DBHost = substr($oP8DBHost, 0, $iPos);
+				$sAfter = substr($sP8DBHost, $iPos + 1);
+				$sP8DBHost = substr($sP8DBHost, 0, $iPos);
 
 				if (is_numeric($sAfter))
 				{
@@ -1187,12 +1212,12 @@ class P7ToP8Migration
 					$sUnixSocket = $sAfter;
 				}
 			}
-			$this->oP8PDO = @new \PDO('mysql:dbname=' . $oP8DBName .
+			$this->oP8PDO = @new \PDO('mysql:dbname=' . $sP8DBName .
 						(empty($sP8DBHost) ? '' : ';host='.$sP8DBHost).
 						(empty($sDbPort) ? '' : ';port='.$sDbPort).
-						(empty($sUnixSocket) ? '' : ';unix_socket='.$sUnixSocket), $oP8DBLogin, $oP8DBPassword);
+						(empty($sUnixSocket) ? '' : ';unix_socket='.$sUnixSocket), $sP8DBLogin, $sP8DBPassword);
 			//Add prefixes
-			$sPrefix = $oP8DBPrefix . "adav_";
+			$sPrefix = $sP8DBPrefix . "adav_";
 			$sAddPrefixQuery = "RENAME TABLE addressbooks TO {$sPrefix}addressbooks,
 				cache TO {$sPrefix}cache,
 				calendarobjects TO {$sPrefix}calendarobjects,
@@ -1221,7 +1246,7 @@ class P7ToP8Migration
 			\Aurora\System\Api::Log("Drop 'principals' tables: " .  $sDropPrincipalsTablesQuery, \Aurora\System\Enums\LogLevel::Full, 'migration-');
 
 			//Drop backup tables
-			$sGetBackupTablesNamesQuery = "SHOW TABLES WHERE `Tables_in_{$oP8DBName}` LIKE '%_old%' OR `Tables_in_{$oP8DBName}` LIKE 'calendars_%' ";
+			$sGetBackupTablesNamesQuery = "SHOW TABLES WHERE `Tables_in_{$sP8DBName}` LIKE '%_old%' OR `Tables_in_{$sP8DBName}` LIKE 'calendars_%' ";
 			$stmt = $this->oP8PDO->prepare($sGetBackupTablesNamesQuery);
 			$stmt->execute();
 			$aBackupTablesNames = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -1316,15 +1341,15 @@ class P7ToP8Migration
 					}
 
 					\copy($sPathDir, $sDestination.'/'.$sRead);
-					if ($sRead === ".sabredav")
-					{
-						$aFilesProperties = unserialize(@file_get_contents($sDestination.'/'.$sRead));
-						if (is_array($aFilesProperties) && count($aFilesProperties) > 0)
-						{
-							$aFilesProperties = $this->RenameFilesOwner($aFilesProperties);
-							@file_put_contents($sDestination.'/'.$sRead, serialize($aFilesProperties));
-						}
-					}
+					// if ($sRead === ".sabredav")
+					// {
+					// 	$aFilesProperties = unserialize(@file_get_contents($sDestination.'/'.$sRead));
+					// 	if (is_array($aFilesProperties) && count($aFilesProperties) > 0)
+					// 	{
+					// 		$aFilesProperties = $this->RenameFilesOwner($aFilesProperties);
+					// 		@file_put_contents($sDestination.'/'.$sRead, serialize($aFilesProperties));
+					// 	}
+					// }
 				}
 				$oDirectory->close();
 			}
@@ -1461,7 +1486,7 @@ class P7ToP8Migration
 
 	public function MoveTables()
 	{
-		$oP7DBPrefix = $this->oP7Settings->GetConf('Common/DBPrefix');
+		$sP7DBPrefix = $this->oP7Settings->GetConf('Common/DBPrefix');
 		$iRowLimit = 1000;
 
 		$aTables = [
@@ -1478,22 +1503,22 @@ class P7ToP8Migration
 
 		foreach ($aTables as $sTableName)
 		{
-			$sGetTableQuery = "SHOW CREATE TABLE `{$oP7DBPrefix}{$sTableName}`";
+			$sGetTableQuery = "SHOW CREATE TABLE `{$sP7DBPrefix}{$sTableName}`";
 			try
 			{
 				$stmt = $this->oP7PDO->prepare($sGetTableQuery);
 				$stmt->execute();
 				$aGetTable = $stmt->fetchAll();
 				$this->oP8PDO->exec($aGetTable[0]['Create Table']);
-				$sSelectRowCount = "SELECT count(*) FROM `{$oP7DBPrefix}{$sTableName}`";
+				$sSelectRowCount = "SELECT count(*) FROM `{$sP7DBPrefix}{$sTableName}`";
 				$stmt = $this->oP7PDO->prepare($sSelectRowCount);
 				$stmt->execute();
 				$iRowCount = (int) $stmt->fetchColumn();
 				$iOffset = 0;
-				\Aurora\System\Api::Log("    Table: {$oP7DBPrefix}{$sTableName}. Migration started", \Aurora\System\Enums\LogLevel::Full, 'migration-');
+				\Aurora\System\Api::Log("    Table: {$sP7DBPrefix}{$sTableName}. Migration started", \Aurora\System\Enums\LogLevel::Full, 'migration-');
 				while($iOffset < $iRowCount)
 				{
-					$sSelectAllQuery = "SELECT * FROM `{$oP7DBPrefix}{$sTableName}` LIMIT {$iRowLimit} OFFSET {$iOffset}";
+					$sSelectAllQuery = "SELECT * FROM `{$sP7DBPrefix}{$sTableName}` LIMIT {$iRowLimit} OFFSET {$iOffset}";
 					$stmt = $this->oP7PDO->prepare($sSelectAllQuery);
 					$stmt->execute();
 					$aGetTableData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -1522,14 +1547,14 @@ class P7ToP8Migration
 								$sInsertDataRow = $sInsertDataRow . ', ' . $field;
 							}
 						}
-						$sInsertDataQuery .= "INSERT INTO `{$oP7DBPrefix}{$sTableName}` VALUES ({$sInsertDataRow});\n";
+						$sInsertDataQuery .= "INSERT INTO `{$sP7DBPrefix}{$sTableName}` VALUES ({$sInsertDataRow});\n";
 					}
 					if ($sInsertDataQuery !== '')
 					{
 						$this->oP8PDO->exec($sInsertDataQuery);
 					}
 				}
-				\Aurora\System\Api::Log("    Table: {$oP7DBPrefix}{$sTableName}. Migrated successfully", \Aurora\System\Enums\LogLevel::Full, 'migration-');
+				\Aurora\System\Api::Log("    Table: {$sP7DBPrefix}{$sTableName}. Migrated successfully", \Aurora\System\Enums\LogLevel::Full, 'migration-');
 			}
 			catch(Exception $e)
 			{
@@ -1543,18 +1568,18 @@ class P7ToP8Migration
 	{
 		$this->Output("Start migration of shared calendars.");
 
-		$oP7DBPrefix = $this->oP7Settings->GetConf('Common/DBPrefix');
+		$sP7DBPrefix = $this->oP7Settings->GetConf('Common/DBPrefix');
 
 		$sSelectAllSharedCalendarsQuery = "
 			SELECT
-				{$oP7DBPrefix}adav_calendarshares.*,
+				{$sP7DBPrefix}adav_calendarshares.*,
 				prncpl.uri AS member_principal,
 				prncpl.displayname AS member_displayname,
 				clndr.uri AS calendar_uri,
 				clndr.principaluri AS owner_principaluri
-			FROM {$oP7DBPrefix}adav_calendarshares
-			LEFT JOIN {$oP7DBPrefix}adav_principals AS prncpl on prncpl.id = {$oP7DBPrefix}adav_calendarshares.member
-			LEFT JOIN {$oP7DBPrefix}adav_calendars AS clndr on clndr.id = {$oP7DBPrefix}adav_calendarshares.calendarid
+			FROM {$sP7DBPrefix}adav_calendarshares
+			LEFT JOIN {$sP7DBPrefix}adav_principals AS prncpl on prncpl.id = {$sP7DBPrefix}adav_calendarshares.member
+			LEFT JOIN {$sP7DBPrefix}adav_calendars AS clndr on clndr.id = {$sP7DBPrefix}adav_calendarshares.calendarid
 			WHERE prncpl.uri IS NOT NULL
 		";
 		$stmt = $this->oP7PDO->prepare($sSelectAllSharedCalendarsQuery);
@@ -1689,7 +1714,7 @@ class P7ToP8Migration
 				}
 				$this->bFindFetcher = true;
 				//create Fetcher
-				$mFetcherResult = $this->oP8MtaConnectorModule::Decorator()->CreateFetcher(
+				$mFetcherResult = $this->oP8MtaConnectorModuleDecorator->CreateFetcher(
 					$oP8UserId,
 					$oP8AccountId,
 					$oFetcherItem->Folder,
@@ -1723,7 +1748,7 @@ class P7ToP8Migration
 			foreach ($oMailAliases->Aliases as $sP7Alias)
 			{
 				//trying to find Alias in p8 database
-				$aP8Aliases = $this->oP8MtaConnectorModule::Decorator()->GetAliases($oP8UserId);
+				$aP8Aliases = $this->oP8MtaConnectorModuleDecorator->GetAliases($oP8UserId);
 				if ($aP8Aliases && isset($aP8Aliases['Aliases']) && !empty($aP8Aliases['Aliases']))
 				{
 					foreach ($aP8Aliases['Aliases'] as $sP8Alias)
@@ -1741,7 +1766,7 @@ class P7ToP8Migration
 				{
 					$AliasName = $aAliasParts[0];
 					$AliasDomain = $aAliasParts[1];
-					$mResult = $this->oP8MtaConnectorModule::Decorator()->AddNewAlias($oP8UserId, $AliasName, $AliasDomain);
+					$mResult = $this->oP8MtaConnectorModuleDecorator->AddNewAlias($oP8UserId, $AliasName, $AliasDomain);
 					if (!$mResult)
 					{
 						\Aurora\System\Api::Log("Error while Alias creation: " . $sP7Alias, \Aurora\System\Enums\LogLevel::Full, 'migration-');
@@ -1790,7 +1815,7 @@ class P7ToP8Migration
 					else
 					{
 						//create mailing list if not exists
-						$bCreateMailingListResult = $this->oP8MtaConnectorModule::Decorator()->CreateMailingList($this->GetTenant(), (int) $aMtaDomain['DomainId'], $oP7MailingList->Email);
+						$bCreateMailingListResult = $this->oP8MtaConnectorModuleDecorator->CreateMailingList($this->GetTenant(), (int) $aMtaDomain['DomainId'], $oP7MailingList->Email);
 						if ($bCreateMailingListResult)
 						{
 							$mP8MailingListId = $this->oP8MtaConnectorModule->oApiMailingListsManager->getMailingListIdByEmail($oP7MailingList->Email);
@@ -1820,7 +1845,7 @@ class P7ToP8Migration
 								}
 							}
 							//add member to mailing list
-							$bAddMailingListMemberResult = $this->oP8MtaConnectorModule::Decorator()->AddMailingListMember($mP8MailingListId, $sP7Member);
+							$bAddMailingListMemberResult = $this->oP8MtaConnectorModuleDecorator->AddMailingListMember($mP8MailingListId, $sP7Member);
 							if (!$bAddMailingListMemberResult)
 							{
 								\Aurora\System\Api::Log("Error while adding {$sP7Member} memeber to {$oP7MailingList->Email} mailing list. ", \Aurora\System\Enums\LogLevel::Full, 'migration-');
@@ -1874,7 +1899,7 @@ else
 		}
 		$oMigration->Start();
 		$oMigration->MigrateEmptyDomains();
-		$oMigration->UpdateUserFilesInfo();
+		// $oMigration->UpdateUserFilesInfo();
 	}
 	catch (Exception $e)
 	{

@@ -1,15 +1,17 @@
 <?php
-
-/*
- * Copyright 2004-2015, AfterLogic Corp.
- * Licensed under AGPLv3 license or AfterLogic license
+/**
+ * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
- * See the LICENSE file for a full license statement.
+ * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
  */
 
 namespace MailSo\Base;
 
 /**
+ * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
+ * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
+ *
  * @category MailSo
  * @package Base
  */
@@ -141,11 +143,11 @@ class LinkFinder
 				$sLink = 'http://'.\ltrim($sLink);
 			}
 
-			return '<a '.($bAddTargetBlank ? 'target="_blank" ': '').'href="'.$sLink.'">'.$sNameLink.'</a>';
+			return '<a '.($bAddTargetBlank ? 'target="_blank" ': '').'href="'.$sLink.'" class="external">'.$sNameLink.'</a>';
 		};
 
 		$this->fMailWrapper = function ($sEmail) use ($bAddTargetBlank) {
-			return '<a '.($bAddTargetBlank ? 'target="_blank" ': '').'href="mailto:'.$sEmail.'">'.$sEmail.'</a>';
+			return '<a '.($bAddTargetBlank ? 'target="_blank" ': '').'href="mailto:'.$sEmail.'" class="external">'.$sEmail.'</a>';
 		};
 
 		return $this;

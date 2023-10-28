@@ -80,7 +80,34 @@ class Poppassd extends \Aurora\System\Net\AbstractProtocol
 	 */
 	public function NewPass($sNewPassword)
 	{
-		return $this->SendCommand('newpass '.$sNewPassword, array($sNewPassword), 0);
+		$bResult = false;
+		$sMessage = '';
+		$aLines = [];
+		if ($this->WriteLine('newpass '.$sNewPassword, array($sNewPassword)))
+		{
+			while ($sLine = $this->GetNextLine())
+			{
+				$aLine = \explode(' ', $sLine);
+				if ($aLine[0] == 200)
+				{
+					$bResult = true;
+					break;
+				}
+				if ($aLine[0] == 500)
+				{
+					$bResult = false;
+					$aLines[] = substr($sLine, 4) ;
+				}
+			}
+		}
+		if (!$bResult)
+		{
+			$sMessage = implode("\n", $aLines);
+		}
+
+		return [$bResult, $sMessage];
+
+//		return $this->SendCommand('newpass '.$sNewPassword, array($sNewPassword), 0);
 	}
 
 	/**

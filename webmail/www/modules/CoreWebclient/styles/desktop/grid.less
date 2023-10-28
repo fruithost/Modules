@@ -17,15 +17,8 @@ html.non-adjustable .panels {
 	}
 }
 
-// .panels .panel_helper {
-	// display: inline-block;
-	// vertical-align: top;
-	// .box-sizing;
-// }
-
 .panel {
 	border-radius: 5px;
-	box-shadow: -1px 0 2px rgba(0,0,0,0.11);
 	font-size: 9pt;
 	height: 100%;
 	position: relative;
@@ -34,6 +27,10 @@ html.non-adjustable .panels {
 	flex-basis: auto;
 	flex-grow: 1;
 	background: #fff;
+	
+	&.center_panel, &.item_viewer, &.data {
+		box-shadow: -1px 0 2px rgba(0, 0, 0, 0.11);
+	}
 
 	.box-sizing;
 	
@@ -74,8 +71,13 @@ html.non-adjustable .panels {
 		}
 	}
 	
-	&.center_panel .panel_top {
-		background: #f1f1f1;
+	&.center_panel {
+		.panel_top {
+			background: @theme-center-top-panel-bg;
+		}
+		.panel_bottom {
+			background: @theme-center-bottom-panel-bg;
+		}
 	}
 
 	.panel_top {
@@ -107,10 +109,8 @@ html.non-adjustable .panels {
 	}
 	
 	.panel_bottom {
-		background-color: #ffffff;
 		border-radius: 0 0 4px 4px;
 		border-top: 1px solid #E2E2E2;
-		//height: 26px;
 		line-height: 26px;
 		padding: 10px 20px;
 	}
@@ -222,12 +222,12 @@ html.non-adjustable .panels {
 
 .items_list {
 	.section_title {
-		color: #fff;
+		color: @theme-section-title-color;
 		cursor: default;
 		display: block;
 		font-weight: bold;
 		padding: 10px 17px 10px 17px;
-		//text-shadow: 0px 1px 0px #fff;
+		text-shadow: @theme-section-title-text-shadow;
 		text-transform: uppercase;
 		white-space: nowrap;
 		
@@ -243,12 +243,12 @@ html.non-adjustable .panels {
 	
 	.use_threads .threaded {
 		background: #f9f8f6;
-		border-left: 5px solid #e3e3e3;
+		border-left: 5px solid #afabab;
 		max-height: 0px;
 
 		html.rtl & {
 			border-left: 0px;
-			border-right: 5px solid #e3e3e3;
+			border-right: 5px solid #afabab;
 		}
 
 		&.show {
@@ -478,14 +478,13 @@ html.non-adjustable .panels {
 	.items_list {
 		.item {
 			background: none;
-			font-size: 10pt;
 			max-height: inherit;
 			
 			& > .title {
 				color: lighten(@group-item-font-color, 20%);
 				cursor: default;
 				display: block;
-				font-size: 11pt;
+				font-size: @theme-group-style-item-font-size;
 				font-weight: normal;
 				line-height: normal;
 				margin-bottom: 0px;
@@ -579,9 +578,16 @@ html.non-adjustable .panels {
 					margin-left: 10px;
 					margin-right: 0px;
 				}
+				
+				.theme-left-panel-item-count();
 			}
 			.count.total {
 				color: #ececec;
+				
+				.theme-left-panel-item-count-total();
+			}
+			&.selected > .title .count.total {
+				.theme-left-panel-item-selected-count-total();
 			}
 			.count:first-child {
 				margin-right: 10px;
@@ -589,17 +595,17 @@ html.non-adjustable .panels {
 			.count.unseen:hover {
 				border-radius: ~"11px/10px";
 
-				.theme-clear-panel-list-item-unseen-count-hover();
+				.theme-left-panel-item-unseen-count-hover();
 			}
 
 			&.selected > .title .count.unseen {
 				border-radius: ~"11px/10px";
 
-				.theme-clear-panel-list-item-count();
+				.theme-left-panel-item-selected-count();
 			}
 
 			&.selected > .title .count.unseen:hover {
-				.theme-clear-panel-list-item-count-hover();
+				.theme-left-panel-item-count-hover();
 			}
 		}
 		
@@ -607,7 +613,6 @@ html.non-adjustable .panels {
 			.item.accordion {
 				.collapse_handler {
 					display: inline-block;
-					margin-left: -4px;
 					vertical-align: middle;
 					width: 12px;
 
@@ -622,11 +627,11 @@ html.non-adjustable .panels {
 					}
 
 					&.expanded:before {
-						content: "\e66d";
+						content: "\e66e";
 					}
 
 					&.collapsed:before {
-						content: "\e670";
+						content: "\e66d";
 					}
 				}
 
@@ -694,3 +699,12 @@ html.non-adjustable .panels {
 		}
 	}
 }
+
+/* IE9 do not support flex-wrap and flex-direction */
+.no-flexwrap
+{
+	.panel {
+		float: left;
+	}
+}
+	

@@ -67,7 +67,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			$oServer = $this->getServer($iServerId);
 			if ($oServer && ($oServer->OwnerType !== \Aurora\Modules\Mail\Enums\ServerOwnerType::Tenant || $oServer->TenantId === $iTenantId))
 			{
-				$bResult = $this->oEavManager->deleteEntity($iServerId);
+				$bResult = $this->oEavManager->deleteEntity($iServerId, \Aurora\Modules\Mail\Classes\Server::class);
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
@@ -136,16 +136,16 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			else
 			{
 				$aFilters = [
-					'$AND' => [
-						'1$OR' => [
+					'$OR' => [
+						'1$AND' => [
 							'OwnerType' => [\Aurora\Modules\Mail\Enums\ServerOwnerType::SuperAdmin, '='],
-							'Domains' => ['%' . $sDomain . '%', 'LIKE']
+							'Domains' => ['%' . $sDomain . '%', 'LIKE'],
 						],
-						'2$OR' => [
+						'2$AND' => [
 							'OwnerType' => [\Aurora\Modules\Mail\Enums\ServerOwnerType::Tenant, '='],
-							'Domains' => ['%' . $sDomain . '%', 'LIKE']
+							'Domains' => ['%' . $sDomain . '%', 'LIKE'],
 						],
-					]
+					],
 				];
 			}
 
@@ -155,7 +155,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				0,
 				999,
 				$aFilters
-			);		
+			);	
 			if (count($aResult) > 0)
 			{
 				foreach ($aResult as $oTempServer)
@@ -180,18 +180,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	}	
 	
 	/**
-	 * 
 	 * @param int $iTenantId
-	 * @return boolean|array
+	 * @param string $sSearch
+	 * @return array
 	 */
-	public function getServerList($iTenantId = 0)
+	private function _getServersFilters($iTenantId = 0, $sSearch = '')
 	{
-		$aResult = false;
-		$iOffset = 0;
-		$iLimit = 0;
-		$sOrderBy = 'Name';
-		$iOrderType = \Aurora\System\Enums\SortOrder::ASC;
-		
 		$aFilters = [];
 		if ($iTenantId === 0)
 		{
@@ -207,26 +201,51 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				],
 			]];
 		}
-		
-		try
+		if ($sSearch !== '')
 		{
-			$aResult = $this->oEavManager->getEntities(
-				\Aurora\Modules\Mail\Classes\Server::class,
-				array(),
-				$iOffset,
-				$iLimit,
-				$aFilters,
-				$sOrderBy,
-				$iOrderType
-			);
+			$aFilters['Name'] = ['%' . $sSearch . '%', 'LIKE'];
+			$aFilters = ['$AND' => $aFilters];
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
-		{
-			$aResult = false;
-			$this->setLastException($oException);
-		}
+		return $aFilters;
+	}
+	
+	/**
+	 * @param int $iTenantId
+	 * @param string $sSearch
+	 * @return int
+	 */
+	public function getServersCount($iTenantId = 0, $sSearch = '')
+	{
+		$aFilters = $this->_getServersFilters($iTenantId, $sSearch);
+		return $this->oEavManager->getEntitiesCount(
+			\Aurora\Modules\Mail\Classes\Server::class,
+			$aFilters
+		);
+	}
+	
+	/**
+	 * @param int $iTenantId
+	 * @param int $iOffset
+	 * @param int $iLimit
+	 * @param string $sSearch
+	 * @return boolean|array
+	 */
+	public function getServerList($iTenantId = 0, $iOffset = 0, $iLimit = 0, $sSearch = '')
+	{
+		$sOrderBy = 'Name';
+		$iOrderType = \Aurora\System\Enums\SortOrder::ASC;
 		
-		return $aResult;
+		$aFilters = $this->_getServersFilters($iTenantId, $sSearch);
+		
+		return $this->oEavManager->getEntities(
+			\Aurora\Modules\Mail\Classes\Server::class,
+			array(),
+			$iOffset,
+			$iLimit,
+			$aFilters,
+			$sOrderBy,
+			$iOrderType
+		);
 	}
 	
 	/**
@@ -278,5 +297,21 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		}
 
 		return $oServer;
+	}
+
+	/**
+	 *
+	 * @param array $aFilters
+	 * @return boolean
+	 */
+	public function getServerListByFilter($aFilters)
+	{
+		return $this->oEavManager->getEntities(
+			\Aurora\Modules\Mail\Classes\Server::class,
+			[],
+			0,
+			0,
+			$aFilters
+		);
 	}
 }

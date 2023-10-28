@@ -6,6 +6,7 @@ var
 
     Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 
+    App = require('%PathToCoreWebclientModule%/js/App.js'),
     Browser = require('%PathToCoreWebclientModule%/js/Browser.js')
 ;
 
@@ -21,6 +22,7 @@ function CCrea(oOptions)
         'fontNameArray': ['Tahoma'],
         'defaultFontName': 'Tahoma',
         'defaultFontSize': 3,
+		'alwaysTryUseImageWhilePasting': true,
         'dropableArea': null,
         'isRtl': false,
         'onChange': function () {},
@@ -107,6 +109,7 @@ CCrea.prototype.start = function (bEditable)
         return !!(sValue.match(/^[A-Z0-9\"!#\$%\^\{\}`~&'\+\-=_\.]+@[A-Z0-9\.\-]+$/i));
     }
 
+	this.aRanges = null; // if this.aRanges is not null first focus doesn't work properly, then insert image doesn't work
     this.$container = $('#' + this.oOptions.creaId);
     this.$editableArea = $('<div></div>').addClass('crea-content-editable')
         .prop('contentEditable', 'true').appendTo(this.$container);
@@ -165,7 +168,7 @@ CCrea.prototype.start = function (bEditable)
                 aHtml
             ;
 
-            if (self.pasteImage(oEvent))
+            if (self.oOptions.alwaysTryUseImageWhilePasting && self.pasteImage(oEvent))
             {
                 oEvent.preventDefault();
             }
@@ -190,7 +193,6 @@ CCrea.prototype.start = function (bEditable)
                     {
                         sHtml = aHtml[1];
                     }
-                    sHtml = self.replacePToBr(sHtml);
 
                     self.execCom('insertHTML', sHtml);
                 }
@@ -281,6 +283,8 @@ CCrea.prototype.start = function (bEditable)
 
     this.initContentEditable();
     this.setEditable(bEditable);
+	
+	App.broadcastEvent('%ModuleName%::StartCrea::after', {'EditableArea': this.$editableArea, 'InsertHtmlHandler': this.insertHtml.bind(this)});
 };
 
 CCrea.prototype.clearUndoRedo = function ()
@@ -307,7 +311,7 @@ CCrea.prototype.editableSave = function ()
         oLastSaved = _.last(this.aEditableAreaHtml),
         sLastSaved = oLastSaved ? oLastSaved[0] : ''
     ;
-	
+
     if (sEditableHtml !== sLastSaved)
     {
         this.clearRedo();
@@ -772,15 +776,6 @@ CCrea.prototype.setBasicStyles = function (sFontName, sFontSize, sDirection)
 };
 
 /**
- * @param {string} sText
- * @returns {string}
- */
-CCrea.prototype.replacePToBr = function (sText)
-{
-    return sText.replace(/<\/p>/gi, '<br />').replace(/<p [^>]*>/gi, '').replace(/<p>/gi, '');
-};
-
-/**
  * Gets plain text from rich editor.
  *
  * @return {string}
@@ -832,8 +827,7 @@ CCrea.prototype.getText = function (bRemoveSignatureAnchor)
         }
 
         sVal = this.$editableArea.html();
-        sVal = this.replacePToBr(sVal);
-        sVal = '<div data-crea="font-wrapper" style="font-family: ' + this.sBasicFontName + '; font-size: ' + this.sBasicFontSize + '; direction: ' + this.sBasicDirection + '">' + sVal + '</div>';
+        sVal = '<div data-crea="font-wrapper" style="font-family: ' + this.getFontNameWithFamily(this.sBasicFontName) + '; font-size: ' + this.sBasicFontSize + '; direction: ' + this.sBasicDirection + '">' + sVal + '</div>';
     }
 
     return sVal;
@@ -1451,7 +1445,7 @@ CCrea.prototype.getFontName = function ()
         var
             sFontName = window.document.queryCommandValue('FontName'),
             sValidFontName = this.sBasicFontName,
-            sFindedFontName = ''
+            sFoundFontName = ''
         ;
 
         if (typeof sFontName === 'string')
@@ -1460,13 +1454,13 @@ CCrea.prototype.getFontName = function ()
             $.each(this.oOptions.fontNameArray, function (iIndex, sFont) {
                 if (sFontName.indexOf(sFont) > -1 || sFontName.indexOf(sFont.toLowerCase()) > -1)
                 {
-                    sFindedFontName = sFont;
+                    sFoundFontName = sFont;
                 }
             });
 
-            if (sFindedFontName !== '')
+            if (sFoundFontName !== '')
             {
-                sValidFontName = sFindedFontName;
+                sValidFontName = sFoundFontName;
             }
         }
     }
@@ -1833,7 +1827,16 @@ CCrea.prototype.checkAnchorNode = function ()
         {
             oCurrLink = oSel.anchorNode.parentElement || oSel.anchorNode.parentNode;
 
-            if (oCurrLink.tagName === 'A' || oCurrLink.parentNode.tagName === 'A' || oCurrLink.parentElement.tagName === 'A')
+			if (oCurrLink.parentNode.tagName === 'A')
+			{
+				oCurrLink = oCurrLink.parentNode;
+			}
+			else if (oCurrLink.parentElement.tagName === 'A')
+			{
+				oCurrLink = oCurrLink.parentNode;
+			}
+
+            if (oCurrLink.tagName === 'A')
             {
                 if (!this.bInUrl || oCurrLink !== this.oCurrLink)
                 {

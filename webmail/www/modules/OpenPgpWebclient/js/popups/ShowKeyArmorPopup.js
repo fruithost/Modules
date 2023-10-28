@@ -4,15 +4,17 @@ var
 	_ = require('underscore'),
 	$ = require('jquery'),
 	ko = require('knockout'),
-	
+
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
-	
+
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
-	
+	Popups = require('%PathToCoreWebclientModule%/js/Popups.js'),
+	ConfirmPopup = require('%PathToCoreWebclientModule%/js/popups/ConfirmPopup.js'),
+
 	ComposeMessageWithAttachments = ModulesManager.run('MailWebclient', 'getComposeMessageWithAttachments'),
-	
+
 	CAbstractPopup = require('%PathToCoreWebclientModule%/js/popups/CAbstractPopup.js')
 ;
 
@@ -22,9 +24,9 @@ var
 function CShowKeyArmorPopup()
 {
 	CAbstractPopup.call(this);
-	
+
 	this.bAllowSendEmails = _.isFunction(ComposeMessageWithAttachments);
-	
+
 	this.armor = ko.observable('');
 	this.htmlArmor = ko.computed(function () {
 		return TextUtils.encodeHtml(this.armor().replace(/\r/g, ''));
@@ -36,22 +38,22 @@ function CShowKeyArmorPopup()
 			TextUtils.i18n('%MODULENAME%/HEADING_VIEW_PRIVATE_KEY', {'USER': this.user()}) :
 			TextUtils.i18n('%MODULENAME%/HEADING_VIEW_PUBLIC_KEY', {'USER': this.user()});
 	}, this);
-	
+
 	this.downloadLinkHref = ko.computed(function() {
 		var
 			sHref = '#',
 			oBlob = null
 		;
-		
+
 		if (Blob && window.URL && $.isFunction(window.URL.createObjectURL))
 		{
 			oBlob = new Blob([this.armor()], {type: 'text/plain'});
 			sHref = window.URL.createObjectURL(oBlob);
 		}
-		
+
 		return sHref;
 	}, this);
-	
+
 	this.downloadLinkFilename = ko.computed(function () {
 		var
 			sConvertedUser = this.user().replace(/</g, '').replace(/>/g, ''),
@@ -59,7 +61,7 @@ function CShowKeyArmorPopup()
 		;
 		return TextUtils.i18n(sLangKey, {'USER': sConvertedUser}) + '.asc';
 	}, this);
-	
+
 	this.domKey = ko.observable(null);
 }
 
@@ -79,15 +81,40 @@ CShowKeyArmorPopup.prototype.onOpen = function (oKey)
 
 CShowKeyArmorPopup.prototype.send = function ()
 {
-	if (this.bAllowSendEmails && this.armor() !== '' && this.downloadLinkFilename() !== '')
+	const fSend = () => {
+		if (this.bAllowSendEmails
+			&& this.armor() !== ''
+			&& this.downloadLinkFilename() !== ''
+		)
+		{
+			Ajax.send('Core', 'SaveContentAsTempFile', { 'Content': this.armor(), 'FileName': this.downloadLinkFilename() }, function (oResponse) {
+				if (oResponse.Result)
+				{
+					ComposeMessageWithAttachments([oResponse.Result]);
+					this.closePopup();
+				}
+			}, this);
+		}
+	};
+
+	if (this.private())
 	{
-		Ajax.send('Core', 'SaveContentAsTempFile', { 'Content': this.armor(), 'FileName': this.downloadLinkFilename() }, function (oResponse) {
-			if (oResponse.Result)
-			{
-				ComposeMessageWithAttachments([oResponse.Result]);
-				this.closePopup();
-			}
-		}, this);
+		const sConfirm = TextUtils.i18n('%MODULENAME%/CONFIRM_SEND_PRIVATE_KEY');
+		Popups.showPopup(ConfirmPopup,
+			[
+				sConfirm,
+				bSend => {
+					if (bSend)
+					{
+						fSend();
+					}
+				}
+			]
+		);
+	}
+	else
+	{
+		fSend();
 	}
 };
 
@@ -98,7 +125,7 @@ CShowKeyArmorPopup.prototype.select = function ()
 		oSel = null,
 		oRange = null
 	;
-	
+
 	if (oDomKey && window.getSelection && document.createRange)
 	{
 		oRange = document.createRange();

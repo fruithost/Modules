@@ -22,14 +22,11 @@ function CMessageControlsView()
 	this.sAccountEmail = '';
 	this.sFromEmail = '';
 	
-	this.decryptPassword = ko.observable('');
+	this.oEncryptionKey = null;
 	
+	this.isEncryptedMessage = ko.observable(false);
 	this.visibleDecryptControl = ko.observable(false);
 	this.visibleVerifyControl = ko.observable(false);
-	
-	this.visible = ko.computed(function () {
-		return this.visibleDecryptControl() || this.visibleVerifyControl();
-	}, this);
 }
 
 CMessageControlsView.prototype.ViewTemplate = '%ModuleName%_MessageControlsView';
@@ -40,8 +37,7 @@ CMessageControlsView.prototype.reset = function ()
 	this.sAccountEmail = '';
 	this.sFromEmail = '';
 	
-	this.decryptPassword('');
-	
+	this.isEncryptedMessage(false);
 	this.visibleDecryptControl(false);
 	this.visibleVerifyControl(false);
 };
@@ -77,20 +73,34 @@ CMessageControlsView.prototype.doAfterPopulatingMessage = function (oMessageProp
 		this.sAccountEmail = oMessageProps.sAccountEmail;
 		this.sFromEmail = oMessageProps.sFromEmail;
 
-		this.decryptPassword('');
-
 		if (Settings.enableOpenPgp())
 		{
-			this.visibleDecryptControl(oMessageProps.sText.indexOf('-----BEGIN PGP MESSAGE-----') !== -1);
+			this.isEncryptedMessage(oMessageProps.sText.indexOf('-----BEGIN PGP MESSAGE-----') !== -1);
 			this.visibleVerifyControl(oMessageProps.sText.indexOf('-----BEGIN PGP SIGNED MESSAGE-----') !== -1);
-			if (this.visible() && this.oMessagePane)
+			if (this.isEncryptedMessage())
 			{
-				this.oMessagePane.changeText('<pre>' + TextUtils.encodeHtml(this.sText) + '</pre>');
+				OpenPgp.getEncryptionKeyFromArmoredMessage(this.sText)
+					.then(oEncryptionKey => {
+						if (oEncryptionKey)
+						{
+							this.visibleDecryptControl(true);
+							this.oEncryptionKey = oEncryptionKey;
+						}
+						else
+						{
+							this.visibleDecryptControl(false);
+						}
+					});
 			}
+			this.visibleDecryptControl(this.isEncryptedMessage());
 		}
 		else
 		{
 			this.visibleDecryptControl(false);
+		}
+		if ((this.visibleVerifyControl() || this.visibleDecryptControl()) && this.oMessagePane)
+		{
+			this.oMessagePane.changeText('<pre>' + TextUtils.encodeHtml(this.sText) + '</pre>');
 		}
 	}
 	else
@@ -102,13 +112,12 @@ CMessageControlsView.prototype.doAfterPopulatingMessage = function (oMessageProp
 CMessageControlsView.prototype.decryptMessage = function ()
 {
 	var
-		sPrivateKeyPassword = $.trim(this.decryptPassword()),
 		fOkHandler = _.bind(function (oRes) {
 			if (oRes && oRes.result && !oRes.errors && this.oMessagePane)
 			{
 				this.oMessagePane.changeText('<pre>' + TextUtils.encodeHtml(oRes.result) + '</pre>');
 
-				this.decryptPassword('');
+				this.isEncryptedMessage(false);
 				this.visibleDecryptControl(false);
 
 				if (!oRes.notices)
@@ -133,7 +142,7 @@ CMessageControlsView.prototype.decryptMessage = function ()
 		}
 	;
 	
-	OpenPgp.decryptAndVerify(this.sText, this.sAccountEmail, this.sFromEmail, sPrivateKeyPassword, fOkHandler, fErrorHandler);
+	OpenPgp.decryptAndVerify(this.sText, this.oEncryptionKey, this.sFromEmail, '', fOkHandler, fErrorHandler);
 };
 
 CMessageControlsView.prototype.verifyMessage = function ()

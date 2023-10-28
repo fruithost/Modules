@@ -8,6 +8,8 @@
 namespace Aurora\Modules\SettingsWebclient;
 
 /**
+ * This module displays the interface of user settings. The settings are provided by other modules.
+ * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.

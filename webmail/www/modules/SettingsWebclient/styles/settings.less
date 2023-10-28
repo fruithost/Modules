@@ -2,6 +2,10 @@
 	.folders {
 		.items_list_group_style();
 		
+		.items_list .item .count {
+			background: none;
+		}
+		
 		.items_list .item .title .name {
 			.fadeout();
 		}
@@ -259,9 +263,13 @@
 	.buttons {
 		margin: 0px 20px 15px;
 	}
-	
+
 	.fieldset .buttons {
 		margin: 0px 0px 15px 0px;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
 	}
 }
 
@@ -315,130 +323,6 @@
 .settings .mail-accounts .panel_top .buttons {
 	float: right;
 	margin: 30px 20px 15px;
-}
-
-.settings .account_list {
-	background: #fafafa;
-	border: 1px solid #d5d9dc;
-	border-radius: 4px;
-	margin: 0px 20px;
-	overflow: hidden;
-	
-	.clearfixHelper();
-
-	.item {
-		border-bottom: 1px solid #d5d9dc;
-		color: #626262;
-		cursor: pointer;
-		padding: 6px 10px;
-
-		&.fetcher {
-			.icon {
-				display: inline-block;
-				font-size: 20px;
-				height: 18px;
-				vertical-align: bottom;
-				width: 18px;
-				
-				.init-icon-font();
-			}
-
-			.icon.fetcher:before {
-				content: "\e65b";
-			}
-
-			.icon.default-identity {
-				font-family: monospace;
-				font-size: 19px;
-				height: 17px;
-				margin-left: 10px;
-			}
-
-			.label {
-				color: #929292;
-			}
-
-			.title {
-				font-weight: bold;
-			}
-			
-			.info {
-				float: right;
-			}
-		}
-
-		&:last-child {
-			border-bottom: 0px;
-		}
-
-		&.selected {
-			background: #f1f1f1;
-			color: #4d4d4d;
-			font-weight: bold;
-		}
-	}
-
-	.button {
-		float: right;
-	}
-
-	.title {
-		display: inline-block;
-		font-size: 9pt;
-		padding: 0px;
-	}
-}
-
-.settings .account_list {
-	background: #fafafa none repeat scroll 0 0;
-	border: 1px solid #d5d9dc;
-	border-radius: 4px;
-	clear: both;
-	margin: 0 20px 20px;
-	overflow: hidden;
-	
-	.item {
-		border-bottom: 1px solid #d5d9dc;
-		color: #626262;
-		cursor: pointer;
-		padding: 6px 10px;
-		
-		.title {
-			margin: 0;
-		}
-		
-		&.selected {
-			background: #f1f1f1 none repeat scroll 0 0;
-			color: #4d4d4d;
-			font-weight: bold;
-		}
-	}	
-	
-	.item .link.fetcher {
-		float: right;
-		font-weight: normal;
-		margin-left: 12px;
-	}
-	
-	.buttons {
-		margin: 15px 0px;
-
-		.button {
-			font-size: 10pt;
-		}
-	}
-
-	.item .button {
-		background: none repeat scroll 0 0 #6fa8de;
-		border: 1px solid #5d97cd;
-		border-radius: 4px 4px 4px 4px;
-		color: #ffffff;
-		cursor: pointer;
-		display: inline-block;
-		font-size: 9pt !important;
-		padding: 1px 5px;
-		text-shadow: 0 1px 0 #4d759b;
-	}
 }
 
 .row.keys_label {
@@ -608,11 +492,13 @@
 }
 
 .settings .helpdesk .input,
+.settings .allow-block-lists .message .input,
 .settings .autoresponder .input {
 	width: 520px;
 }
 
 .settings .helpdesk .signature .input,
+.settings .allow-block-lists .message .input,
 .settings .autoresponder .message .input {
 	height: 145px;
 }
@@ -640,4 +526,56 @@ html.rtl .settings .signature .editor_row .editor {
 
 .settings .signature .editor_row .editor .html_editor {
 	.pass-events-through();
+}
+
+.panels.settings .ip-allow-list,
+.panels.settings .security,
+.panels.settings .two-factor-auth {
+	.folders .items_list .item {
+		&:last-child {
+			border-bottom: 1px solid #cccccc;
+		}
+		.title {
+			cursor: default;
+
+			.name {
+				line-height: 1.4;
+
+				.name_empty {
+					color: #c1bfbf;
+				}
+
+				.text_hint {
+					color: #929292;
+					font-size: smaller;
+				}
+			}
+		}
+	}
+
+	.folders.items_list .controls .button {
+		&.rename {
+			font-size: 26px;
+			margin-top: -2px;
+			margin-right: 6px;
+
+			&:before {
+				content: "\e62d";
+			}
+		}
+		&.delete {
+			vertical-align: top;
+		}
+	}
+
+	.device-active-icon {
+		.init-icon-font();
+
+		color: #96c671;
+		font-size: 10pt;
+
+		&:before {
+			content: "\e649";
+		}
+	}
 }

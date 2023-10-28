@@ -56,6 +56,7 @@ function CAccountFiltersSettingsFormView()
 
 	this.actionOptions = [
 		{'text': TextUtils.i18n('%MODULENAME%/LABEL_MOVE_FILTER_ACTION'), 'value': 3},
+		{'text': TextUtils.i18n('%MODULENAME%/LABEL_REDIRECT_FILTER_ACTION'), 'value': 7},
 		{'text': TextUtils.i18n('%MODULENAME%/LABEL_DELETE_FILTER_ACTION'), 'value': 1}
 	];
 	
@@ -72,7 +73,6 @@ function CAccountFiltersSettingsFormView()
 			this.phaseArray[iIndex] += ' ' + sItem;
 		}
 	}, this);
-	
 	this.firstState = null;
 }
 
@@ -141,7 +141,8 @@ CAccountFiltersSettingsFormView.prototype.getParametersForSave = function ()
 				'Filter': oItem.filter(),
 				'Condition': oItem.condition(),
 				'Action': oItem.action(),
-				'FolderFullName': oItem.folder()
+				'FolderFullName': oItem.folder(),
+				'Email': oItem.email()
 			};
 		})
 	;
@@ -234,6 +235,10 @@ CAccountFiltersSettingsFormView.prototype.displayFilterPart = function (sPart, s
 	else if (sPart === '%FOLDER%')
 	{
 		sTemplate = 'Folder';
+	}
+	else if (sPart === '%EMAIL%')
+	{
+		sTemplate = 'Email';
 	}
 	else if (sPart.substr(0, 9) === '%DEPENDED')
 	{

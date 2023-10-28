@@ -21,7 +21,7 @@ class CommandCreator extends \Aurora\System\Db\AbstractCommandCreator
 	 */
 	public function getMinByHash($sHash)
 	{
-		$sSql = 'SELECT hash_id, hash, data FROM %smin_hashes WHERE hash = %s';
+		$sSql = 'SELECT hash_id, hash, data, expire_date FROM %smin_hashes WHERE hash = %s';
 		
 		return sprintf($sSql, $this->prefix(), $this->escapeString($sHash));
 	}
@@ -33,10 +33,22 @@ class CommandCreator extends \Aurora\System\Db\AbstractCommandCreator
 	 */
 	public function getMinByID($sHashID)
 	{
-		$sSql = 'SELECT hash_id, hash, data FROM %smin_hashes WHERE hash_id = %s';
+		$sSql = 'SELECT hash_id, hash, data, expire_date FROM %smin_hashes WHERE hash_id = %s';
 
 		return sprintf($sSql, $this->prefix(), $this->escapeString($sHashID));
 	}
+
+	/**
+	 * @param string $sHashID
+	 *
+	 * @return string
+	 */
+	public function getMinListByUserId($iUserId)
+	{
+		$sSql = 'SELECT hash_id, hash, data, expire_date FROM %smin_hashes WHERE user_id = %d';
+
+		return sprintf($sSql, $this->prefix(), $iUserId);
+	}	
 	
 	/**
 	 * @param string $sHash
@@ -69,12 +81,13 @@ class CommandCreator extends \Aurora\System\Db\AbstractCommandCreator
 	 *
 	 * @return string
 	 */
-	public function createMin($sHash, $sHashID, $sEncodedParams)
+	public function createMin($sHash, $sHashID, $sEncodedParams, $iUserId = null, $iExpireDate = null)
 	{
-		$sSql = 'INSERT INTO %smin_hashes ( hash_id, hash, data ) VALUES ( %s, %s, %s )';
+		$sExpireDate = $iExpireDate ? (int) $iExpireDate : 'NULL';
+		$sSql = 'INSERT INTO %smin_hashes ( hash_id, user_id, hash, data, expire_date ) VALUES ( %s, %d, %s, %s, %s )';
 
-		return sprintf($sSql, $this->prefix(), $this->escapeString($sHashID), $this->escapeString($sHash),
-			$this->escapeString($sEncodedParams));
+		return sprintf($sSql, $this->prefix(), $this->escapeString($sHashID), $iUserId, $this->escapeString($sHash),
+			$this->escapeString($sEncodedParams), $sExpireDate);
 	}
 
 	/**

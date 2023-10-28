@@ -102,8 +102,8 @@ function CSelector(list, fSelectCallback, fDeleteCallback, fDblClickCallback, fE
 		'read': function () {
 			var aList = _.filter(this.list(), function (oItem) {
 				var
-					bC = oItem.checked(),
-					bS = oItem.selected()
+					bC = oItem && oItem.checked && oItem.checked(),
+					bS = oItem && oItem.selected && oItem.selected()
 				;
 
 				return bC || (self.bCheckOnSelect && bS);
@@ -136,7 +136,7 @@ function CSelector(list, fSelectCallback, fDeleteCallback, fDblClickCallback, fE
 
 	this.selectorHook.subscribe(function () {
 		var oPrev = this.selectorHook();
-		if (oPrev)
+		if (oPrev && _.isFunction(oPrev.selected))
 		{
 			oPrev.selected(false);
 		}
@@ -741,7 +741,10 @@ CSelector.prototype.onDelete = function ()
  */
 CSelector.prototype.onEnter = function (oItem)
 {
-	this.fEnterCallback.call(this, oItem);
+	if (oItem)
+	{
+		this.fEnterCallback.call(this, oItem);
+	}
 };
 
 /**

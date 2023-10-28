@@ -1,14 +1,14 @@
 <div class="middle_bar" data-bind="css: {'advanced_search': bAdvancedSearch}">
 	<div class="panel_top">
-		<label class="custom_checkbox" data-bind="css: {'checked': checkAll, 'incomplete': checkAllIncomplite}">
+		<span class="custom_checkbox" data-bind="click: function () { checkAll(!checkAll()); },
+					css: {'checked': checkAll, 'incomplete': checkAllIncomplite}">
 			<span class="icon"></span>
-			<input type="checkbox" data-bind="checked: checkAll" />
-		</label>
+		</span>
 		<!-- ko template: {name: '%ModuleName%_SearchView'} --><!-- /ko -->
 	</div>
 	<div class="panel_center unselectable" data-bind="customScrollbar: {'reset': listChangedThrottle(), x: false}">
 		<div class="scroll-inner message_list_scroll">
-			<div class="items_list message_list" data-bind="initDom: messagesContainer">
+			<div class="items_list message_list" data-bind="initDom: messagesContainer, css: folderFullName">
 				<span>
 					<span class="list_notification" data-bind="visible: visibleInfoSearchLoading">
 						<span class="link" data-bind="i18n: {'key': '%MODULENAME%/ACTION_STOP_SEARCH'}, click: onStopSearchClick"></span>
@@ -56,7 +56,7 @@
 				</span>
 
 				<div class="items_sub_list message_sub_list" data-bind="foreach: collection, 
-					 draggablePlace: function (oMessage, bCtrl) {return $root.dragAndDropHelper(oMessage, bCtrl);},
+					 draggablePlace: disableMoveMessages() ? null : function (oMessage, bCtrl) {return $root.dragAndDropHelper(oMessage, bCtrl);},
 					 css: {'not_use_threads': !useThreading(), 'use_threads': useThreading}">
 					<!-- ko template: {name: $parent.customMessageItemViewTemplate() || '%ModuleName%_MessageItemView'} --><!-- /ko -->
 				</div>

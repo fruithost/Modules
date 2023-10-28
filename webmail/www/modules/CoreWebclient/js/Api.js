@@ -3,6 +3,7 @@
 var
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	
+	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	ModuleErrors = require('%PathToCoreWebclientModule%/js/ModuleErrors.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	
@@ -48,6 +49,14 @@ Api.showErrorByCode = function (oResponse, sDefaultError, bNotHide)
 				sResultError = TextUtils.i18n('%MODULENAME%/ERROR_CAPTCHA_IS_INCORRECT');
 				break;
 			case Enums.Errors.AccessDenied:
+				if (oResponse.AuthenticatedUserId === 0 && App.getUserId() !== 0)
+				{
+					sResultError = TextUtils.i18n('%MODULENAME%/ERROR_USER_DELETED');
+				}
+				else
+				{
+					sResultError = TextUtils.i18n('%MODULENAME%/ERROR_ACCESS_DENIED');
+				}
 				break;
 			case Enums.Errors.UserAlreadyExists:
 				sResultError = TextUtils.i18n('%MODULENAME%/ERROR_USER_ALREADY_EXISTS');

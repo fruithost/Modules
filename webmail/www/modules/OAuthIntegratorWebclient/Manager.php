@@ -32,24 +32,25 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return \Aurora\Modules\OAuthIntegratorWebclient\Classes\Account
 	 */
-	public function getAccount($iUserId, $sType)
+	public function getAccount($iUserId, $sType, $sEmail = '')
 	{
 		$mResult = false;
+		$aWhere = [
+			'IdUser' => $iUserId, 
+			'Type' => $sType
+		];
+		if (!empty($sEmail))
+		{
+			$aWhere['Email'] = $sEmail;
+		}
 		try
 		{
-			$aEntities = $this->oEavManager->getEntities(
-				Classes\Account::class,
-				array(),
-				0,
-				0,
-				array(
-					'IdUser' => $iUserId,
-					'Type' => $sType
-				));
-			if (is_array($aEntities) && count($aEntities) > 0)
-			{
-				$mResult = $aEntities[0];
-			}
+			$mResult = (new \Aurora\System\EAV\Query(Classes\Account::class))
+				->where([
+					'$AND' => $aWhere
+				])
+				->one()
+				->exec();
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -70,21 +71,15 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		$mResult = false;
 		try
 		{
-			$aEntities = $this->oEavManager->getEntities(
-				Classes\Account::class,
-				array(),
-				0,
-				0,
-				array(
-					'IdSocial' => $sIdSocial,
-					'Type' => $sType
-				)
-			);
-			if (is_array($aEntities) && count($aEntities) > 0)
-			{
-				$mResult = $aEntities[0];
-			}
-			
+			$mResult = (new \Aurora\System\EAV\Query(Classes\Account::class))
+				->where([
+					'$AND' => [
+						'IdSocial' => $sIdSocial, 
+						'Type' => $sType
+					]
+				])
+				->one()
+				->exec();
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -104,14 +99,9 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		$aResult = false;
 		try
 		{
-			$aResult = $this->oEavManager->getEntities(
-				Classes\Account::class,
-				array(),
-				0,
-				0,
-				array(
-					'IdUser' => $iIdUser
-				));
+			$aResult = (new \Aurora\System\EAV\Query(Classes\Account::class))
+				->where(['IdUser' => $iIdUser])
+				->exec();			
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -192,15 +182,15 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function deleteAccount($iIdUser, $sType)
+	public function deleteAccount($iIdUser, $sType, $sEmail)
 	{
 		$bResult = false;
 		try
 		{
-			$oSocial = $this->getAccount($iIdUser, $sType);
+			$oSocial = $this->getAccount($iIdUser, $sType, $sEmail);
 			if ($oSocial)
 			{
-				if (!$this->oEavManager->deleteEntity($oSocial->EntityId))
+				if (!$this->oEavManager->deleteEntity($oSocial->EntityId, \Aurora\Modules\OAuthIntegratorWebclient\Classes\Account::class))
 				{
 					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserDeleteFailed);
 				}
@@ -231,7 +221,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			{
 				if ($oSocial)
 				{
-					if (!$this->oEavManager->deleteEntity($oSocial->EntityId))
+					if (!$this->oEavManager->deleteEntity($oSocial->EntityId, \Aurora\Modules\OAuthIntegratorWebclient\Classes\Account::class))
 					{
 						throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserDeleteFailed);
 					}

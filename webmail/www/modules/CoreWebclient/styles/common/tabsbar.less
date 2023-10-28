@@ -1,6 +1,6 @@
 /*=== Tabsbar CSS ===*/
 .tabsbar {
-    .theme-tabsbar();
+	.theme-tabsbar();
 	//display: flex;
 	//flex-direction: row;
 	//flex-wrap: wrap;
@@ -14,19 +14,20 @@
 	z-index: 1000;
 	
 	& > .content {
-/*		display: flex;
+		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
-		align-content: center;*/
+		align-items: center;
+		justify-content: space-between;
 		height: 100%;
-
 		width: 100%;
-		&::before {
-			content: "";
-			display: inline-block;
-			height: 100%;
-			vertical-align: middle;
-		}
+		
+		// &::before {
+		// 	content: "";
+		// 	display: inline-block;
+		// 	height: 100%;
+		// 	vertical-align: middle;
+		// }
 	}
 	
 	.item {
@@ -46,6 +47,11 @@
 			border-radius: 4px;
 			
 			.animation(highlight 0.5s linear);
+		}
+		
+		&.logo {
+			display: none;
+			outline: none;
 		}
 		
 		&.emails {
@@ -83,6 +89,7 @@
 		}
 		
 		.helper {
+			font-weight: bold;
 			display: block;
 			height: 0;
 			overflow: hidden;
@@ -139,33 +146,43 @@
 	.expand .control:before {
 		content: "\e66e";
 	}
+
+	.spacer {
+		// background: #fff;
+		padding: 10px;
+		flex-grow: 1;
+	}
 	
+	.mobile,
 	.settings,
 	.logout {
 		//display: block;
-		float: right;
+		// float: right;
 		font-size: 8pt;
-		height: auto;
-		margin-left: 6px;
-		margin-right: 0px;
-		margin-top: @tabsbar-item-top-offset;
-		
-		
+		// height: auto;
+		// margin-left: 6px;
+		// margin-right: 0px;
+		// margin-top: @tabsbar-item-top-offset;
+		order: 100;
+
 		//align-self: flex-end;
 		
-		html.rtl & {
-			float: left;
-			margin-left: 0px;
-			margin-right: 6px;
-		}
+		// html.rtl & {
+		// 	float: left;
+		// 	margin-left: 0px;
+		// 	margin-right: 6px;
+		// }
 	}
 	
 	.logout span {
 		cursor: pointer;
 	}
 	
-	.logo img {
-		max-height: @theme-tabs-height - 8px; //item padding
+	.specified-logo {
+		outline: none;
+		img {
+			max-height: @theme-tabs-height - 8px; //item padding
+		}
 	}
 	
 	.dropdown_helper {
@@ -196,5 +213,23 @@
 				background: #eeeeee;
 			}
 		}
+	}
+}
+
+/* IE9 do not support flex-wrap and flex-direction */
+.no-flexwrap
+{
+	.tabsbar .item {
+		margin-top: 24px;
+	}	
+
+	.tabsbar .spacer {
+		display: none;
+	}
+
+	.tabsbar .item.mobile,
+	.tabsbar .item.settings,
+	.tabsbar .item.logout {
+		float: right;
 	}
 }

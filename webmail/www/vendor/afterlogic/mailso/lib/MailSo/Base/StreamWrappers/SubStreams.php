@@ -1,15 +1,17 @@
 <?php
-
-/*
- * Copyright 2004-2015, AfterLogic Corp.
- * Licensed under AGPLv3 license or AfterLogic license
+/**
+ * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
- * See the LICENSE file for a full license statement.
+ * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
  */
 
 namespace MailSo\Base\StreamWrappers;
 
 /**
+ * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
+ * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
+ *
  * @category MailSo
  * @package Base
  * @subpackage StreamWrappers
@@ -71,7 +73,7 @@ class SubStreams
 		$sHashName = \md5(\microtime(true).\rand(1000, 9999));
 
 		self::$aStreams[$sHashName] = $aSubStreams;
-		
+
 		\MailSo\Base\Loader::IncStatistic('CreateStream/SubStreams');
 
 		return \fopen(self::STREAM_NAME.'://'.$sHashName, 'rb');
@@ -87,7 +89,7 @@ class SubStreams
 		{
 			return $this->aSubStreams[$this->iIndex];
 		}
-		
+
 		return $nNull;
 	}
 
@@ -109,7 +111,7 @@ class SubStreams
 		{
 			$sHashName = $aPath['host'];
 			$this->sHash = $sHashName;
-			
+
 			if (isset(self::$aStreams[$sHashName]) &&
 				\is_array(self::$aStreams[$sHashName]) &&
 				0 < \count(self::$aStreams[$sHashName]))
@@ -170,18 +172,6 @@ class SubStreams
 							}
 							
 							$sReturn .= $sReadResult;
-
-							$iLen = \strlen($sReturn);
-							if ($iCount < $iLen)
-							{
-								$this->sBuffer = \substr($sReturn, $iCount);
-								$sReturn = \substr($sReturn, 0, $iCount);
-								$iCount = 0;
-							}
-							else
-							{
-								$iCount -= $iLen;
-							}
 						}
 						else
 						{
@@ -192,6 +182,18 @@ class SubStreams
 					{
 						$sReturn .= $mCurrentPart;
 						$this->iIndex++;
+					}
+					
+					$iLen = \strlen($sReturn);
+					if ($iCount < $iLen)
+					{
+						$this->sBuffer = \substr($sReturn, $iCount);
+						$sReturn = \substr($sReturn, 0, $iCount);
+						$iCount = 0;
+					}
+					else
+					{
+						$iCount -= $iLen;
 					}
 				}
 			}
@@ -256,7 +258,7 @@ class SubStreams
 	{
 		return false;
 	}
-	
+
 	static public function setGlobalCounter($value)
     {
 		$GLOBALS['counter'] = $value;
@@ -269,11 +271,11 @@ class SubStreams
 			self::setGlobalCounter($defValue);
 		}
 		return $GLOBALS['counter'];
-    }	
-	
+    }
+
 	static public function incGlobalCounter()
     {
 		self::setGlobalCounter(self::getGlobalCounter() + 1);
     }
-	
+
 }

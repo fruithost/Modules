@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -12,7 +12,7 @@ use Aurora\System\Exceptions\DbException;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Api
  * @subpackage Db
@@ -109,7 +109,7 @@ class MySql extends \Aurora\System\Db\Sql
 
 		if (\Aurora\System\Api::$bUseDbLog)
 		{
-			\Aurora\System\Api::Log('DB(PDO/mysql) : start connect to '.$this->sUser.'@'.$this->sHost);
+			\Aurora\System\Logger::LogSql('DB(PDO/mysql) : start connect to '.$this->sUser.'@'.$this->sHost);
 		}
 
 		$aPDOAttr = array(\PDO::ATTR_TIMEOUT => 5, \PDO::ATTR_EMULATE_PREPARES => false, \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION);
@@ -174,13 +174,13 @@ class MySql extends \Aurora\System\Db\Sql
 				$sPdoString = 'mysql:'.implode(';', $aParts);
 				if (\Aurora\System\Api::$bUseDbLog)
 				{
-					\Aurora\System\Api::Log('DB : PDO('.$sPdoString.')');
+					\Aurora\System\Logger::LogSql('DB : PDO('.$sPdoString.')');
 				}
 
 				$this->oPDO = @new \PDO($sPdoString, $sDbLogin, $sDbPassword, $aPDOAttr);
 				if (\Aurora\System\Api::$bUseDbLog)
 				{
-					\Aurora\System\Api::Log('DB : connected to '.$this->sUser.'@'.$this->sHost);
+					\Aurora\System\Logger::LogSql('DB : connected to '.$this->sUser.'@'.$this->sHost);
 				}
 
 				if ($this->oPDO)
@@ -188,10 +188,10 @@ class MySql extends \Aurora\System\Db\Sql
 					@register_shutdown_function(array(&$this, 'Disconnect'));
 				}
 			}
-			catch (Exception $oException)
+			catch (\Exception $oException)
 			{
-				\Aurora\System\Api::Log($oException->getMessage(), \Aurora\System\Enums\LogLevel::Error);
-				\Aurora\System\Api::Log($oException->getTraceAsString(), \Aurora\System\Enums\LogLevel::Error);
+				\Aurora\System\Logger::LogSql($oException->getMessage(), \Aurora\System\Enums\LogLevel::Error);
+				\Aurora\System\Logger::LogSql($oException->getTraceAsString(), \Aurora\System\Enums\LogLevel::Error);
 				$this->oPDO = false;
 
 				throw new DbException($oException->getMessage(), $oException->getCode(), $oException);
@@ -199,7 +199,7 @@ class MySql extends \Aurora\System\Db\Sql
 		}
 		else
 		{
-			\Aurora\System\Api::Log('Class PDO dosn\'t exist', \Aurora\System\Enums\LogLevel::Error);
+			\Aurora\System\Logger::LogSql('Class PDO dosn\'t exist', \Aurora\System\Enums\LogLevel::Error);
 		}
 
 		return !!$this->oPDO;
@@ -238,7 +238,7 @@ class MySql extends \Aurora\System\Db\Sql
 
 			if (\Aurora\System\Api::$bUseDbLog)
 			{
-				\Aurora\System\Api::Log('DB : disconnect from '.$this->sUser.'@'.$this->sHost);
+				\Aurora\System\Logger::LogSql('DB : disconnect from '.$this->sUser.'@'.$this->sHost);
 			}
 
 			unset($this->oPDO);
@@ -274,7 +274,7 @@ class MySql extends \Aurora\System\Db\Sql
 		}
 		catch (\Exception $e)
 		{
-			\Aurora\System\Api::Log($sQuery);
+			\Aurora\System\Logger::LogSql($sQuery);
 		}
 
 		return false;
@@ -301,7 +301,7 @@ class MySql extends \Aurora\System\Db\Sql
 			$rExplainResult = $this->SilentQuery($sExplainQuery);
 			if ($rExplainResult != false)
 			{
-				while (false != ($mResult = $rExplainResult->fetch(PDO::FETCH_ASSOC)))
+				while (false != ($mResult = $rExplainResult->fetch(\PDO::FETCH_ASSOC)))
 				{
 					$sExplainLog .= AU_API_CRLF.print_r($mResult, true);
 				}
@@ -314,7 +314,7 @@ class MySql extends \Aurora\System\Db\Sql
 				$rExplainResult = $this->SilentQuery('SHOW warnings');
 				if ($rExplainResult != false)
 				{
-					while (false != ($mResult = $rExplainResult->fetch(PDO::FETCH_ASSOC)))
+					while (false != ($mResult = $rExplainResult->fetch(\PDO::FETCH_ASSOC)))
 					{
 						$sExplainLog .= AU_API_CRLF.print_r($mResult, true);
 					}
@@ -372,7 +372,7 @@ class MySql extends \Aurora\System\Db\Sql
 	{
 		if ($this->rResultId)
 		{
-			$mResult = $this->rResultId->fetch(PDO::FETCH_ASSOC);
+			$mResult = $this->rResultId->fetch(\PDO::FETCH_ASSOC);
 			if (!$mResult && $bAutoFree)
 			{
 				$this->FreeResult();

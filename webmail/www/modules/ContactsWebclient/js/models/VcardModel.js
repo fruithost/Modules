@@ -59,7 +59,14 @@ CVcardModel.prototype.onContactsSaveVcfResponse = function (oResponse, oRequest)
 	}
 	else
 	{
-		this.uid(oResponse.Result.Uid);
+		if (_.isArray(oResponse.Result.ImportedUids) && oResponse.Result.ImportedUids.length === 1)
+		{
+			this.uid(oResponse.Result.ImportedUids[0]);
+			if (MainTab)
+			{
+				MainTab.updateVcardUid(this.file(), this.uid());
+			}
+		}
 	}
 };
 

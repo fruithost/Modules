@@ -3,17 +3,30 @@
 var
 	_ = require('underscore'),
 	$ = require('jquery'),
+	moment = require('moment'),
 	ko = require('knockout'),
-	
+
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
-	
+	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
+
 	Popups = require('%PathToCoreWebclientModule%/js/Popups.js'),
 	AlertPopup = require('%PathToCoreWebclientModule%/js/popups/AlertPopup.js'),
-	
+
 	App = require('%PathToCoreWebclientModule%/js/App.js'),
-	Screens = require('%PathToCoreWebclientModule%/js/Screens.js')
+	Pulse = require('%PathToCoreWebclientModule%/js/Pulse.js'),
+	Settings = require('%PathToCoreWebclientModule%/js/Settings.js'),
+	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
+
+	aFilterDebugInfo = []
 ;
+
+function _getRequestDataString (oReqData)
+{
+	return 'start time:' + oReqData.Time.format('DD.MM, HH:mm:ss') + '<br />' + JSON.stringify(oReqData.Request).substr(0, 300) + '<br />'
+				+ 'readyState:' + oReqData.Xhr.readyState + (Types.isString(oReqData.Xhr.statusText) ? ':' + oReqData.Xhr.statusText : '') + '<br />'
+				+ (Types.isString(oReqData.Xhr.responseText) ? ':' + oReqData.Xhr.responseText.substr(0, 300) + '<br />' : '');
+}
 
 /**
  * @constructor
@@ -21,24 +34,48 @@ var
 function CAjax()
 {
 	this.requests = ko.observableArray([]);
-	
+
 	this.aOnAllRequestsClosedHandlers = [];
 	this.requests.subscribe(function () {
 		if (this.requests().length === 0)
 		{
 			_.each(this.aOnAllRequestsClosedHandlers, function (fHandler) {
-				if ($.isFunction(fHandler))
+				if (_.isFunction(fHandler))
 				{
 					fHandler();
 				}
 			});
 		}
 	}, this);
-	
+
 	this.aAbortRequestHandlers = {};
-	
+
 	this.bAllowRequests = true;
 	this.bInternetConnectionProblem = false;
+
+	if (Settings.AllowClientDebug)
+	{
+		App.subscribeEvent('%ModuleName%::GetDebugInfo', _.bind(function (oParams) {
+			var aInfo = [];
+
+			if (this.requests().length)
+			{
+				aInfo.push('<b>Current requests:</b>');
+				_.each(this.requests(), function (oReqData) {
+					aInfo.push(_getRequestDataString(oReqData));
+				});
+			}
+
+			if (aFilterDebugInfo.length > 0)
+			{
+				aInfo.push('');
+				aInfo.push('<b>aFilterDebugInfo:</b>');
+				aInfo = aInfo.concat(aFilterDebugInfo);
+			}
+
+			oParams.Info.push(aInfo.join('<br />'));
+		}, this));
+	}
 }
 
 /**
@@ -51,7 +88,7 @@ CAjax.prototype.getOpenedRequest = function (sModule, sMethod)
 	var oFoundReqData = _.find(this.requests(), function (oReqData) {
 		return oReqData.Request.Module === sModule && oReqData.Request.Method === sMethod;
 	});
-	
+
 	return oFoundReqData ? oFoundReqData.Request : null;
 };
 
@@ -62,9 +99,11 @@ CAjax.prototype.getOpenedRequest = function (sModule, sMethod)
  */
 CAjax.prototype.hasOpenedRequests = function (sModule, sMethod)
 {
+	// Do not change requests here. It calls hasOpenedRequests and we get a loop.
+
 	sModule = Types.pString(sModule);
 	sMethod = Types.pString(sMethod);
-	
+
 	if (sMethod === '')
 	{
 		return this.requests().length > 0;
@@ -72,16 +111,7 @@ CAjax.prototype.hasOpenedRequests = function (sModule, sMethod)
 	else
 	{
 		return !!_.find(this.requests(), function (oReqData) {
-			if (oReqData)
-			{
-				var
-					bComplete = oReqData.Xhr.readyState === 4,
-					bAbort = oReqData.Xhr.readyState === 0 && oReqData.Xhr.statusText === 'abort',
-					bSameMethod = oReqData.Request.Module === sModule && oReqData.Request.Method === sMethod
-				;
-				return !bComplete && !bAbort && bSameMethod;
-			}
-			return false;
+			return oReqData && oReqData.Request.Module === sModule && oReqData.Request.Method === sMethod;
 		});
 	}
 };
@@ -114,38 +144,42 @@ CAjax.prototype.registerOnAllRequestsClosedHandler = function (fHandler)
  */
 CAjax.prototype.send = function (sModule, sMethod, oParameters, fResponseHandler, oContext, iTimeout, oMainParams)
 {
+	oParameters = oParameters || {};
+
+	var oRequest = _.extendOwn({
+		Module: sModule,
+		Method: sMethod,
+		Parameters: oParameters
+	}, App.getCommonRequestParameters());
+
+	if (oMainParams)
+	{
+		oRequest = _.extendOwn(oRequest, oMainParams);
+	}
+
 	if (this.bAllowRequests && !this.bInternetConnectionProblem)
 	{
-		var oRequest = _.extendOwn({
-			Module: sModule,
-			Method: sMethod
-		}, App.getCommonRequestParameters());
-		
-		if (oMainParams)
-		{
-			oRequest = _.extendOwn(oRequest, oMainParams);
-		}
-		
-		oParameters = oParameters || {};
-		
 		var oEventParams = {
 			'Module': sModule,
 			'Method': sMethod,
-			'Parameters': oParameters,
+			'Parameters': oParameters, // can be changed by reference
 			'ResponseHandler': fResponseHandler,
 			'Context': oContext,
 			'Continue': true
 		};
 		App.broadcastEvent('SendAjaxRequest::before', oEventParams);
-		
+
 		if (oEventParams.Continue)
 		{
-			oRequest.Parameters = oParameters;
-
-			this.abortRequests(oRequest);
+			this.abortSameRequests(oRequest);
 
 			this.doSend(oRequest, fResponseHandler, oContext, iTimeout);
 		}
+	}
+	else
+	{
+		var oResponse = { Result: false, ErrorCode: Enums.Errors.NotDisplayedError };
+		this.executeResponseHandler(fResponseHandler, oContext, oResponse, oRequest, 'error');
 	}
 };
 
@@ -166,11 +200,23 @@ CAjax.prototype.doSend = function (oRequest, fResponseHandler, oContext, iTimeou
 		oXhr = null,
 		oCloneRequest = _.clone(oRequest),
 		sAuthToken = $.cookie('AuthToken') || '',
-		oHeader = (sAuthToken !== '') ? { 'Authorization': 'Bearer ' + sAuthToken } : {}
+		oHeader = { 'X-Client': 'WebClient' }
 	;
-	
+
+	if (sAuthToken === '' && App.getUserRole() !== Enums.UserRole.Anonymous)
+	{
+		App.logoutAndGotoLogin();
+	}
+
+	if (sAuthToken !== '')
+	{
+		oHeader['Authorization'] = 'Bearer ' + sAuthToken;
+	}
+
+	oHeader['X-DeviceId'] = Utils.getUUID();
+
 	oCloneRequest.Parameters = JSON.stringify(oCloneRequest.Parameters);
-	
+
 	oXhr = $.ajax({
 		url: '?/Api/',
 		type: 'POST',
@@ -183,20 +229,20 @@ CAjax.prototype.doSend = function (oRequest, fResponseHandler, oContext, iTimeou
 		complete: alwaysFunc,
 		timeout: iTimeout === undefined ? 50000 : iTimeout
 	});
-	
-	this.requests().push({ Request: oRequest, Xhr: oXhr });
+
+	this.requests().push({ Request: oRequest, Xhr: oXhr, Time: moment() });
 };
 
 /**
  * @param {Object} oRequest
  */
-CAjax.prototype.abortRequests = function (oRequest)
+CAjax.prototype.abortSameRequests = function (oRequest)
 {
 	var fHandler = this.aAbortRequestHandlers[oRequest.Module];
-	
-	if ($.isFunction(fHandler) && this.requests().length > 0)
+
+	if (_.isFunction(fHandler) && this.requests().length > 0)
 	{
-		_.each(this.requests(), _.bind(function (oReqData, iIndex) {
+		_.each(this.requests(), _.bind(function (oReqData) {
 			if (oReqData)
 			{
 				var oOpenedRequest = oReqData.Request;
@@ -205,13 +251,10 @@ CAjax.prototype.abortRequests = function (oRequest)
 					if (fHandler(oRequest, oOpenedRequest))
 					{
 						oReqData.Xhr.abort();
-						this.requests()[iIndex] = undefined;
 					}
 				}
 			}
 		}, this));
-		
-		this.requests(_.compact(this.requests()));
 	}
 };
 
@@ -233,8 +276,6 @@ CAjax.prototype.abortAllRequests = function (oExcept)
 			oReqData.Xhr.abort();
 		}
 	}, this);
-	
-	this.requests([]);
 };
 
 /**
@@ -267,7 +308,7 @@ CAjax.prototype.done = function (oRequest, fResponseHandler, oContext, oResponse
 			App.logoutAndGotoLogin();
 		}, '', TextUtils.i18n('%MODULENAME%/ACTION_LOGOUT')]);
 	}
-	
+
 	// if oResponse.Result === 0 or oResponse.Result === '' this is not an error
 	if (oResponse && (oResponse.Result === false || oResponse.Result === null || oResponse.Result === undefined))
 	{
@@ -280,15 +321,15 @@ CAjax.prototype.done = function (oRequest, fResponseHandler, oContext, oResponse
 			case Enums.Errors.AuthError:
 				if (App.getUserRole() !== Enums.UserRole.Anonymous)
 				{
-					App.logoutAndGotoLogin(Enums.Errors.AuthError);
+					App.logoutAndGotoLogin();
 				}
 				break;
 		}
-		
+
 		oResponse.Result = false;
 	}
-	
-	this.executeResponseHandler(fResponseHandler, oContext, oResponse, oRequest);
+
+	this.executeResponseHandler(fResponseHandler, oContext, oResponse, oRequest, sType);
 };
 
 /**
@@ -302,7 +343,7 @@ CAjax.prototype.done = function (oRequest, fResponseHandler, oContext, oResponse
 CAjax.prototype.fail = function (oRequest, fResponseHandler, oContext, oXhr, sType, sErrorText)
 {
 	var oResponse = { Result: false, ErrorCode: 0 };
-	
+
 	switch (sType)
 	{
 		case 'abort':
@@ -317,12 +358,24 @@ CAjax.prototype.fail = function (oRequest, fResponseHandler, oContext, oXhr, sTy
 			}
 			else
 			{
+				var oReqData = _.find(this.requests(), function (oTmpReqData, iIndex) {
+					return oTmpReqData && _.isEqual(oTmpReqData.Request, oRequest);
+				});
+				if (oReqData)
+				{
+					Utils.log('DataTransferFailed', _getRequestDataString(oReqData));
+				}
+				else
+				{
+					var sResponseText = Types.pString(oXhr && oXhr.responseText);
+					Utils.log('DataTransferFailed', sErrorText, '<br />' + sResponseText.substr(0, 300));
+				}
 				oResponse = { Result: false, ErrorCode: Enums.Errors.DataTransferFailed, ResponseText:  oXhr.responseText };
 			}
 			break;
 	}
-	
-	this.executeResponseHandler(fResponseHandler, oContext, oResponse, oRequest);
+
+	this.executeResponseHandler(fResponseHandler, oContext, oResponse, oRequest, sType);
 };
 
 /**
@@ -330,19 +383,24 @@ CAjax.prototype.fail = function (oRequest, fResponseHandler, oContext, oXhr, sTy
  * @param {Object} oContext
  * @param {Object} oResponse
  * @param {Object} oRequest
+ * @param {string} sType
  */
-CAjax.prototype.executeResponseHandler = function (fResponseHandler, oContext, oResponse, oRequest)
+CAjax.prototype.executeResponseHandler = function (fResponseHandler, oContext, oResponse, oRequest, sType)
 {
 	if (!oResponse)
 	{
 		oResponse = { Result: false, ErrorCode: 0 };
 	}
-	
-	if ($.isFunction(fResponseHandler) && !oResponse.StopExecuteResponse)
+
+	// Check the Internet connection before passing control to the modules.
+	// It forbids or allows further AJAX requests.
+	this.checkConnection(oRequest.Module, oRequest.Method, sType);
+
+	if (_.isFunction(fResponseHandler) && !oResponse.StopExecuteResponse)
 	{
 		fResponseHandler.apply(oContext, [oResponse, oRequest]);
 	}
-	
+
 	App.broadcastEvent('ReceiveAjaxResponse::after', {'Request': oRequest, 'Response': oResponse});
 };
 
@@ -353,39 +411,46 @@ CAjax.prototype.executeResponseHandler = function (fResponseHandler, oContext, o
  */
 CAjax.prototype.always = function (oRequest, oXhr, sType)
 {
-	if (sType !== 'abort')
-	{
-		_.each(this.requests(), function (oReqData, iIndex) {
-			if (oReqData && _.isEqual(oReqData.Request, oRequest))
+	this.filterRequests(oRequest);
+};
+
+CAjax.prototype.filterRequests = function (oRequest, sCallerName)
+{
+	this.requests(_.filter(this.requests(), function (oReqData, iIndex) {
+		if (oReqData)
+		{
+			if (_.isEqual(oReqData.Request, oRequest))
 			{
-				this.requests()[iIndex] = undefined;
+				return false;
 			}
-		}, this);
-
-		this.requests(_.compact(this.requests()));
-
-		this.checkConnection(oRequest.Module, oRequest.Method, sType);
-	}
+			var
+				bComplete = oReqData.Xhr.readyState === 4,
+				bFail = oReqData.Xhr.readyState === 0 && (oReqData.Xhr.statusText === 'abort' || oReqData.Xhr.statusText === 'error'),
+				bTooLong = moment().diff(oReqData.Time) > 1000 * 60 * 5 // 5 minutes
+			;
+			if (Settings.AllowClientDebug && (bComplete || bFail || bTooLong))
+			{
+				if (bTooLong)
+				{
+					Utils.log(sCallerName, 'remove more than 5 minutes request', _getRequestDataString(oReqData));
+				}
+				else if (bFail)
+				{
+					Utils.log(sCallerName, 'remove fail request', _getRequestDataString(oReqData));
+				}
+				else if (bComplete)
+				{
+					Utils.log(sCallerName, 'remove complete request', _getRequestDataString(oReqData));
+				}
+			}
+			return !bComplete && !bFail && !bTooLong;
+		}
+	}, this));
 };
 
 CAjax.prototype.checkConnection = (function () {
 
-	var
-		iTimer = -1,
-		iLastWakeTime = new Date().getTime(),
-		iCurrentTime = 0,
-		bAwoke = false
-	;
-
-	setInterval(function() { //fix for sleep mode
-		iCurrentTime = new Date().getTime();
-		bAwoke = iCurrentTime > (iLastWakeTime + 5000 + 1000);
-		iLastWakeTime = iCurrentTime;
-		if (bAwoke)
-		{
-			Screens.hideError(true);
-		}
-	}, 5000);
+	var iTimer = -1;
 
 	return function (sModule, sMethod, sStatus)
 	{
@@ -395,7 +460,7 @@ CAjax.prototype.checkConnection = (function () {
 			Ajax.bInternetConnectionProblem = false;
 			Screens.hideError(true);
 		}
-		else
+		else if (this.bAllowRequests)
 		{
 			if (sModule === 'Core' && sMethod === 'Ping')
 			{
@@ -425,3 +490,22 @@ module.exports = {
 	startSendRequests: _.bind(Ajax.startSendRequests, Ajax),
 	send: _.bind(Ajax.send, Ajax)
 };
+
+Pulse.registerEveryMinuteFunction(function () {
+	Ajax.filterRequests(null, 'pulse');
+});
+
+Pulse.registerWakeupFunction(function () {
+	Utils.log('<u>wakeup</u>, hasOpenedRequests: ' + Ajax.hasOpenedRequests() + ', bInternetConnectionProblem: ' + Ajax.bInternetConnectionProblem);
+	if (Ajax.hasOpenedRequests())
+	{
+		_.each(Ajax.requests(), function (oReqData) {
+			Utils.log('<i>wakeup</i>: ' + _getRequestDataString(oReqData));
+		});
+		Ajax.filterRequests(null, 'wakeup');
+	}
+	if (Ajax.bInternetConnectionProblem)
+	{
+		Ajax.checkConnection();
+	}
+});

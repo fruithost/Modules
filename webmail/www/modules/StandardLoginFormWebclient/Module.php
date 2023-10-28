@@ -8,6 +8,8 @@
 namespace Aurora\Modules\StandardLoginFormWebclient;
 
 /**
+ * Displays standard login form with ability to pass login and password.
+ * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.

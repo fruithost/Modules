@@ -16,7 +16,7 @@ var
  * @param {string} sExceptEmail
  * @param {string} sStorage
  */
-function Callback(oRequest, fResponse, sExceptEmail, sStorage)
+function Callback(oRequest, fResponse, sExceptEmail, sStorage, bWithGroups)
 {
 	var
 		sTerm = oRequest.term,
@@ -24,24 +24,51 @@ function Callback(oRequest, fResponse, sExceptEmail, sStorage)
 			'Search': sTerm,
 			'Storage': sStorage,
 			'SortField': Enums.ContactSortField.Frequency,
-			'SortOrder': 1
+			'SortOrder': 1,
+			'WithGroups': bWithGroups ? bWithGroups : false,
+			'WithoutTeamContactsDuplicates': true
 		}
 	;
 
-	Ajax.send('GetContacts', oParameters, function (oResponse) {
+	Ajax.send('GetContactSuggestions', oParameters, function (oResponse) {
 		var aList = [];
 		if (oResponse && oResponse.Result && oResponse.Result.List)
 		{
 			aList = _.map(oResponse.Result.List, function (oItem) {
+				var
+					sValue = oItem.ViewEmail,
+					sLable = ""
+				;
+				if (oItem.FullName && 0 < $.trim(oItem.FullName).length)
+				{
+					if (oItem.ForSharedToAll)
+					{
+						sValue = oItem.FullName;
+					}
+					else if (oItem.IsGroup)
+					{
+						sLable = ('"' + oItem.FullName + '" (' + oItem.ViewEmail + ')');
+						sValue = oItem.ViewEmail;
+					}
+					else
+					{
+						sValue = ('"' + oItem.FullName + '" <' + oItem.ViewEmail + '>');
+					}
+				}
 				return oItem && oItem.ViewEmail && oItem.ViewEmail !== sExceptEmail ?
 				{
-					value: (oItem.FullName && 0 < $.trim(oItem.FullName).length) ? (oItem.ForSharedToAll ? oItem.FullName : ('"' + oItem.FullName + '" <' + oItem.ViewEmail + '>')) : oItem.ViewEmail,
+					label: sLable ? sLable : sValue,
+					value: sValue,
 					name: oItem.FullName,
 					email: oItem.ViewEmail,
 					frequency: oItem.Frequency,
 					id: oItem.UUID,
+					storage: oItem.Storage,
 					team: oItem.Storage === 'team',
-					sharedToAll: oItem.Storage === 'shared'
+					sharedToAll: oItem.Storage === 'shared',
+					hasKey: oItem.HasPgpPublicKey,
+					encryptMessage: oItem.PgpEncryptMessages,
+					signMessage: oItem.PgpSignMessages
 				} :
 				null;
 			});
@@ -165,7 +192,7 @@ function PhoneCallback(oRequest, fResponse)
  */
 function DeleteHandler(oContact)
 {
-	Ajax.send('UpdateContact', { 'Contact': { 'UUID': oContact.id, 'Frequency': -1 } });
+	Ajax.send('UpdateContact', { 'Contact': { 'UUID': oContact.id, 'Frequency': -1, 'Storage': oContact.storage } });
 }
 
 function RequestUserByPhone(sNumber, fCallBack, oContext)

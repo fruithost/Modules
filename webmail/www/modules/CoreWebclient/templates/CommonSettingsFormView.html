@@ -12,6 +12,10 @@
 				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_THEME'}"></span>
 				<select class="value input" data-bind="value: selectedTheme, options: aThemes"></select>
 			</div>
+			<div class="row" data-bind="visible: bAdmin && aMobileThemes.length > 1">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_MOBILE_THEME'}"></span>
+				<select class="value input" data-bind="value: selectedMobileTheme, options: aMobileThemes"></select>
+			</div>
 			<div class="row">
 				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LANGUAGE'}"></span>
 				<select class="value input" data-bind="value: selectedLanguage, options: aLanguages, optionsText: 'name', optionsValue: 'value'"></select>
@@ -55,9 +59,11 @@
 			</div>
 		</div>
 		<div class="buttons">
-			<span class="button" data-bind="click: save">
-				<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_SAVE'}, visible: !isSaving()"></span>
-				<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_SAVE_IN_PROGRESS'}, visible: isSaving()"></span>
+			<span class="button" data-bind="click: save, visible: !isSaving()">
+				<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}"></span>
+			</span>
+			<span class="button" data-bind="visible: isSaving()">
+				<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}"></span>
 			</span>
 		</div>
 	</div>

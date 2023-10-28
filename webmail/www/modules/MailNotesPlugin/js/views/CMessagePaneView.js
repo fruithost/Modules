@@ -4,9 +4,9 @@ var
 	_ = require('underscore'),
 	$ = require('jquery'),
 	ko = require('knockout'),
-	
+
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
-	
+
 	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	Api = require('%PathToCoreWebclientModule%/js/Api.js'),
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
@@ -19,12 +19,12 @@ function GetPlainText(sHtml)
 	{
 		return '';
 	}
-	
+
 	var fReplacer = function (sMatch, sLink, sLinkName) {
 		var sClearLink = sLink.replace(/(\w{3,4}:\/\/)(.*)/, '$2');
 		return (sLink === sLinkName || sClearLink === sLinkName) ? sLink : sLinkName + ' (' + sLink + ')';
 	};
-	
+
 	return sHtml
 		.replace(/\r\n/g, ' ')
 		.replace(/\n/g, ' ')
@@ -68,7 +68,7 @@ function CMessagePaneView(oMailCache, fRouteMessageView)
 	this.saveButtonText = ko.computed(function () {
 		return this.isSaving() ? TextUtils.i18n('COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS') : TextUtils.i18n('COREWEBCLIENT/ACTION_SAVE');
 	}, this);
-	
+
 	this.bBinded = false;
 }
 
@@ -116,20 +116,20 @@ CMessagePaneView.prototype.getSubjectFromText = function (sText)
 			return $.trim(sTextPart) !== '';
 		})
 	;
-	
+
 	sSubject = $.trim(sSubject);
 	if (sSubject.length > 50)
 	{
 		sSubject = sSubject.substring(0, 50);
 	}
-	
+
 	return sSubject;
 };
 
 CMessagePaneView.prototype.onCurrentMessageSubscribe = function ()
 {
 	var oMessage = this.currentMessage();
-	
+
 	if (oMessage)
 	{
 		if (oMessage.isPlain())
@@ -185,7 +185,7 @@ CMessagePaneView.prototype.onBind = function ($MailViewDom)
 
 CMessagePaneView.prototype.onRoute = function (aParams, oParams)
 {
-	MailCache.setCurrentMessage(oParams.Uid, oParams.Folder);
+	MailCache.setCurrentMessage(MailCache.currentAccountId(), oParams.Folder, oParams.Uid);
 	if (oParams.Custom === 'create-note')
 	{
 		this.messageText('');
@@ -215,9 +215,9 @@ CMessagePaneView.prototype.saveNewNote = function ()
 	var
 		oFolder = MailCache.getCurrentFolder(),
 		oParameters = {
-			'AccountId': MailCache.currentAccountId(),
+			'AccountID': MailCache.currentAccountId(),
 			'FolderFullName': oFolder.fullName(),
-			'Text': this.messageText().replace(/\n/g, '<br />').replace(/\r\n/g, '<br />'),
+			'Text': TextUtils.encodeHtml(this.messageText()).replace(/\n/g, '<br />').replace(/\r\n/g, '<br />'),
 			'Subject': this.getSubjectFromText(this.messageText())
 		}
 	;
@@ -256,10 +256,10 @@ CMessagePaneView.prototype.saveEditedNote = function (oMessage)
 	{
 		var
 			oParameters = {
-				'AccountId': MailCache.currentAccountId(),
+				'AccountID': MailCache.currentAccountId(),
 				'FolderFullName': oMessage.folder(),
 				'MessageUid': oMessage.uid(),
-				'Text': this.messageText().replace(/\n/g, '<br />').replace(/\r\n/g, '<br />'),
+				'Text': TextUtils.encodeHtml(this.messageText()).replace(/\n/g, '<br />').replace(/\r\n/g, '<br />'),
 				'Subject': this.getSubjectFromText(this.messageText())
 			},
 			oFolder = MailCache.getFolderByFullName(MailCache.currentAccountId(), oMessage.folder())

@@ -37,8 +37,15 @@ class Module extends \Aurora\System\Module\AbstractModule
 			$oCoreClientModule = \Aurora\System\Api::GetModule('CoreWebclient');
 			if ($oCoreClientModule instanceof \Aurora\System\Module\AbstractModule) 
 			{
-				$sTemplateContent = file_get_contents($this->GetPath().'/templates/Index.html');
-				$sTemplateContent = str_replace('%MODULE_PATH%', 'modules/EavObjectViewer', $sTemplateContent);
+				$sTemplateContent = file_get_contents($this->GetPath().'/dist/index.html');
+				//$sTemplateContent = '<div src="/app.js"></div>';
+				$sTemplateContent = str_replace('src=css', 'src=modules/EavObjectViewer/dist/css', $sTemplateContent);
+				$sTemplateContent = str_replace('src=/js', 'src=modules/EavObjectViewer/dist/js', $sTemplateContent);
+				$sTemplateContent = str_replace('href=/js', 'href=modules/EavObjectViewer/dist/js', $sTemplateContent);
+				$sTemplateContent = str_replace('href=/css', 'href=modules/EavObjectViewer/dist/css', $sTemplateContent);
+				
+				// var_dump($sTemplateContent);
+				// exit;
 				
 				return $sTemplateContent;
 			}
@@ -51,8 +58,38 @@ class Module extends \Aurora\System\Module\AbstractModule
 	
 	public function EntryEavObjectViewerAction()
 	{
-		$oManagerApi = \Aurora\System\Managers\Eav::getInstance();
+		if (isset($_SERVER['HTTP_ORIGIN'])) {
+		  // Decide if the origin in $_SERVER['HTTP_ORIGIN'] is one
+		  // you want to allow, and if so:
+		  header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+		  header('Access-Control-Allow-Credentials: true');
+		}
 
+		if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+		  if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
+			// may also be using PUT, PATCH, HEAD etc
+			header('Access-Control-Allow-Methods: GET, POST, OPTIONS');         
+		  }
+		  
+		  if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
+			header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+		  }
+
+		  exit(0);
+		}
+		
+		$bIsAdmin = false;
+		try
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+			$bIsAdmin = true;
+		}
+		catch (\Aurora\System\Exceptions\ApiException $oEcxeption) {}
+		
+		if (!$bIsAdmin) {
+			exit;
+		}
+		$oManagerApi = new \Aurora\System\Managers\Eav();
 		if (isset($_POST['action']))
 		{
 			$result = false;
@@ -80,15 +117,21 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 						$aViewProperties = array_keys($aMap);
 
-						if ($_POST['EntityId'])
+						if ($_POST['properties'])
 						{
-							$oObject->EntityId = (int)$_POST['EntityId'];
-
-							foreach ($aViewProperties as $property)
+							$properties = json_decode($_POST['properties']);
+							
+							if (isset($properties->EntityId))
 							{
-								if (!empty($_POST[$property]))
+								$oObject->EntityId = (int)$properties->EntityId;
+
+								foreach ($aViewProperties as $propertyName)
 								{
-									$oObject->{$property} = $_POST[$property];
+									// if (!empty($_POST[$property]))
+									if (isset($properties->{$propertyName}))
+									{
+										$oObject->{$propertyName} = $properties->{$propertyName};
+									}
 								}
 							}
 						}
@@ -108,16 +151,18 @@ class Module extends \Aurora\System\Module\AbstractModule
 					}
 					break;
 
-				case 'delete':
-					$result = $oManagerApi->deleteEntity($_POST['EntityId']);
-					break;
+				// case 'delete':
+					// $result = $oManagerApi->deleteEntity($_POST['EntityId']);
+					// break;
 
-				case 'delete_multiple':
+				// case 'delete_multiple':
+				case 'delete':
 					if ($_POST['ids'])
 					{
 						$aIds = explode(',', $_POST['ids']);
 					}
 					$result = true;
+
 					foreach ($aIds as $id) 
 					{
 						if (!$oManagerApi->deleteEntity((int)$id))
@@ -134,39 +179,55 @@ class Module extends \Aurora\System\Module\AbstractModule
 					break;
 
 				case 'list':
-					if (isset($_POST['ObjectName']))
+					$sObjectName = isset($_POST['ObjectName']) ? (string)$_POST['ObjectName'] : '';
+					if ($sObjectName)
 					{
+						$iOffset = (int)$_POST['offset'];
+						$iLimit = (int)$_POST['limit'];
+						
 						$aResultItems = array();
 
-						$sObjectType = 	str_replace('_', '\\', $_POST['ObjectName']);
+						$sObjectType = 	str_replace('_', '\\', $sObjectName);
 						$oEntity = new $sObjectType('Core');
-						
+
 						$aFilters = array();
-						if (!empty($_POST['searchField']))
+						$sSearchField = $_POST['searchField'];
+
+						if (!empty($sSearchField))
 						{
-							if ($oEntity->isStringAttribute($_POST['searchField']))
-							{
-								$aFilters = [$_POST['searchField'] => ['%'.$_POST['searchText'].'%', 'LIKE']];
-							}
-							else if ($oEntity->getType($_POST['searchField']) === 'int')
-							{
-								$aFilters = [$_POST['searchField'] => [(int)$_POST['searchText'], '=']];
+							switch ($oEntity->getType($sSearchField)) {
+								case 'string':
+									$aFilters = [$sSearchField => ['%'.(string)$_POST['searchText'].'%', 'LIKE']];
+									break;
+								case 'int':
+									$aFilters = [$sSearchField => [(int)$_POST['searchText'], '=']];
+									break;
+								case 'bigint':
+									$aFilters = [$sSearchField => [$_POST['searchText'], '=']];
+									break;
+								case 'bool':
+									$aFilters = [$sSearchField => [(bool)$_POST['searchText'], '=']];
+									break;
 							}
 						}
 						
-						$aItems = $oManagerApi->getEntities(
-							$sObjectType, 
-							array(), 
-							0, 
-							99, 
-							$aFilters,
-							array(), 
-							\Aurora\System\Enums\SortOrder::ASC
-						);
+						$aItems = (new \Aurora\System\EAV\Query($sObjectType))
+							->where($aFilters)
+							->offset($iOffset)
+							->limit($iLimit)
+							->exec();
+
+						$iItemsCount = (new \Aurora\System\EAV\Query($sObjectType))
+							->where($aFilters)
+							->count()
+							->exec();
+
+						$aAttributes = $oEntity->getAttributes();
 
 						if (is_array($aItems))
 						{
-							$aAttributes = $oManagerApi->getAttributesNamesByEntityType($sObjectType);
+							// $aAttributes = $oManagerApi->getAttributesNamesByEntityType($sObjectType);
+
 							
 							foreach ($aItems as $oItem)
 							{
@@ -178,29 +239,45 @@ class Module extends \Aurora\System\Module\AbstractModule
 									'EntityId' => 'int',
 									'UUID' => 'string'
 								];
-								foreach ($aAttributes as $sAttribute)
+								foreach ($aAttributes as $sAttribute => $oAttribute)
 								{
 									if (isset($oItem->{$sAttribute}))
 									{
-										$aResultItems['Fields'][$sAttribute] = $oItem->getType($sAttribute);
-										if ($sObjectType === 'Aurora\Modules\StandardAuth\Classes\Account') 
+										if ($sObjectType === \Aurora\Modules\StandardAuth\Classes\Account::class) 
 										{
 											$aResultItem[$sAttribute] = htmlspecialchars($oItem->{$sAttribute});
 										}
 										else
 										{
-											$aResultItem[$sAttribute] = $oItem->{$sAttribute};
+											$aResultItem[$sAttribute] = htmlspecialchars($oItem->{$sAttribute});
 										}
 									}
 									else
 									{
-										$aResultItems['Fields'][$sAttribute] = 'string';
-										$aResultItem[$sAttribute] = '';
+										$aResultItem[$sAttribute] = htmlspecialchars($oAttribute->Value);
 									}
 									
 								}
 								$aResultItems['Values'][] = $aResultItem;
 							}
+
+							$aResultItems['Fields'] = array();
+
+							foreach ($aAttributes as $sAttribute => $oAttribute)
+							{
+								$aResultItems['Fields'][$sAttribute] = $oAttribute->Type;
+							}
+							
+							$aResultItems['pagination'] = array(
+								'total' => $iItemsCount,
+								//'per_page' => 2,
+								//'current_page' => 1,
+								//'last_page' => 2,
+								//'next_page_url' => 'asdasd',
+								//'prev_page_url' => 'asdasd1',
+								'from' => $iOffset,
+								'to' => $iOffset + $iLimit
+							);
 
 							$response = [
 								'error' => false,

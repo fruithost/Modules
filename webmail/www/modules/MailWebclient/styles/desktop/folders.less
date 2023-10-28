@@ -21,10 +21,14 @@
 }
 
 .folders {
+	.title .icon.type11:before {
+		content: "\e920";
+	}
+
 	.title .icon.type1:before {
 		content: "\e616";
 	}
-	
+
 	.title .icon.type2:before {
 		content: "\e615";
 	}
@@ -48,7 +52,6 @@
 	.title .icon.type7,
 	.selected .title .icon.type7 {
 		&:before {
-			color: #ffb736;
 			content: "\e613";
 			margin-top: -0.1ex;
 		}
@@ -56,14 +59,11 @@
 	
 	.item:not(.virtualEmpty) .title .icon.type7 {
 		text-shadow: none;
+		color: #ffb736 !important;
 	}
 	
-	.virtualEmpty .title .icon.type7:before {
-		color: #ffffff !important;
-	}
-	
-	.virtualEmpty.selected .title .icon.type7:before {
-		color: #ffffff !important;
+	.virtualEmpty.selected .title .icon.type7 {
+		color: #ffffff;
 	}
 }
 

@@ -1,3 +1,5 @@
+@theme-background-color: #ece9e0;
+
 @theme-tabs-height: 70px;
 @theme-common-link-color: #4477bb;
 @theme-common-link-hover-color: #c74747;
@@ -7,7 +9,7 @@
 @theme-use-text-fade: true;
 
 .theme-main-background() {
-	background: #ece9e0;
+	background: @theme-background-color;
 }
 
 .theme-tabsbar() {
@@ -78,9 +80,15 @@
 @theme-toolbar-height: 55px;
 
 .theme-common-panel-toolbar() {
-	background: #fbfbf9;
-	border: none;
+	background: #e0e7ef;
+	background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #dbe3eb), color-stop(1, #e6edf5));
+	background: -webkit-linear-gradient(bottom, #dbe3eb 0%, #e6edf5 100%);
+	background: -ms-linear-gradient(bottom, #dbe3eb, #e6edf5);
+	background: -moz-linear-gradient(center bottom, #dbe3eb 0%, #e6edf5 100%);
+	background: -o-linear-gradient(#e6edf5, #dbe3eb);
+	border-bottom: 1px solid #cacfd5;
 	border-radius: 4px 4px 0 0;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e6edf5', endColorstr='#dbe3eb', GradientType=0);
 	white-space: nowrap;
 
 	.resizer {
@@ -88,7 +96,7 @@
 	}
 }
 
-@theme-toolbar-item-icon-color: #78b8f0;
+@theme-toolbar-item-icon-color: #898989;
 
 .theme-toolbar-item() {
 	& > .icon {
@@ -111,25 +119,35 @@
 }
 
 .theme-toolbar-item-hover() {
-/*	background: #eeeeee;
-
-	.hint {
-		background-color: darken(#eeeeee, 10%);
-	}*/
 }
 
-.theme-clear-left-panel() {}
+.theme-clear-left-panel() {
+	background: @theme-background-color;
+}
 
-.theme-clear-panel-list-item-count() {
+.theme-left-panel-item-count() {}
+
+.theme-left-panel-item-count-total() {
+	color: #777777;
+}
+
+.theme-left-panel-item-selected-count-total() {
+	background: #327cc2;
+	border-radius: 11px;
+	box-shadow: 0px 1px 1px #2965b7 inset, 0px 1px 0px rgba(255, 255, 255, 0.3);
+	color: white;
+}
+
+.theme-left-panel-item-selected-count() {
 	background: #327cc2;
 	box-shadow: 0px 1px 1px #2965b7 inset, 0px 1px 0px rgba(255,255,255,0.3);
 }
 
-.theme-clear-panel-list-item-count-hover() {
+.theme-left-panel-item-count-hover() {
 	background: #2965b7;
 }
 
-.theme-clear-panel-list-item-unseen-count-hover() {
+.theme-left-panel-item-unseen-count-hover() {
 	background: #d9d6ce;
 }
 
@@ -139,9 +157,10 @@
 @theme-list-checked-item-bg: #ebf7cb;
 @theme-list-unseen-item-bg: #f4f6f7;
 
-@theme-group-style-item-bg: #ece9e0;
+@theme-group-style-item-bg: @theme-background-color;
 @theme-group-style-selected-item-bg-color: #95bada;
 @theme-group-style-selected-item-bg: #95bada;
+@theme-group-style-item-font-size: 12pt;
 
 .theme-group-style-selected-item() {
 	text-shadow: 0px 1px 0px #678197;
@@ -150,7 +169,7 @@
 .theme-address-capsule() {
 	background-color: #e5eff7;
     color: #5b9bcd;
-    border: none;
+    border: solid 1px #c4d9ea;
 	
 	.ficon {
 		color: #5b9bcd;
@@ -167,8 +186,7 @@
 }
 
 .theme-address-capsule-notfound() {
-	background: #ffffff;
-	border: solid 1px #e5eff7;
+	background: none;
 	color: #5b9bcd;
 }
 
@@ -191,3 +209,59 @@
 @theme-fields-dates-editable-hover-color: #c74747;
 
 @theme-settings-filter-link-color: #4477bb;
+
+@theme-quick-reply-bg: #fcfcfc;
+@theme-quick-reply-textarea-border: 1px solid #d7d7d7;
+
+@theme-center-top-panel-bg: #f8f8f8;
+@theme-center-bottom-panel-bg: #f8f8f8;
+
+@theme-section-title-color: #777777;
+@theme-section-title-text-shadow: 0px 1px 0px #ffffff;
+
+.files .attachments .item.file .item_content,
+.message_viewer .attachments .item .item_content {
+	background: #f7f7f7 !important;
+    box-shadow: 0px 1px 2px #cccccc !important;
+}
+
+.panel.compose .panel_content > .toolbar {
+	border: none;
+}
+
+.popup.files .popup_panel .panels .panel.storages_panel {
+	background: none !important;
+}
+
+.LoginLayout .languages.demo {
+	background: none !important;
+	border: none !important;
+	
+	.langs_heading {
+		color: #519ce2 !important;
+	}
+	
+	.item {
+		.item_content {
+			color: #519ce2 !important;
+			background: none !important;
+
+			&:hover {
+				color: darken(#519ce2, 30%) !important;
+			}
+		}
+		
+		&.selected .item_content {
+			background: lighten(#519ce2, 25%) !important;
+		}
+	}
+}
+
+.login_panel .social .info {
+	color: #929292 !important;
+}
+
+.login_panel .header .icon:before {
+	color: lighten(#519ce2, 10%) !important;
+    text-shadow: 0 1px 0 #ffffff, 0 -1px 0 darken(#519ce2, 10%), -1px -1px #519ce2 !important;
+}

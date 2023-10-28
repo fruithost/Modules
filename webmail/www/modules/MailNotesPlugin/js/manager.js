@@ -9,8 +9,6 @@ module.exports = function (oAppData) {
 				
 		App = require('%PathToCoreWebclientModule%/js/App.js'),
 
-		bNormalUser = App.getUserRole() === Enums.UserRole.NormalUser,
-		
 		sNotesName = 'Notes',
 		sNotesFullName = sNotesName
 	;
@@ -37,7 +35,7 @@ module.exports = function (oAppData) {
 		}
 	}
 	
-	if (bNormalUser)
+	if (App.isUserNormalOrTenant())
 	{
 		return {
 			start: function (oModulesManager) {

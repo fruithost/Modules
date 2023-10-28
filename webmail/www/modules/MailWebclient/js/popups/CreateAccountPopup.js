@@ -66,12 +66,15 @@ CCreateAccountPopup.prototype.init = function ()
 /**
  * @param {Function=} fCallback
  */
-CCreateAccountPopup.prototype.onOpen = function (fCallback)
+CCreateAccountPopup.prototype.onOpen = function (fCallback, sFriendlyName, sEmail, sIncomingPassword)
 {
 	this.fCallback = fCallback;
 	
 	this.init();
-	
+	this.friendlyName(sFriendlyName);
+	this.email(sEmail);
+	this.incomingLogin(sEmail);
+	this.incomingPassword(sIncomingPassword);
 	this.focusFieldToEdit();
 };
 

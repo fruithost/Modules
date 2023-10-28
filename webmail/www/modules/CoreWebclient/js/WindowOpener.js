@@ -81,20 +81,44 @@ module.exports = {
 	},
 	
 	/**
+	 * Attempts to get the "origin" value for an opened window.
+	 * Returns false if this is not possible.
+	 * This means that the user has opened some other site in it.
+	 * @param {object} oWin
+	 * @returns {bool}
+	 */
+	isSameOrigin: function (oWin)
+	{
+		var sWinOrigin = '';
+
+		try
+		{
+			sWinOrigin = oWin.location.origin;
+		}
+		catch (oError)
+		{
+			// There is "accessing a cross-origin frame" error if something else was opened in the oWin tab
+			console.log('The following error was catched:');
+			console.error(oError);
+		}
+		return window.location.origin === sWinOrigin;
+	},
+
+	/**
 	 * @returns {Array}
 	 */
 	getOpenedWindows: function ()
 	{
 		aOpenedWins = _.filter(aOpenedWins, function (oWin) {
-			return !oWin.closed;
-		});
-		
+			return this.isSameOrigin(oWin) && !oWin.closed;
+		}.bind(this));
 		return aOpenedWins;
 	},
 	
 	closeAll: function ()
 	{
 		_.each(aOpenedWins, function (oWin) {
+			// Check of windows origin doesn't work in unload event handler, so it is moved to onbeforeunload event handler
 			if (!oWin.closed)
 			{
 				oWin.close();

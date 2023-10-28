@@ -1,0 +1,17 @@
+<div class="panel_top">
+	<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_SETTINGS_TAB'}"></h2>
+</div>
+<div class="panel_center">
+	<div class="fields">
+		<div class="fieldset">
+			<div class="row hint">
+				<span data-bind="html: tfaStatusForUserText"></span>
+			</div>
+			<div class="buttons" style="text-align: left;" data-bind="visible: twoFactorAuthEnabled">
+				<span class="button" data-bind="click: comfirmDisableUserTfa">
+					<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_DISABLE_TFA'}"></span>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>

@@ -7,9 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'TijsVerkoyen\\CssToInlineStyles' => array($vendorDir . '/tijsverkoyen/css-to-inline-styles'),
-    'PEAR' => array($vendorDir . '/pear/pear_exception'),
     'Net' => array($vendorDir . '/pear/net_idna2'),
     'MailSo\\' => array($vendorDir . '/afterlogic/mailso/lib'),
-    'Knp\\Snappy' => array($vendorDir . '/knplabs/knp-snappy/src'),
     'Gufy\\CpanelPhp\\' => array($vendorDir . '/gufy/cpanel-php/src'),
 );

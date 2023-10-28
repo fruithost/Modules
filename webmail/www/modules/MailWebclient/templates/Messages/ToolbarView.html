@@ -1,14 +1,14 @@
 <div class="toolbar">
 	<span class="resizer" data-bind="event: { 'dblclick': resizeDblClick}"></span>
 	<span class="content">
-		<span class="item checkstate" data-bind="command: checkMailCommand, checkstate: {'activeClass': 'process', 'state': checkMailIndicator(), 'duration': 800}, 
+		<span class="item checkstate" data-bind="command: checkMailCommand, checkstate: {'activeClass': 'process', 'state': checkMailIndicator(), 'duration': 800},
 				customTooltip: '%MODULENAME%/ACTION_CHECK_MAIL'" id="selenium_mail_check_button">
 			<span class="icon"></span>
 			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_CHECK_MAIL'}"></span>
 		</span>
-		
+
 		<!-- ko template: {name: '%ModuleName%_Messages_MarkButtonView'} --><!-- /ko -->
-		
+
 		<span class="item move" id="selenium_move_to_folder" data-bind="dropdown: {control: false, scrollToTopContainer: '.scroll-inner'},
 				command: moveToFolderCommand, customTooltip: '%MODULENAME%/ACTION_MOVE_TO_FOLDER', visible: visibleMoveTool">
 			<span class="icon"></span>
@@ -25,9 +25,9 @@
 				</span>
 			</span>
 		</span>
-		
+
 		<!-- ko template: {name: '%ModuleName%_Messages_DeleteButtonView'} --><!-- /ko -->
-		
+
 		<span class="item empty_trash" data-bind="command: emptyTrashCommand, visible: isTrashFolder(), customTooltip: '%MODULENAME%/ACTION_EMPTY_TRASH'">
 			<span class="icon"></span>
 			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_EMPTY_TRASH'}"></span>
@@ -36,7 +36,17 @@
 			<span class="icon"></span>
 			<span class="text" data-bind="i18n: {'key': '%MODULENAME%/ACTION_EMPTY_SPAM'}"></span>
 		</span>
-		
+
 		<!-- ko template: {name: '%ModuleName%_Messages_SpamButtonsView'} --><!-- /ko -->
+
+		<!-- ko template: {name: '%ModuleName%_Messages_SortButtonView'} --><!-- /ko -->
+
+		<!-- ko foreach: otherToolbarCommands -->
+			<span class="item" data-bind="command: Command, css: CssClass, visible: Visible">
+				<span class="icon" data-bind="customTooltip: Text"></span>
+				<span class="text" data-bind="text: Text"></span>
+			</span>
+		<!-- /ko -->
+
 	</span>
 </div>

@@ -20,8 +20,9 @@ var
  * @constructor
  * @extends CCommonFileModel
  */
-function CAttachmentModel()
+function CAttachmentModel(iAccountId)
 {
+	this.iAccountId = iAccountId || App.currentAccountId();
 	this.folderName = ko.observable('');
 	this.messageUid = ko.observable('');
 	
@@ -46,14 +47,18 @@ function CAttachmentModel()
 
 _.extendOwn(CAttachmentModel.prototype, CAbstractFileModel.prototype);
 
+/**
+ * Method is used in other modules
+ * @returns {CAttachmentModel}
+ */
 CAttachmentModel.prototype.getNewInstance = function ()
 {
-	return new CAttachmentModel();
+	return new CAttachmentModel(this.iAccountId);
 };
 
 CAttachmentModel.prototype.getCopy = function ()
 {
-	var oCopy = new CAttachmentModel();
+	var oCopy = new CAttachmentModel(this.iAccountId);
 	
 	oCopy.copyProperties(this);
 	
@@ -62,15 +67,21 @@ CAttachmentModel.prototype.getCopy = function ()
 
 CAttachmentModel.prototype.copyProperties = function (oSource)
 {
+	this.folderName(oSource.folderName());
+	this.messageUid(oSource.messageUid());
+	this.cid(oSource.cid());
+	this.contentLocation(oSource.contentLocation());
+	this.inline(oSource.inline());
+	this.linked(oSource.linked());
+	this.mimePartIndex(oSource.mimePartIndex());
+	this.messagePart(oSource.messagePart());
+	this.content(oSource.content());
+
 	this.fileName(oSource.fileName());
 	this.tempName(oSource.tempName());
 	this.size(oSource.size());
 	this.hash(oSource.hash());
 	this.mimeType(oSource.mimeType());
-	this.cid(oSource.cid());
-	this.contentLocation(oSource.contentLocation());
-	this.inline(oSource.inline());
-	this.linked(oSource.linked());
 	this.thumbnailSrc(oSource.thumbnailSrc());
 	this.thumbnailLoaded(oSource.thumbnailLoaded());
 	this.statusText(oSource.statusText());
@@ -89,7 +100,11 @@ CAttachmentModel.prototype.additionalParse = function (oData)
 {
 	this.content(Types.pString(oData.Content));
 	this.mimePartIndex(Types.pString(oData.MimePartIndex));
-
+	if (this.isMessageType() && this.mimePartIndex() === '')
+	{
+		this.actions(_.without(this.actions(), 'view'));
+	}
+	
 	this.cid(Types.pString(oData.CID));
 	this.contentLocation(Types.pString(oData.ContentLocation));
 	this.inline(!!oData.IsInline);
@@ -123,6 +138,7 @@ CAttachmentModel.prototype.onGetMessageResponse = function (oResult, oRequest)
 	
 	if (oResult && this.oNewWindow)
 	{
+		oResult.TimeStampInUTC = oResult.ReceivedOrDateTimeStampInUTC;
 		oMessage.parse(oResult, oParameters.AccountID, false, true);
 		this.messagePart(oMessage);
 		this.messagePart().viewMessage(this.oNewWindow);
@@ -169,6 +185,7 @@ CAttachmentModel.prototype.viewMessageFile = function ()
 			this.oNewWindow = oWin;
 
 			Ajax.send('GetMessage', {
+				'AccountID': this.iAccountId,
 				'Folder': this.folderName(),
 				'Uid': this.messageUid(),
 				'Rfc822MimeIndex': this.mimePartIndex()

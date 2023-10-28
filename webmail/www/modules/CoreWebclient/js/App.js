@@ -13,7 +13,6 @@ var
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	UrlUtils = require('%PathToCoreWebclientModule%/js/utils/Url.js'),
 	
-	Api = require('%PathToCoreWebclientModule%/js/Api.js'),
 	Browser = require('%PathToCoreWebclientModule%/js/Browser.js'),
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 	Routing = require('%PathToCoreWebclientModule%/js/Routing.js'),
@@ -28,6 +27,7 @@ var
 require('%PathToCoreWebclientModule%/js/enums.js');
 
 require('%PathToCoreWebclientModule%/js/koBindings.js');
+require('%PathToCoreWebclientModule%/js/koOtherBindings.js');
 
 require('%PathToCoreWebclientModule%/js/vendors/inputosaurus.js');
 
@@ -133,6 +133,11 @@ CApp.prototype.getUserRole = function ()
 	return this.iUserRole;
 };
 
+CApp.prototype.isUserNormalOrTenant = function ()
+{
+	return this.iUserRole === Enums.UserRole.NormalUser || this.iUserRole === Enums.UserRole.TenantAdmin;
+};
+
 CApp.prototype.getTenantId = function ()
 {
 	return this.iTenantId;
@@ -182,7 +187,7 @@ CApp.prototype.init = function ()
 {
 	ModulesManager.run('StandardLoginFormWebclient', 'beforeAppRunning', [this.iUserRole !== Enums.UserRole.Anonymous]);
 	
-	if (UserSettings.AllowChangeSettings && !this.isMobile())
+	if (App.isUserNormalOrTenant() && UserSettings.AllowChangeSettings)
 	{
 		ModulesManager.run('SettingsWebclient', 'registerSettingsTab', [
 			function () { return require('%PathToCoreWebclientModule%/js/views/CommonSettingsFormView.js'); },
@@ -208,15 +213,12 @@ CApp.prototype.init = function ()
 		]);
 	}
 		
-	if (Browser.iosDevice && this.iUserRole !== Enums.UserRole.Anonymous && UserSettings.SyncIosAfterLogin && UserSettings.AllowIosProfile && $.cookie('skip-ios') !== '1')
+	ModulesManager.run('Ios', 'routeToIos');
+
+	if (this.iUserRole !== Enums.UserRole.Anonymous)
 	{
-		$.cookie('skip-ios', '1');
-		window.location.href = '?ios';
-	}
-	
-	if (this.iUserRole !== Enums.UserRole.Anonymous && !this.bPublic)
-	{
-		var AccountList = ModulesManager.run('MailWebclient', 'getAccountList');
+		var MainTab = App.isNewTab() && window.opener && window.opener.MainTabMailMethods;
+		var AccountList = MainTab ? MainTab.getAccountList() : ModulesManager.run('MailWebclient', 'getAccountList');
 		if (AccountList)
 		{
 			this.currentAccountId = AccountList.currentId;
@@ -259,7 +261,7 @@ CApp.prototype.init = function ()
 
 	if (!this.isMobile())
 	{
-		$(window).unload(function() {
+		$(window).on('unload', function() {
 			WindowOpener.closeAll();
 		});
 	}
@@ -269,6 +271,7 @@ CApp.prototype.init = function ()
 		{
 			return '';
 		}
+		WindowOpener.getOpenedWindows(); // prepare open windows by removing those that already have a different origin
 	}, this);
 	
 	if (Browser.ie8AndBelow)
@@ -297,6 +300,7 @@ CApp.prototype.showLastErrorOnLogin = function ()
 		
 		if (iError !== 0)
 		{
+			var Api = require('%PathToCoreWebclientModule%/js/Api.js');
 			Api.showErrorByCode({'ErrorCode': iError, 'Module': sErrorModule}, '', true);
 		}
 		
@@ -314,7 +318,8 @@ CApp.prototype.logout = function ()
 {
 	if (Screens.hasUnsavedChanges() || Popups.hasUnsavedChanges())
 	{
-		this.askDiscardChanges(this.logoutAndGotoLogin.bind(this));
+		var oCurrentScreen = _.isFunction(Screens.getCurrentScreen) ? Screens.getCurrentScreen() : null;
+		this.askDiscardChanges(this.logoutAndGotoLogin.bind(this), null, oCurrentScreen);
 	}
 	else
 	{
@@ -324,31 +329,47 @@ CApp.prototype.logout = function ()
 
 /**
  * Makes user logout and relocate to login screen after that.
- * @param {number=} iLastErrorCode
  */
-CApp.prototype.logoutAndGotoLogin = function (iLastErrorCode)
+CApp.prototype.logoutAndGotoLogin = function ()
 {
-	var Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js');
-
-	Ajax.send('Core', 'Logout', iLastErrorCode ? {'LastErrorCode': iLastErrorCode} : null);
-
-	Ajax.abortAndStopSendRequests();
-
-	$.removeCookie('AuthToken');
-
-	window.onbeforeunload = null;
-	
-	WindowOpener.closeAll();
-	
-	Routing.finalize();
-	
-	if (Types.isNonEmptyString(UserSettings.CustomLogoutUrl))
+	function gotoLoginPage()
 	{
-		window.location.href = UserSettings.CustomLogoutUrl;
+		if (Types.isNonEmptyString(UserSettings.CustomLogoutUrl))
+		{
+			window.location.href = UserSettings.CustomLogoutUrl;
+		}
+		else
+		{
+			UrlUtils.clearAndReloadLocation(Browser.ie8AndBelow, true);
+		}
+	}
+	
+	if ($.cookie('AuthToken'))
+	{
+		var Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js');
+
+		Ajax.send('Core', 'Logout', {}, function () {
+			$.removeCookie('AuthToken');
+
+			Routing.finalize();
+
+			this.iUserRole = Enums.UserRole.Anonymous;
+			this.sUserName = '';
+			this.sUserPublicId = '';
+			this.iUserId = 0;
+
+			gotoLoginPage();
+		}, this);
+		
+		var oExcept = {
+			Module: 'Core',
+			Method: 'Logout'
+		};
+		Ajax.abortAndStopSendRequests(oExcept);
 	}
 	else
 	{
-		UrlUtils.clearAndReloadLocation(Browser.ie8AndBelow, true);
+		gotoLoginPage();
 	}
 };
 
@@ -456,7 +477,7 @@ CApp.prototype.useGoogleAnalytics = function ()
  */
 CApp.prototype.checkCookies = function ()
 {
-	$.cookie.defaults = { path: UserSettings.CookiePath };
+	$.cookie.defaults = { path: UserSettings.CookiePath, secure: UserSettings.CookieSecure };
 	
 	$.cookie('checkCookie', '1');
 	var bCookieWorks = $.cookie('checkCookie') === '1';
@@ -477,12 +498,25 @@ CApp.prototype.checkCookies = function ()
 			var sAuthToken = $.cookie('AuthToken');
 			if (sAuthToken)
 			{
-				$.cookie('AuthToken', sAuthToken, { expires: 30 });
+				this.setAuthToken(sAuthToken);
 			}
 		}
 	}
 	
 	return bCookieWorks;
+};
+
+/**
+ * @param {string} sAuthToken
+ */
+CApp.prototype.setAuthToken = function (sAuthToken)
+{
+	var oParams = {};
+	if (UserSettings.AuthTokenCookieExpireTime > 0)
+	{
+		oParams['expires'] = UserSettings.AuthTokenCookieExpireTime;
+	}
+	$.cookie('AuthToken', sAuthToken, oParams);
 };
 
 CApp.prototype.getCommonRequestParameters = function ()

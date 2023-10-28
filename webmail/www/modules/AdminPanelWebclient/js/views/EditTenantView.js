@@ -7,15 +7,26 @@ var
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	
+	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js')
 ;
+
+function GetAdditionalFieldValue (oField, sValue)
+{
+	switch (oField.FieldType)
+	{
+		case 'bool': return Types.pBool(sValue);
+		case 'int': return Types.pInt(sValue);
+		default: return Types.pString(sValue);
+	}
+};
 
 function ParseAdditionalFields(sEntityType)
 {
 	var aAdditionalFields = Types.pArray(window.auroraAppData && window.auroraAppData.additional_entity_fields_to_edit);
-	return _.filter(aAdditionalFields, function (oFieldData) {
-		oFieldData.value = ko.observable('');
-		return oFieldData.Entity === sEntityType;
+	return _.filter(aAdditionalFields, function (oField) {
+		oField.value = ko.observable(GetAdditionalFieldValue(oField, ''));
+		return oField.Entity === sEntityType;
 	});
 }
 
@@ -24,6 +35,7 @@ function ParseAdditionalFields(sEntityType)
  */
 function CEditTenantView()
 {
+	this.bAllowEditWebDomain = App.getUserRole() === Enums.UserRole.SuperAdmin;
 	this.id = ko.observable(0);
 	this.name = ko.observable('');
 	this.description = ko.observable('');
@@ -65,7 +77,7 @@ CEditTenantView.prototype.clearFields = function ()
 	this.siteName('');
 	
 	_.each(this.aAdditionalFields, function (oField) {
-		oField.value('');
+		oField.value(GetAdditionalFieldValue(oField, ''));
 	});
 };
 
@@ -80,7 +92,9 @@ CEditTenantView.prototype.parse = function (iEntityId, oResult)
 		this.siteName(oResult.SiteName);
 		
 		_.each(this.aAdditionalFields, function (oField) {
-			oField.value(Types.pString(oResult[oField.FieldName]));
+			oField.value(GetAdditionalFieldValue(oField, oResult[oField.FieldName]));
+			oField.EnableOnCreate = Types.pBool(oField.EnableOnCreate, true);
+			oField.EnableOnEdit = Types.pBool(oField.EnableOnEdit, true);
 		});
 	}
 	else
@@ -107,7 +121,7 @@ CEditTenantView.prototype.isValidSaveData = function ()
 CEditTenantView.prototype.getParametersForSave = function ()
 {
 	var oParameters = {
-		Id: this.id(),
+		TenantId: this.id(),
 		Name: this.name(),
 		Description: this.description(),
 		WebDomain: this.webDomain(),
@@ -115,7 +129,12 @@ CEditTenantView.prototype.getParametersForSave = function ()
 	};
 	
 	_.each(this.aAdditionalFields, function (oField) {
-		oParameters[oField.FieldName] = oField.value();
+		var mValue = oField.value();
+		if (oField.FieldType === 'int')
+		{
+			mValue = Types.pInt(mValue);
+		}
+		oParameters[oField.FieldName] = mValue;
 	});
 	
 	return oParameters;

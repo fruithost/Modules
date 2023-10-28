@@ -6,5 +6,9 @@
     "ShowSingleMailChangePasswordInCommonSettings": [
 		false,
 		"bool"
+	],
+    "ShowSingleMailChangePasswordInSecuritySettings": [
+		false,
+		"bool"
 	]
 }

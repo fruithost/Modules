@@ -48,7 +48,7 @@ class PrefixTest extends \PHPixie\Test\Testcase
         $locator = $this->prepareLocator('second');
         
         for($i=0; $i<2; $i++) {
-            $this->assertSame($locator, $this->locator->get('second'));
+            $this->assertSame($locator, $this->locator->get('second', true));
         }
     }
     
@@ -77,7 +77,8 @@ class PrefixTest extends \PHPixie\Test\Testcase
         $locator = $this->abstractMock('\PHPixie\Filesystem\Locators\Locator');
         
         $locatorConfig = $this->getData();
-        $this->method($this->locatorsConfig, 'slice', $locatorConfig, array($name), 0);
+        $this->method($this->locatorsConfig, 'get', array($name => array()), array(), 0);
+        $this->method($this->locatorsConfig, 'slice', $locatorConfig, array($name), 1);
         $this->method($this->locatorBuilder, 'buildFromConfig', $locator, array($locatorConfig), 0);
         
         return $locator;

@@ -2,11 +2,12 @@
 
 module.exports = function (oAppData) {
 	var 
-		App = require('%PathToCoreWebclientModule%/js/App.js'),
-		Promise = require("bluebird")
+		Promise = require('bluebird'),
+		
+		App = require('%PathToCoreWebclientModule%/js/App.js')
 	;
 	
-	if (App.getUserRole() === Enums.UserRole.SuperAdmin)
+	if (App.getUserRole() === Enums.UserRole.SuperAdmin || App.getUserRole() === Enums.UserRole.TenantAdmin)
 	{
 		var
 			_ = require('underscore'),
@@ -28,32 +29,48 @@ module.exports = function (oAppData) {
 		
 		return {
 			start: function () {
-				aAdminPanelTabsParams.push({
-					GetTabView: function(resolve) {
-						require.ensure(
-							['modules/%ModuleName%/js/views/DbAdminSettingsView.js'],
-							function() {
-								resolve(require('modules/%ModuleName%/js/views/DbAdminSettingsView.js'));
-							},
-							"admin-bundle"
-						);
-					},
-					TabName: Settings.HashModuleName + '-db',
-					TabTitle: TextUtils.i18n('%MODULENAME%/LABEL_DB_SETTINGS_TAB')
-				});
-				aAdminPanelTabsParams.push({
-					GetTabView: function(resolve) {
-						require.ensure(
-							['modules/%ModuleName%/js/views/SecurityAdminSettingsView.js'],
-							function() {
-								resolve(require('modules/%ModuleName%/js/views/SecurityAdminSettingsView.js'));
-							},
-							"admin-bundle"
-						);
-					},
-					TabName: Settings.HashModuleName + '-security',
-					TabTitle: TextUtils.i18n('%MODULENAME%/LABEL_SECURITY_SETTINGS_TAB')
-				});
+				if (App.getUserRole() === Enums.UserRole.SuperAdmin)
+				{
+					aAdminPanelTabsParams.push({
+						GetTabView: function(resolve) {
+							require.ensure(
+								['modules/%ModuleName%/js/views/DbAdminSettingsView.js'],
+								function() {
+									resolve(require('modules/%ModuleName%/js/views/DbAdminSettingsView.js'));
+								},
+								'admin-bundle'
+							);
+						},
+						TabName: Settings.HashModuleName + '-db',
+						TabTitle: TextUtils.i18n('%MODULENAME%/LABEL_DB_SETTINGS_TAB')
+					});
+					aAdminPanelTabsParams.push({
+						GetTabView: function(resolve) {
+							require.ensure(
+								['modules/%ModuleName%/js/views/SecurityAdminSettingsView.js'],
+								function() {
+									resolve(require('modules/%ModuleName%/js/views/SecurityAdminSettingsView.js'));
+								},
+								'admin-bundle'
+							);
+						},
+						TabName: Settings.HashModuleName + '-security',
+						TabTitle: TextUtils.i18n('%MODULENAME%/LABEL_SECURITY_SETTINGS_TAB')
+					});
+					aAdminPanelTabsParams.push({
+						GetTabView: function(resolve) {
+							require.ensure(
+								['modules/%ModuleName%/js/views/AboutAdminSettingsView.js'],
+								function() {
+									resolve(require('modules/%ModuleName%/js/views/AboutAdminSettingsView.js'));
+								},
+								'admin-bundle'
+							);
+						},
+						TabName: 'about',
+						TabTitle: TextUtils.i18n('%MODULENAME%/LABEL_ABOUT_SETTINGS_TAB')
+					});
+				}
 				aAdminPanelTabsParams.push({
 					GetTabView: function(resolve) {
 						require.ensure(
@@ -61,24 +78,11 @@ module.exports = function (oAppData) {
 							function() {
 								resolve(require('modules/%ModuleName%/js/views/CommonSettingsPaneView.js'));
 							},
-							"admin-bundle"
+							'admin-bundle'
 						);
 					},
 					TabName: 'common',
 					TabTitle: TextUtils.i18n('%MODULENAME%/LABEL_COMMON_SETTINGS_TAB')
-				});
-				aAdminPanelTabsParams.push({
-					GetTabView: function(resolve) {
-						require.ensure(
-							['modules/%ModuleName%/js/views/AboutAdminSettingsView.js'],
-							function() {
-								resolve(require('modules/%ModuleName%/js/views/AboutAdminSettingsView.js'));
-							},
-							"admin-bundle"
-						);
-					},
-					TabName: 'about',
-					TabTitle: TextUtils.i18n('%MODULENAME%/LABEL_ABOUT_SETTINGS_TAB')
 				});
 			},
 			getScreens: function () {
@@ -127,11 +131,21 @@ module.exports = function (oAppData) {
 									});
 								});
 							},
-							"admin-bundle"
+							'admin-bundle'
 						);
 					});
 				};
 				return oScreens;
+			},
+			getHeaderItem: function () {
+				if (App.getUserRole() === Enums.UserRole.SuperAdmin)
+				{
+					return null;
+				}
+				return {
+					item: require('modules/%ModuleName%/js/views/HeaderItemView.js'),
+					name: Settings.HashModuleName
+				};
 			},
 			getAbstractSettingsFormViewClass: function () {
 				return require('modules/%ModuleName%/js/views/CAbstractSettingsFormView.js');

@@ -18,6 +18,35 @@ li.address_capsule {
 		right: 0;
 		text-decoration: none;
 	}
+
+	span.address_capsule_key {
+		margin: -1px;
+		
+		.init-icon-font(after);
+
+		&:after {
+			color: green;
+			vertical-align: middle;
+			text-shadow: 0 0 1px grey;
+		}
+		
+		&.address_capsule_key_unset:after {
+			content: "\e658";
+		}
+		
+		&.address_capsule_key_encrypt:after {
+			content: "\e91b";
+		}
+		
+		&.address_capsule_key_not_encrypt:after {
+			color: orange;
+			content: "\e91a";
+		}
+		
+		&.address_capsule_key_sign:after {
+			content: "\e91c";
+		}
+	}
 	
 	.theme-address-capsule();
 }

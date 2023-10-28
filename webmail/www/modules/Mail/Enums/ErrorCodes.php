@@ -1,8 +1,5 @@
 <?php
-/*
- * @copyright Copyright (c) 2019, Afterlogic Corp.
- * @license AGPL-3.0 or Afterlogic Software License
- *
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,6 +7,11 @@
 
 namespace Aurora\Modules\Mail\Enums;
 
+/**
+ * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
+ * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
+ */
 class ErrorCodes
 {
 	const CannotConnectToMailServer = 4001;
@@ -29,6 +31,7 @@ class ErrorCodes
 	const CannotUploadMessage = 4015;
 	const CannotUploadMessageFileNotEml = 4016;
 	const DomainIsNotAllowedForLoggingIn = 4017;
+	const TenantQuotaExceeded = 4018;
 
 	/**
 	 * @var array
@@ -51,5 +54,6 @@ class ErrorCodes
 		'CannotUploadMessage' => self::CannotUploadMessage,
 		'CannotUploadMessageFileNotEml' => self::CannotUploadMessageFileNotEml,
 		'DomainIsNotAllowedForLoggingIn' => self::DomainIsNotAllowedForLoggingIn,
+		'TenantQuotaExceeded' => self::TenantQuotaExceeded,
 	];
 }

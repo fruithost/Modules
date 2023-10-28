@@ -1,0 +1,70 @@
+.items_list.simple_list {
+	.item {
+		&.fetcher {
+			.icon {
+				display: inline-block;
+				font-size: 20px;
+				height: 18px;
+				vertical-align: bottom;
+				width: 18px;
+				
+				.init-icon-font();
+			}
+
+			.icon.fetcher:before {
+				content: "\e65b";
+			}
+
+			.icon.default-identity {
+				font-family: monospace;
+				font-size: 19px;
+				height: 17px;
+				margin-left: 10px;
+			}
+
+			.label {
+				color: #929292;
+			}
+
+			.title {
+				font-weight: bold;
+			}
+			
+			.info {
+				float: right;
+			}
+		}
+
+		.link.fetcher {
+			float: right;
+			font-weight: normal;
+			margin-left: 12px;
+		}
+	}
+
+	.icon_oauth {
+		border-radius: 20px;
+		max-height: 36px;
+		vertical-align: middle;
+	}
+
+	.title_oauth {
+		font-size: 10pt;
+		font-weight: bold;
+		line-height: 36px;
+		margin-left: 6px;
+		vertical-align: middle;
+	}
+
+	.AdminPanelLayout & {
+		margin: 0px 20px 30px;
+	
+		.item .title {
+			mask: none;
+			-webkit-mask: none;
+			-o-mask: none;
+			-ms-mask: none;
+		}
+	}
+}
+

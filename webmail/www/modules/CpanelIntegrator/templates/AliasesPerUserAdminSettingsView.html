@@ -1,0 +1,32 @@
+<div class="middle_bar">
+	<div class="panel_top">
+		<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_SETTINGS_TAB_ALIASES'}"></h2>
+	</div>
+	<div class="panel_center">
+		<div class="fields">
+			<div class="fieldset">
+				<div class="row">
+					<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ALIAS'}"></span>
+					<span class="value">
+						<input class="input" style="margin-right: 4px; width: 200px" type="text" data-bind="value: aliasName" />
+						<span style="font-size: 14pt;">@</span>
+						<select class="input" style="width: auto;" data-bind="options: domains, value: domain"></select>
+					</span>
+					<span class="buttons" style="margin: 0 0 0 25px;">
+						<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_ADD_NEW_ALIAS'}, click: addNewAlias"></span>
+					</span>
+				</div>
+				<div class="row">
+					<span class="label"></span>
+					<span class="value">
+						<select size="9" tabindex="15" class="input" style="width: 300px;" multiple="multiple"
+								data-bind="options: aliases, selectedOptions: selectedAliases"></select>
+					</span>
+					<span class="buttons" style="vertical-align: bottom; display:  inline-block; margin: 0 0 4px 25px;">
+						<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_DELETE_ALIASES'}, click: deleteAliases"></span>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

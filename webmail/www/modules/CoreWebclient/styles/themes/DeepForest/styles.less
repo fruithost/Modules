@@ -16,7 +16,7 @@
 	@tabsbar-item-font-color: #fff;
 	@tabsbar-item-font-color-hover: #FFFAB5;
 	@tabsbar-item-font-shadow: 0 0 10px #000, 0 0 15px #000;
-	@tabsbar-item-top-offset: 34px;
+	// @tabsbar-item-top-offset: 34px;
 	
 	.dropdown_content {
 		border-radius: 4px;
@@ -224,18 +224,24 @@
 	}
 }
 
-.theme-clear-panel-list-item-count() {
+.theme-left-panel-item-count() {}
+
+.theme-left-panel-item-count-total() {}
+
+.theme-left-panel-item-selected-count-total() {}
+
+.theme-left-panel-item-selected-count() {
 	background: transparent;
 	box-shadow: none;
 	border: 1px solid #fff;
 	padding: 1px 9px;
 }
 
-.theme-clear-panel-list-item-count-hover() {
+.theme-left-panel-item-count-hover() {
 	background: #3f805f;
 }
 
-.theme-clear-panel-list-item-unseen-count-hover() {
+.theme-left-panel-item-unseen-count-hover() {
 	background: #3d2d2d;
 }
 
@@ -248,6 +254,7 @@
 @theme-group-style-item-bg: #000;
 @theme-group-style-selected-item-bg-color: #57B183;
 @theme-group-style-selected-item-bg: #57B183;
+@theme-group-style-item-font-size: 11pt;
 
 .theme-group-style-selected-item() {
 	text-shadow: none;
@@ -297,3 +304,29 @@
 @theme-fields-dates-editable-hover-color: #c74747;
 
 @theme-settings-filter-link-color: #4477bb;
+
+@theme-quick-reply-bg: #ffffff;
+@theme-quick-reply-textarea-border: none;
+
+@theme-center-top-panel-bg: #f1f1f1;
+@theme-center-bottom-panel-bg: #ffffff;
+
+@theme-section-title-color: #ffffff;
+@theme-section-title-text-shadow: none;
+
+.sharing_panel {
+	transition: background 200ms ease 0s, color 200ms ease 0s;
+	border-radius: 15px;
+	border: 1px solid #ffffff;
+	box-shadow: 0 0 8px #3d5250;
+	background: #ffffff;
+	
+	.item.file {
+		padding: 10px;
+	}
+	
+	.item .size {
+		color: #ddd;
+		margin-top: 6px;
+	}
+}

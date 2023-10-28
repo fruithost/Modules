@@ -42,5 +42,9 @@
 	"UseDropdownLanguagesView": [
 		false,
 		"bool"
+	],
+	"AuthTokenCookieExpireTime": [
+		30,
+		"int"
 	]
 }

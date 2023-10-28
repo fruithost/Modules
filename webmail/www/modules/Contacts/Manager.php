@@ -7,6 +7,8 @@
 
 namespace Aurora\Modules\Contacts;
 
+use Aurora\Modules\Contacts\Classes\CTag;
+
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
@@ -54,25 +56,23 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	public function getContactByEmail($iUserId, $sEmail)
 	{
 		$oContact = null;
-		$aViewAttrs = array();
 		$aFilters = array(
 			'$AND' => array(
 				'ViewEmail' => array($sEmail, '='),
 				'IdUser' => array($iUserId, '='),
 			)
 		);
-		$aOrderBy = array('FullName');
-		$aContacts = $this->oEavManager->getEntities(
-			Classes\Contact::class,
-			$aViewAttrs, 
-			0, 
-			0, 
-			$aFilters, 
-			$aOrderBy
-		);
-		if (count($aContacts) > 0)
+
+		$oContact = (new \Aurora\System\EAV\Query())
+			->select()
+			->whereType(Classes\Contact::class)
+			->where($aFilters)
+			->orderBy(['FullName'])
+			->one()
+			->exec();
+
+		if ($oContact instanceof Classes\Contact)
 		{
-			$oContact = $aContacts[0];
 			$oContact->GroupsContacts = $this->getGroupContacts(null, $oContact->UUID);
 		}
 		return $oContact;
@@ -87,7 +87,16 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getGroup($sUUID)
 	{
-		return $this->oEavManager->getEntity($sUUID, Classes\Group::class);
+		$mResult = false;
+		$oGroup = $this->oEavManager->getEntity($sUUID, Classes\Group::class);
+
+		if ($oGroup instanceof \Aurora\Modules\Contacts\Classes\Group)
+		{
+			$oGroup->GroupContacts = $this->getGroupContacts($oGroup->UUID);
+			$mResult = $oGroup;
+		}
+
+		return $mResult;
 	}
 	
 	/**
@@ -99,25 +108,19 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getGroupByName($sName, $iUserId)
 	{
-		$oGroup = null;
 		$aFilters = [
 			'$AND' => [
 				'Name' => [$sName, '='],
 				'IdUser' => [$iUserId, '=']
 			]
 		];
-		$aGroups = $this->oEavManager->getEntities(
-			Classes\Group::class,
-			[],
-			0,
-			0,
-			$aFilters
-		);
-		if (count($aGroups) > 0)
-		{
-			$oGroup = $aGroups[0];
-		}
-		return $oGroup;
+
+		return (new \Aurora\System\EAV\Query())
+			->select()
+			->whereType(Classes\Group::class)
+			->where($aFilters)
+			->one()
+			->exec();
 	}
 
 	/**
@@ -131,10 +134,19 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	public function updateContact($oContact)
 	{
 		$oContact->DateModified = date('Y-m-d H:i:s');
+		$oContact->calculateETag();
 		$res = $this->oEavManager->saveEntity($oContact);
 		if ($res)
 		{
 			$this->updateContactGroups($oContact);
+			if ($oContact->Storage === 'personal')
+			{
+				$this->updateCTag($oContact->IdUser, $oContact->Storage);
+			}
+			else
+			{
+				$this->updateCTag($oContact->IdTenant, $oContact->Storage);
+			}
 		}
 		
 		return $res;
@@ -185,7 +197,22 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function updateGroup($oGroup)
 	{
-		return $this->oEavManager->saveEntity($oGroup);
+		$res = false;
+		if ($oGroup instanceof Classes\Group)
+		{
+			$res = $oGroup->save();
+			if ($res)
+			{
+				$this->updateCTag($oGroup->IdUser, 'personal');
+				foreach ($oGroup->GroupContacts as $oGroupContact)
+				{
+					$oGroupContact->GroupUUID = $oGroup->UUID;
+					$res = $oGroupContact->save();
+				}
+			}
+		}
+
+		return $res;
 	}
 
 	/**
@@ -217,11 +244,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			}
 		}
 		
-		return $this->oEavManager->getEntitiesCount(
-			Classes\Contact::class,
-			$aFilters,
-			$aContactUUIDs
-		);
+		return (new \Aurora\System\EAV\Query())
+			->whereType(Classes\Contact::class)
+			->where($aFilters)
+			->whereIdOrUuidIn($aContactUUIDs)
+			->count()
+			->exec();
 	}
 
 	/**
@@ -251,20 +279,80 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		$iOffset = 0, $iLimit = 20, $aFilters = array(), $aViewAttrs = array())
 	{
 		$sSortField = 'FullName';
+		$sCustomSelect = '';
 		switch ($iSortField)
 		{
 			case \Aurora\Modules\Contacts\Enums\SortField::Email:
 				$sSortField = 'ViewEmail';
 				break;
 			case \Aurora\Modules\Contacts\Enums\SortField::Frequency:
-				$sSortField = 'Frequency';
+				$sSortField = 'AgeScore';
+				$sCustomSelect = ', (attr_Frequency/CEIL(DATEDIFF(CURDATE() + INTERVAL 1 DAY, attr_DateModified)/30)) as attr_AgeScore';
 				break;
 		}
 
-		$aOrderBy = array($sSortField);
-		return $this->oEavManager->getEntities(
-			Classes\Contact::class,
-			$aViewAttrs, $iOffset, $iLimit, $aFilters, $aOrderBy, $iSortOrder);
+		return (new \Aurora\System\EAV\Query())
+			->select($aViewAttrs)
+			->customSelect($sCustomSelect)
+			->whereType(Classes\Contact::class)
+			->where($aFilters)
+			->offset($iOffset)
+			->limit($iLimit)
+			->orderBy([$sSortField])
+			->sortOrder($iSortOrder)
+			->exec();
+	}
+
+		/**
+	 * Returns list of contacts within specified range, sorted according to specified requirements. 
+	 * 
+	 * @param int $iSortField Sort field. Accepted values:
+	 *
+	 *		\Aurora\Modules\Contacts\Enums\SortField::Name
+	 *		\Aurora\Modules\Contacts\Enums\SortField::Email
+	 *		\Aurora\Modules\Contacts\Enums\SortField::Frequency
+	 *
+	 * Default value is **\Aurora\Modules\Contacts\Enums\SortField::Email**.
+	 * @param int $iSortOrder Sorting order. Accepted values:
+	 *
+	 *		\Aurora\System\Enums\SortOrder::ASC
+	 *		\Aurora\System\Enums\SortOrder::DESC,
+	 *
+	 * for ascending and descending respectively. Default value is **\Aurora\System\Enums\SortOrder::ASC**.
+	 * @param int $iOffset Ordinal number of the contact item the list stars with. Default value is **0**.
+	 * @param int $iLimit The upper limit for total number of contacts returned. Default value is **20**.
+	 * @param array $aFilters
+	 * @param array $aViewAttrs
+	 * 
+	 * @return array|bool
+	 */
+	public function getContactsAsArray($iSortField = \Aurora\Modules\Contacts\Enums\SortField::Name, $iSortOrder = \Aurora\System\Enums\SortOrder::ASC,
+		$iOffset = 0, $iLimit = 20, $aFilters = array(), $aViewAttrs = array())
+	{
+		$sSortField = 'FullName';
+		$sCustomSelect = '';
+		switch ($iSortField)
+		{
+			case \Aurora\Modules\Contacts\Enums\SortField::Email:
+				$sSortField = 'ViewEmail';
+				break;
+			case \Aurora\Modules\Contacts\Enums\SortField::Frequency:
+				$sSortField = 'AgeScore';
+				$sCustomSelect = ', (attr_Frequency/CEIL(DATEDIFF(CURDATE() + INTERVAL 1 DAY, attr_DateModified)/30)) as attr_AgeScore';
+				break;
+		}
+
+		return (new \Aurora\System\EAV\Query())
+			->select($aViewAttrs)
+			->customSelect($sCustomSelect)
+			->whereType(Classes\Contact::class)
+			->where($aFilters)
+			->offset($iOffset)
+			->limit($iLimit)
+			->orderBy([$sSortField])
+			->sortOrder($iSortOrder)
+			->asArray()
+			->exec();
 	}
 
 	/**
@@ -277,7 +365,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getContactUids($aFilters = array())
 	{
-		return $this->oEavManager->getEntitiesUids(Classes\Contact::class, 0, 0, $aFilters);
+		return (new \Aurora\System\EAV\Query())
+			->select(['UUID'])
+			->whereType(Classes\Contact::class)
+			->where($aFilters)
+			->onlyUUIDs()
+			->exec();
 	}	
 
 	/**
@@ -299,9 +392,13 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			$aFilters = array('IdUser' => array($iUserId, '='));
 		}
-		return $this->oEavManager->getEntities(
-			Classes\Group::class,
-			$aViewAttrs, 0, 0, $aFilters, 'Name');
+
+		return (new \Aurora\System\EAV\Query())
+			->select($aViewAttrs)
+			->whereType(Classes\Group::class)
+			->where($aFilters)
+			->orderBy(['Name'])
+			->exec();
 	}
 
 	/**
@@ -314,14 +411,24 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	public function createContact($oContact)
 	{
 		$oContact->DateModified = date('Y-m-d H:i:s');
+		$oContact->calculateETag();
 		$res = $this->oEavManager->saveEntity($oContact);
 		
 		if ($res)
 		{
+			if ($oContact->Storage === 'personal')
+			{
+				$this->updateCTag($oContact->IdUser, $oContact->Storage);
+			}
+			else
+			{
+				$this->updateCTag($oContact->IdTenant, $oContact->Storage);
+			}
+
 			foreach ($oContact->GroupsContacts as $oGroupContact)
 			{
 				$oGroupContact->ContactUUID = $oContact->UUID;
-				$this->oEavManager->saveEntity($oGroupContact);
+				$oGroupContact->save();
 			}
 		}
 
@@ -337,14 +444,14 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function createGroup($oGroup)
 	{
-		$res = $this->oEavManager->saveEntity($oGroup);
+		$res = $oGroup->save();
 		
 		if ($res)
 		{
 			foreach ($oGroup->GroupContacts as $oGroupContact)
 			{
 				$oGroupContact->GroupUUID = $oGroup->UUID;
-				$res = $this->oEavManager->saveEntity($oGroupContact);
+				$res = $oGroupContact->save();
 			}
 		}
 
@@ -358,7 +465,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 * 
 	 * @return bool
 	 */
-	public function deleteContacts($aContactUUIDs)
+	public function deleteContacts($iIdUser, $sStorage, $aContactUUIDs)
 	{
 		$aEntitiesUUIDs = [];
 		
@@ -372,6 +479,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			}
 		}
 		
+		$oUser = \Aurora\Modules\Core\Module::getInstance()->GetUserUnchecked($iIdUser);
+		if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
+		{
+			$iIdUser = $sStorage === 'personal' ? $oUser->EntityId : $oUser->IdTenant;
+		}
+		$this->updateCTag($iIdUser, $sStorage);
 		return $this->oEavManager->deleteEntities($aEntitiesUUIDs);
 	}
 
@@ -387,9 +500,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			$aFilters = array('ContactUUID' => $sContactUUID);
 		}
-		return $this->oEavManager->getEntities(
-			Classes\GroupContact::class,
-			$aViewAttrs, 0, 0, $aFilters);
+
+		return (new \Aurora\System\EAV\Query())
+			->select($aViewAttrs)
+			->whereType(Classes\GroupContact::class)
+			->where($aFilters)
+			->exec();
 	}
 	
 	/**
@@ -410,6 +526,24 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			foreach ($aGroupContact as $oGroupContact)
 			{
 				$aEntitiesUUIDs[] = $oGroupContact->UUID;
+
+				$oContact = $this->getContact($oGroupContact->ContactUUID);
+				if ($oContact instanceof Classes\Contact)
+				{
+					if ($oContact->Storage === 'personal')
+					{
+						$this->updateCTag($oContact->IdUser, $oContact->Storage);
+					}
+					else
+					{
+						$this->updateCTag($oContact->IdTenant, $oContact->Storage);
+					}
+
+					$oContact->DateModified = date('Y-m-d H:i:s');
+					$oContact->calculateETag();
+					$oContact->saveAttributes(['DateModified', 'ETag']);
+				}
+
 			}
 		}
 		
@@ -440,13 +574,27 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		{
 			if (!in_array($sContactUUID, $aCurrContactUUIDs))
 			{
-				$oGroupContact = \Aurora\Modules\Contacts\Classes\GroupContact::createInstance(
-					Classes\GroupContact::class,
-					Module::GetName()
-				);
+				$oGroupContact = new Classes\GroupContact(Module::GetName());
 				$oGroupContact->GroupUUID = $sGroupUUID;
 				$oGroupContact->ContactUUID = $sContactUUID;
-				$res = $this->oEavManager->saveEntity($oGroupContact) || $res;
+				$res = $oGroupContact->save() || $res;
+
+				$oContact = $this->getContact($sContactUUID);
+				if ($oContact instanceof Classes\Contact)
+				{
+					if ($oContact->Storage === 'personal')
+					{
+						$this->updateCTag($oContact->IdUser, $oContact->Storage);
+					}
+					else
+					{
+						$this->updateCTag($oContact->IdTenant, $oContact->Storage);
+					}
+
+					$oContact->DateModified = date('Y-m-d H:i:s');
+					$oContact->calculateETag();
+					$oContact->save();
+				}
 			}
 		}
 		
@@ -471,9 +619,93 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			if (in_array($oGroupContact->ContactUUID, $aContactUUIDs))
 			{
 				$aIdEntitiesToDelete[] = $oGroupContact->UUID;
+
+				$oContact = $this->getContact($oGroupContact->ContactUUID);
+				if ($oContact instanceof Classes\Contact)
+				{
+					if ($oContact->Storage === 'personal')
+					{
+						$this->updateCTag($oContact->IdUser, $oContact->Storage);
+					}
+					else
+					{
+						$this->updateCTag($oContact->IdTenant, $oContact->Storage);
+					}
+
+					$oContact->DateModified = date('Y-m-d H:i:s');
+					$oContact->calculateETag();
+					$oContact->save();
+				}
 			}
 		}
 		
 		return $this->oEavManager->deleteEntities($aIdEntitiesToDelete);
+	}
+	public function getCTags($iUserId, $Storage)
+	{
+		$mResult = [];
+
+		$aFilters = [
+			'$AND' => [
+				'Storage' => [$Storage, '='],
+				'UserId' => [$iUserId, '=']
+			]
+		];
+
+		$aEntities = (new \Aurora\System\EAV\Query())
+			->whereType(Classes\CTag::class)
+			->where($aFilters)
+			->exec();
+
+		if (is_array($aEntities) && count($aEntities) > 0)
+		{
+			$mResult = $aEntities;
+		}
+
+		return $mResult;
+	}	
+
+
+	public function getCTag($iUserId, $Storage)
+	{
+		$mResult = new Classes\CTag();
+		$mResult->UserId = $iUserId;
+		$mResult->Storage = $Storage;
+
+		$aFilters = [
+			'$AND' => [
+				'Storage' => [$Storage, '='],
+				'UserId' => [$iUserId, '=']
+			]
+		];
+
+		$aEntities = (new \Aurora\System\EAV\Query())
+			->whereType(Classes\CTag::class)
+			->where($aFilters)
+			->exec();
+
+		if (is_array($aEntities) && count($aEntities) > 0)
+		{
+			$mResult = $aEntities[0];
+		}
+
+		return $mResult;
+	}	
+
+	public function updateCTag($iUserId, $Storage)
+	{
+		$oCTagObject = $this->getCTag($iUserId, $Storage);
+		$oCTagObject->CTag = $oCTagObject->CTag + 1;
+
+		$this->oEavManager->saveEntity($oCTagObject);
+	}
+
+	public function deleteCTagsByUserId($iUserId, $Storage)
+	{
+		$aCTags = $this->getCTags($iUserId, $Storage);
+		foreach ($aCTags as $oCTag)
+		{
+			$this->oEavManager->deleteEntity($oCTag->EntityId, Classes\CTag::class);
+		}
 	}
 }

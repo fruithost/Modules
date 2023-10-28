@@ -31,6 +31,10 @@
 		1,
 		"int"
 	],
+    "ContentSecurityPolicy": [
+        "",
+        "string"
+    ],
 	"CustomLogoutUrl": [
 		"",
 		"string"
@@ -98,6 +102,10 @@
 			"Vietnamese": "tiếng Việt"
 		},
 		"array"
+	],
+	"MultipleFilesUploadLimit": [
+		50,
+		"int"
 	],
 	"ShowQuotaBar": [
 		true,

@@ -38,14 +38,24 @@ class Server extends \Aurora\System\EAV\Entity
 		'SetExternalAccessServers'		=> array('bool', false),
 		'ExternalAccessImapServer'		=> array('string', ''),
 		'ExternalAccessImapPort'		=> array('int',  143),
+		'ExternalAccessImapAlterPort'	=> array('int',  0),
+		'ExternalAccessPop3Server'		=> array('string', ''),
+		'ExternalAccessPop3Port'		=> array('int',  110),
+		'ExternalAccessPop3AlterPort'	=> array('int',  0),
 		'ExternalAccessSmtpServer'		=> array('string', ''),
-		'ExternalAccessSmtpPort'		=> array('int',  25)
-	);	
+		'ExternalAccessSmtpPort'		=> array('int',  25),
+		'ExternalAccessSmtpAlterPort'	=> array('int',  0),
+		'OAuthEnable'					=> array('bool', false),
+		'OAuthName'						=> array('string', ''),
+		'OAuthType'						=> array('string', ''),
+		'OAuthIconUrl'					=> array('string', '')
+	);
 
 	public function toResponseArray()
 	{
 		$aResponse = parent::toResponseArray();
 		$aResponse['ServerId'] = $this->EntityId;
+
 		$aArgs = [];
 		\Aurora\System\Api::GetModule('Mail')->broadcastEvent(
 			'ServerToResponseArray',

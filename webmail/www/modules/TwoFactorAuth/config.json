@@ -3,8 +3,36 @@
 		true,
 		"bool"
 	],
+	"ShowRecommendationToConfigure": [
+		false,
+		"bool"
+	],
+	"AllowSecurityKeys": [
+		false,
+		"bool"
+	],
+	"FacetIds": [
+		[],
+		"array"
+	],
+	"AllowAuthenticatorApp": [
+		true,
+		"bool"
+	],
 	"ClockTolerance": [
 		2,
+		"int"
+	],
+	"AllowBackupCodes": [
+		false,
+		"bool"
+	],
+	"AllowUsedDevices": [
+		false,
+		"bool"
+	],
+	"TrustDevicesForDays": [
+		0,
 		"int"
 	],
 	 "IncludeInMobile": [

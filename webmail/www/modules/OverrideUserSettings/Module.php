@@ -26,8 +26,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$iUserId = isset($mResult) && (int) $mResult > 0 ? (int) $mResult : 0;
 		if ($iUserId > 0)
 		{
-			$oCoreModuleDecorator = \Aurora\System\Api::GetModuleDecorator('Core');
-			$oUser = $oCoreModuleDecorator->GetUser($iUserId);
+			$oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($iUserId);
 
 			if ($oUser)
 			{
@@ -42,7 +41,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 							foreach ($aDomain["modules"] as $sModuleName)
 							{
 								$oUser->disableModule($sModuleName);
-								$oCoreModuleDecorator->UpdateUserObject($oUser);
+								\Aurora\Modules\Core\Module::Decorator()->UpdateUserObject($oUser);
 							}
 						}
 					}

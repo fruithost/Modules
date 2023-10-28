@@ -25,28 +25,48 @@ function CCache()
 	CoreSettings.dbSettingsChanged.subscribe(function () {
 		if (CoreSettings.dbSettingsChanged())
 		{
-			Ajax.send(Settings.ServerModuleName, 'GetEntityList', { Type: 'Tenant' });
+			Ajax.send(Settings.ServerModuleName, 'GetTenants');
 		}
 	});
+	this.bTenantsChanged = false;
 }
 
 CCache.prototype.init = function (oAppData) {
 	App.subscribeEvent('ReceiveAjaxResponse::after', this.onAjaxResponse.bind(this));
 	
-	var oAppDataSection = oAppData[Settings.ServerModuleName];
+	var oAppDataSection = oAppData['%ModuleName%'];
 	this.parseTenants(oAppDataSection ? oAppDataSection.Tenants : []);
 };
 
 CCache.prototype.onAjaxResponse = function (oParams) {
-	if (oParams.Response.Module === Settings.ServerModuleName && oParams.Response.Method === 'GetEntityList' && oParams.Request.Parameters.Type === 'Tenant')
+	if (oParams.Response.Module === Settings.ServerModuleName)
 	{
-		var
-			sSearch = Types.pString(oParams.Request.Parameters.Search),
-			iOffset = Types.pInt(oParams.Request.Parameters.Offset)
-		;
-		if (sSearch === '' && iOffset === 0)
+		switch (oParams.Response.Method)
 		{
-			this.parseTenants(oParams.Response.Result);
+			case 'CreateTables':
+				Ajax.send(Settings.ServerModuleName, 'GetTenants');
+				break;
+			case 'CreateTenant':
+			case 'DeleteTenants':
+				// Can not request tenants immidiately because it will abort paged GetTenants request for tenants screen.
+				this.bTenantsChanged = true;
+				break;
+			case 'GetTenants':
+				var
+					sSearch = Types.pString(oParams.Request.Parameters.Search),
+					iOffset = Types.pInt(oParams.Request.Parameters.Offset),
+					iLimit = Types.pInt(oParams.Request.Parameters.Limit)
+				;
+				if (sSearch === '' && iOffset === 0 && iLimit === 0)
+				{
+					this.parseTenants(oParams.Response.Result);
+				}
+				else if (this.bTenantsChanged)
+				{
+					Ajax.send(Settings.ServerModuleName, 'GetTenants');
+				}
+				this.bTenantsChanged = false;
+				break;
 		}
 	}
 };

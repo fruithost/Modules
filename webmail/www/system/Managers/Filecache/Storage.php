@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,7 +10,7 @@ namespace Aurora\System\Managers\Filecache;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Filecache
  * @subpackage Storages
@@ -21,7 +21,7 @@ class Storage extends \Aurora\System\Managers\AbstractStorage
 	 * @var string
 	 */
 	protected $sDataPath;
-	
+
 	/**
 	 * @var string
 	 */
@@ -35,9 +35,9 @@ class Storage extends \Aurora\System\Managers\AbstractStorage
 		parent::__construct($oManager);
 
 		$this->sDataPath = rtrim(trim(\Aurora\System\Api::DataPath()), '\\/');
-		$this->sPath = '/temp/.cache/'; 
+		$this->sPath = '/temp/.cache/';
 	}
-	
+
 	/**
 	 * @param string $sPath
 	 */
@@ -173,7 +173,7 @@ class Storage extends \Aurora\System\Managers\AbstractStorage
 	 */
 	public function fileSize($iUserId, $sKey, $sFileSuffix = '', $sFolder = '')
 	{
-		return @filesize($this->generateFileName($iUserId, $sKey, false, $sFileSuffix));
+		return @filesize($this->generateFileName($iUserId, $sKey, false, $sFileSuffix, $sFolder));
 	}
 
 	/**

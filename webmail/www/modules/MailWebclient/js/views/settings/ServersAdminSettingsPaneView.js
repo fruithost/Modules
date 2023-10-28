@@ -3,11 +3,12 @@
 var
 	_ = require('underscore'),
 	ko = require('knockout'),
-	
+
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
-	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
-	
+
 	Api = require('%PathToCoreWebclientModule%/js/Api.js'),
+	App = require('%PathToCoreWebclientModule%/js/App.js'),
+	CPageSwitcherView = require('%PathToCoreWebclientModule%/js/views/CPageSwitcherView.js'),
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 	
@@ -15,6 +16,8 @@ var
 	
 	Popups = require('%PathToCoreWebclientModule%/js/Popups.js'),
 	ConfirmPopup = require('%PathToCoreWebclientModule%/js/popups/ConfirmPopup.js'),
+	
+	LinksUtils = require('modules/%ModuleName%/js/utils/Links.js'),
 	
 	Ajax = require('modules/%ModuleName%/js/Ajax.js'),
 	CServerPairPropertiesView = require('modules/%ModuleName%/js/views/settings/CServerPairPropertiesView.js'),
@@ -29,8 +32,11 @@ function CServersAdminSettingsPaneView()
 	CAbstractSettingsFormView.call(this, Settings.ServerModuleName);
 
 	this.visible = ko.observable(true);
+	this.visibleSearch = ko.observable(false);
 	
-	this.oServerPairPropertiesView = new CServerPairPropertiesView('server_edit', true);
+	this.iServersPerPage = 10;
+	this.oServerPairPropertiesView = new CServerPairPropertiesView('server_edit', true, this.iServersPerPage);
+	this.totalServersCount = this.oServerPairPropertiesView.totalServersCount;
 	
 	this.tenants = ModulesManager.run('AdminPanelWebclient', 'getTenantsObservable');
 	this.tenantOptions = ko.computed(function () {
@@ -71,10 +77,24 @@ function CServersAdminSettingsPaneView()
 		}, this));
 	}, this);
 	
-	this.updateSavedState();
-	this.oServerPairPropertiesView.currentValues.subscribe(function () {
-		this.updateSavedState();
+	this.oPageSwitcher = new CPageSwitcherView(0, this.iServersPerPage);
+	this.oPageSwitcher.currentPage.subscribe(function () {
+		this.routeServerList();
 	}, this);
+	this.iCurrentPage = 0;
+	this.totalServersCount.subscribe(function () {
+		this.oPageSwitcher.setCount(this.totalServersCount());
+		if (this.searchValue() === '')
+		{
+			this.visibleSearch(this.totalServersCount() > this.iServersPerPage);
+		}
+	}, this);
+	
+	this.isSearchFocused = ko.observable(false);
+	this.newSearchValue = ko.observable('');
+	this.searchValue = ko.observable('');
+
+	this.updateSavedState();
 }
 
 _.extendOwn(CServersAdminSettingsPaneView.prototype, CAbstractSettingsFormView.prototype);
@@ -91,6 +111,12 @@ CServersAdminSettingsPaneView.prototype.getSelectedTenantId = function ()
 	return _.isFunction(koSelectedId) ? koSelectedId() : 0;
 };
 
+CServersAdminSettingsPaneView.prototype.routeSearch = function ()
+{
+	var aHash = ['p1', this.newSearchValue()];
+	ModulesManager.run('AdminPanelWebclient', 'setAddHash', [aHash]);
+};
+
 /**
  * Sets routing to create server mode.
  */
@@ -105,7 +131,20 @@ CServersAdminSettingsPaneView.prototype.routeCreateServer = function ()
  */
 CServersAdminSettingsPaneView.prototype.routeEditServer = function (iId)
 {
-	ModulesManager.run('AdminPanelWebclient', 'setAddHash', [[iId]]);
+	var
+		aHash = [],
+		iPage = this.oPageSwitcher.currentPage()
+	;
+	if (iPage > 1 || this.searchValue() !== '')
+	{
+		aHash.push('p' + iPage);
+	}
+	if (this.searchValue() !== '')
+	{
+		aHash.push(this.searchValue());
+	}
+	aHash.push('s' + iId);
+	ModulesManager.run('AdminPanelWebclient', 'setAddHash', [aHash]);
 };
 
 /**
@@ -113,7 +152,19 @@ CServersAdminSettingsPaneView.prototype.routeEditServer = function (iId)
  */
 CServersAdminSettingsPaneView.prototype.routeServerList = function ()
 {
-	ModulesManager.run('AdminPanelWebclient', 'setAddHash', [[]]);
+	var
+		aHash = [],
+		iPage = this.oPageSwitcher.currentPage()
+	;
+	if (iPage > 1 || this.searchValue() !== '')
+	{
+		aHash.push('p' + iPage);
+	}
+	if (this.searchValue() !== '')
+	{
+		aHash.push(this.searchValue());
+	}
+	ModulesManager.run('AdminPanelWebclient', 'setAddHash', [aHash]);
 };
 
 /**
@@ -122,23 +173,34 @@ CServersAdminSettingsPaneView.prototype.routeServerList = function ()
  */
 CServersAdminSettingsPaneView.prototype.onRouteChild = function (aParams)
 {
-	var
-		bCreate = Types.isNonEmptyArray(aParams) && aParams[0] === 'create',
-		iEditServerId = !bCreate && Types.isNonEmptyArray(aParams) ? Types.pInt(aParams[0]) : 0
-	;
+	var oParams = LinksUtils.parseMailServers(aParams);
+	this.newSearchValue(oParams.Search);
+	this.createMode(oParams.Create);
+	this.editedServerId(oParams.EditServerId);
 	
-	this.createMode(bCreate);
-	this.editedServerId(iEditServerId);
+	this.oServerPairPropertiesView.serverInit(oParams.Create);
 	
-	this.oServerPairPropertiesView.serverInit(bCreate);
+	if (!oParams.Create)
+	{
+		if (oParams.Page !== this.oPageSwitcher.currentPage())
+		{
+			this.oPageSwitcher.setPage(oParams.Page, this.iServersPerPage);
+		}
+		if (this.oPageSwitcher.currentPage() !== this.iCurrentPage || this.newSearchValue() !== this.searchValue())
+		{
+			this.iCurrentPage = this.oPageSwitcher.currentPage();
+			this.searchValue(this.newSearchValue());
+			this.oServerPairPropertiesView.requestServers((this.oPageSwitcher.currentPage() - 1) * this.iServersPerPage, this.searchValue());
+		}
+	}
 	
 	this.revert();
 };
 
 CServersAdminSettingsPaneView.prototype.onShow = function ()
 {
+	this.iCurrentPage = 0; // to re-request server list
 	this.selectedTenantId(this.getSelectedTenantId());
-	this.oServerPairPropertiesView.requestServers();
 };
 
 /**
@@ -151,22 +213,33 @@ CServersAdminSettingsPaneView.prototype.deleteServer = function (iId)
 		fCallBack = _.bind(function (bDelete) {
 			if (bDelete)
 			{
-				Ajax.send('DeleteServer', { 'ServerId': iId, 'TenantId': oServerToDelete.iTenantId }, function (oResponse) {
+				Ajax.send('DeleteServer', { 'ServerId': iId, 'TenantId': oServerToDelete.iTenantId, 'DeletionConfirmedByAdmin': true }, function (oResponse) {
 					if (!oResponse.Result)
 					{
 						Api.showErrorByCode(oResponse, TextUtils.i18n('%MODULENAME%/ERROR_DELETE_MAIL_SERVER'));
 					}
-					this.oServerPairPropertiesView.requestServers();
+					if (iId === this.editedServerId())
+					{
+//						this.editedServerId(null);
+						this.routeServerList();
+					}
+					this.oServerPairPropertiesView.requestServers((this.oPageSwitcher.currentPage() - 1) * this.iServersPerPage, this.searchValue());
 				}, this);
 			}
 		}, this),
 		oServerToDelete = _.find(this.servers(), _.bind(function (oServer) {
 			return oServer.iId === iId;
-		}, this))
+		}, this)),
+		oDeleteEntityParams = {
+			'Type': 'Server',
+			'Count': 1,
+			'ConfirmText': TextUtils.i18n('%MODULENAME%/CONFIRM_REMOVE_SERVER')
+		}
 	;
 	if (oServerToDelete && oServerToDelete.bAllowToDelete)
 	{
-		Popups.showPopup(ConfirmPopup, [TextUtils.i18n('%MODULENAME%/CONFIRM_REMOVE_SERVER'), fCallBack, oServerToDelete.sName]);
+		App.broadcastEvent('ConfirmDeleteEntity::before', oDeleteEntityParams);
+		Popups.showPopup(ConfirmPopup, [oDeleteEntityParams.ConfirmText, fCallBack, oServerToDelete.sName]);
 	}
 };
 
@@ -183,7 +256,7 @@ CServersAdminSettingsPaneView.prototype.save = function ()
 		this.isSaving(true);
 		Ajax.send(sMethod, this.getParametersForSave(), function (oResponse) {
 			this.isSaving(false);
-			this.oServerPairPropertiesView.requestServers();
+			this.oServerPairPropertiesView.requestServers((this.oPageSwitcher.currentPage() - 1) * this.iServersPerPage, this.searchValue());
 			if (this.createMode())
 			{
 				this.routeServerList();

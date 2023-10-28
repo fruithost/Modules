@@ -6,7 +6,7 @@
 			</div>
 		</div>
 		
-		<div class="panel center_panel messages_panel">
+		<div class="panel center_panel messages_panel" data-bind="css: {'unified_messages_panel': isUnifiedFolderCurrent}">
 			<div class="panel_content">
 				<!-- ko template: { name: '%ModuleName%_Messages_ToolbarView' } --><!-- /ko -->
 				<!-- ko template: { name: oMessageList.ViewTemplate, data: oMessageList} --><!-- /ko -->

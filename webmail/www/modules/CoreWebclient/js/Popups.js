@@ -83,7 +83,7 @@ CPopups.prototype.showPopup = function (oPopup, aParameters)
 			ko.applyBindings(oPopup, $templatePlace[0]);
 
 			oPopup.$popupDom = $templatePlace.next();
-
+			oPopup.$templatePlace = $templatePlace;
 			oPopup.onBind();
 		}
 
@@ -152,7 +152,16 @@ CPopups.prototype.removePopup = function (oPopup)
 		$(document).off('keyup', this.keyupPopupBound);
 		this.keyupPopupBound = undefined;
 	}
-
+	if (oPopup.$popupDom instanceof $)
+	{
+		oPopup.$popupDom.remove();
+		oPopup.$popupDom = undefined;
+	}
+	if (oPopup.$templatePlace instanceof $)
+	{
+		oPopup.$templatePlace.remove();
+		delete oPopup.$templatePlace;
+	}
 	this.popups = _.without(this.popups, oPopup);
 };
 

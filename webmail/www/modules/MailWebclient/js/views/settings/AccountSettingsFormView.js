@@ -39,10 +39,12 @@ function CAccountSettingsFormView()
 	this.useToAuthorize = ko.observable(false);
 	this.canBeUsedToAuthorize = ko.observable(false);
 	this.isDefaultAccount = ko.observable(false);
+	this.isServerOwner = ko.observable(false);
 	this.friendlyName = ko.observable('');
 	this.email = ko.observable('');
 	this.incomingLogin = ko.observable('');
 	this.incomingPassword = ko.observable('');
+	this.allowSpecifyPassword = ko.observable(false);
 	this.useThreading = ko.observable(false);
 	this.saveRepliesToCurrFolder = ko.observable(false);
 
@@ -83,6 +85,7 @@ function CAccountSettingsFormView()
 		{
 			this.allowChangePassword(ModulesManager.run('ChangePasswordWebclient', 'isChangePasswordButtonAllowed', [AccountList.collection().length, oAccount]));
 			this.isDefaultAccount(oAccount.bDefault);
+			this.isServerOwner(oAccount.oServer.sOwnerType === Enums.ServerOwnerType.Account);
 		}
 		else
 		{
@@ -150,12 +153,28 @@ CAccountSettingsFormView.prototype.revert = function ()
 CAccountSettingsFormView.prototype.populate = function ()
 {
 	var oAccount = AccountList.getEdited();
+	
+	if (this.passwordMightBeIncorrectSubscribtion)
+	{
+		this.passwordMightBeIncorrectSubscribtion.dispose();
+		this.passwordMightBeIncorrectSubscribtion = null;
+	}
+	
 	if (oAccount)
 	{	
 		this.friendlyName(oAccount.friendlyName());
 		this.email(oAccount.email());
 		this.incomingLogin(oAccount.incomingLogin());
 		this.incomingPassword(this.sFakePass);
+		this.allowSpecifyPassword(oAccount.passwordMightBeIncorrect());
+		if (!oAccount.passwordMightBeIncorrect())
+		{
+			this.passwordMightBeIncorrectSubscribtion = oAccount.passwordMightBeIncorrect.subscribe(function () {
+				this.allowSpecifyPassword(oAccount.passwordMightBeIncorrect());
+				this.passwordMightBeIncorrectSubscribtion.dispose();
+				this.passwordMightBeIncorrectSubscribtion = null;
+			}.bind(this));
+		}
 		this.oServerPairPropertiesView.setServer(oAccount.oServer);
 		
 		this.useToAuthorize(oAccount.useToAuthorize());
@@ -171,6 +190,7 @@ CAccountSettingsFormView.prototype.populate = function ()
 		this.email('');
 		this.incomingLogin('');
 		this.incomingPassword('');
+		this.allowSpecifyPassword(false);
 		
 		this.oServerPairPropertiesView.clear();
 		
@@ -232,6 +252,10 @@ CAccountSettingsFormView.prototype.onResponse = function (oResponse, oRequest)
 
 		if (oAccount)
 		{
+			if (Types.isNonEmptyString(oParameters.IncomingPassword) && oParameters.IncomingPassword !== this.sFakePass)
+			{
+				oAccount.passwordMightBeIncorrect(false);
+			}
 			oAccount.updateFromServer(oResponse.Result);
 			this.populate();
 			Screens.showReport(TextUtils.i18n('COREWEBCLIENT/REPORT_SETTINGS_UPDATE_SUCCESS'));

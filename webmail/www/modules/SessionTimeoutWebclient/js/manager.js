@@ -47,7 +47,7 @@ module.exports = function (oAppData) {
 		;
 	}
 
-	if (App.getUserRole() === Enums.UserRole.NormalUser)
+	if (App.isUserNormalOrTenant())
 	{
 		return {
 			registerFunction: function (oSessionTimeoutFunction) {

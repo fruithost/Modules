@@ -35,7 +35,7 @@ function CDropboxSettingsFormView()
 		
 		if (!bResult)
 		{
-			Api.showErrorByCode({'ErrorCode': Types.pInt(sErrorCode), 'ErrorMessage': '', 'ErrorModule': sModule}, '', true);
+			Api.showErrorByCode({'ErrorCode': Types.pInt(sErrorCode), 'ErrorMessage': '', 'Module': sModule}, '', true);
 		}
 		else
 		{
@@ -121,17 +121,17 @@ CDropboxSettingsFormView.prototype.connect = function (aScopes)
 	$.cookie('oauth-redirect', 'connect');
 	this.bRunCallback = false;
 	var
-		oWin = WindowOpener.open(UrlUtils.getAppPath() + '?oauth=dropbox', 'Dropbox'),
+		oWin = WindowOpener.open(UrlUtils.getAppPath() + '?oauth=dropbox-connect', 'Dropbox'),
 		iIntervalId = setInterval(_.bind(function() {
 			if (oWin.closed)
 			{
+				clearInterval(iIntervalId);
 				if (!this.bRunCallback)
 				{
 					window.location.reload();
 				}
 				else
 				{
-					clearInterval(iIntervalId);
 					App.broadcastEvent('OAuthAccountChange::after');
 					this.updateSavedState();
 					Settings.updateScopes(this.connected(), this.scopes());

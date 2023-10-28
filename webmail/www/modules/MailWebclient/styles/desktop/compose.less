@@ -33,7 +33,7 @@
 
 	.new_window,
 	.minimize, .maximize, 
-	.save_and_close, {
+	.save_and_close {
 		background: transparent;
 		border: 0px;
 		box-shadow: none;
@@ -249,7 +249,58 @@
 		background: #ffffc5;
 		border-bottom: 1px solid #f5edd4;
 		color: #b5ad94;
-		padding: 8px 11px;
+		padding: 8px 25px;
+		margin: -6px -10px 0;
+		
+		&.notice-auto-encrypt {
+			background: inherit;
+			border-color: #e2e2e2;
+			color: inherit;
+			font-size: 16px;
+			
+			.custom_checkbox {
+				margin: 0;
+				vertical-align: unset;
+			}
+			
+			.notice-auto-encrypt-info {
+				font-size: 14px;
+				padding-top: 9px;
+			}
+			
+			.notice-auto-encrypt-icon {
+				float: left;
+				font-size: 35px;
+				margin-left: -23px;
+				.init-icon-font(after);
+				
+				&:after {
+					content: "\e658";
+					vertical-align: middle;
+					text-shadow: 0 0 1px grey;
+				}
+			}
+		}
+	}
+	
+	.address_capsule_key_encrypt, .address_capsule_key_not_encrypt, .address_capsule_key_sign {
+		display: none;
+	}
+	.address_capsule_key_unset {
+		display: unset;
+	}
+	&.compose-auto-encrypt {
+		.address_capsule_key_encrypt, .address_capsule_key_not_encrypt, .address_capsule_key_sign {
+			display: unset;
+		}
+		.address_capsule_key_unset {
+			display: none;
+		}
+		.notice-auto-encrypt {
+			background: #96c671;
+			border-color: #82b35d;
+			color: white;
+		}
 	}
 
 	table.fields {
@@ -285,6 +336,11 @@
 		
 		.value {
 			padding: 4px 0px;
+
+			.not_editable {
+				font-size: 13pt;
+				padding: 10px;
+			}
 		}
 		
 		.input {
@@ -314,6 +370,7 @@
 			}
 		}
 		
+		.auto-encrypt-sign-message,
 		.from,
 		.to,
 		.cc,
@@ -321,7 +378,7 @@
 		.subject {
 			font-size: 11pt;
 		}
-		
+
 		.to .link {
 			color: @theme-mail-compose-showcc-link-color;
 			display: inline-block;
@@ -344,6 +401,12 @@
 				.scroll-inner {
 					max-height: 100px;
 				}
+			}
+		}
+		
+		.auto-encrypt-sign-message {
+			.custom_checkbox {
+				vertical-align: unset;
 			}
 		}
 	}
@@ -392,6 +455,12 @@
 		
 		.attachments_container {
 			padding: 20px;
+		}
+		
+		.notice {
+			margin: -34px -9px 11px;
+			padding: 8px 11px;
+			white-space: normal;
 		}
 	}
 }

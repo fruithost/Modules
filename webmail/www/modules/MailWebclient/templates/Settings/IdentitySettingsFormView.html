@@ -15,9 +15,11 @@
 		</div>
 		<div class="row">
 			<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_EMAIL'}"></span>
-			<input class="value input" spellcheck="false" type="text" data-bind="value: email, valueUpdate: 'afterkeydown', onEnter: save, disable: accountPart"/>
+			<input class="value input" spellcheck="false" type="text" 
+				   data-bind="value: email, valueUpdate: 'afterkeydown', onEnter: save, disable: disableEditEmail, visible: emailList().length === 0"/>
+			<select class="value input" data-bind="value: selectedEmail, options: emailList, visible: emailList().length > 0"></select>
 		</div>
-		<div class="row remove_account" data-bind="visible: !bCreate && !accountPart()">
+		<div class="row remove_account" data-bind="visible: !disableRemoveIdentity()">
 			<span class="link" data-bind="i18n: {'key': '%MODULENAME%/ACTION_REMOVE_IDENTITY'}, click: remove"></span>
 		</div>
 	</div>

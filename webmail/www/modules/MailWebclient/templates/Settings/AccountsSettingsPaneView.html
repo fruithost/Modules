@@ -12,12 +12,14 @@
 		</div>
 	</div>
 	<div data-bind="visible: accounts().length > 0">
-		<div class="items_list account_list">
+		<div class="items_list simple_list">
 			<div data-bind="foreach: accounts">
 				<div class="item account" data-bind="css: {'selected': id() === $parent.editedAccountId() && !$parent.editedFetcherId() && !$parent.editedIdentityId()},  click: function () {$parent.editAccount(hash());}">
 					<span class="link fetcher" data-bind="i18n: {'key': '%MODULENAME%/ACTION_ADD_IDENTITY'}, visible: $parent.bAllowIdentities, click: function (oModel, oEv) {$parent.addIdentity(id(), oEv);}"></span>
 					<span class="link fetcher" data-bind="i18n: {'key': '%MODULENAME%/ACTION_ADD_FETCHER'}, visible: (bDefault && $parent.bAllowFetchers), click: function (oModel, oEv) {$parent.addFetcher(id(), oEv);}"></span>
+					<span class="link fetcher" data-bind="i18n: {'key': '%MODULENAME%/ACTION_ADD_ALIAS'}, visible: (bDefault && $parent.bAllowAliases), click: function (oModel, oEv) {$parent.addAlias(id(), oEv);}"></span>
 					<span class="title" data-bind="text: email()"></span>
+					<span class="unified_marker" data-bind="visible: includeInUnifiedMailbox() && showUnifiedMailboxLabel(), text: unifiedMailboxLabelText() || email(), style: {'background': unifiedMailboxLabelColor}"></span>
 				</div>
 
 				<!-- ko foreach: identities -->
@@ -35,6 +37,13 @@
 						<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_FETCH_FROM'}"></span>
 						<span class="title" data-bind="text: incomingServer() + ' / ' + incomingLogin()"></span>
 						<span class="info" data-bind="i18n: {'key': '%MODULENAME%/INFO_FETCHING'}, visible: isLocked()"></span>
+					</div>
+				<!-- /ko -->
+				<!-- ko foreach: aliases -->
+				<div class="item fetcher" data-bind="css: {'selected': id() === $parents[1].editedAliasId()}, click: function () {$parents[1].editAlias($data.hash());}">
+						<span class="icon fetcher"></span>
+						<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ALIAS'}"></span>
+						<span class="title" data-bind="text: fullEmail"></span>
 					</div>
 				<!-- /ko -->
 			</div>

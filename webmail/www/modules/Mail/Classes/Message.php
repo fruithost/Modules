@@ -8,8 +8,6 @@
 namespace Aurora\Modules\Mail\Classes;
 
 /**
- * Message class summary
- * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
@@ -19,6 +17,13 @@ namespace Aurora\Modules\Mail\Classes;
  */
 class Message
 {
+	/**
+	 * Account Id.
+	 * 
+	 * @var int
+	 */
+	protected $iAccountId;
+
 	/**
 	 * Raw full name of the folder the message resides in.
 	 * 
@@ -32,6 +37,13 @@ class Message
 	 * @var int
 	 */
 	protected $iUid;
+
+	/**
+	 * Unified UID value of the message.
+	 * 
+	 * @var int
+	 */
+	protected $sUnifiedUid;
 
 	/**
 	 * Subject of the message.
@@ -246,8 +258,10 @@ class Message
 	 */
 	public function clear()
 	{
+		$this->iAccountId = 0;
 		$this->sFolder = '';
 		$this->iUid = 0;
+		$this->sUnifiedUid = '';
 		$this->sSubject = '';
 		$this->sMessageId = '';
 		$this->sContentType = '';
@@ -391,6 +405,16 @@ class Message
 		return $this->sHtml;
 	}
 
+	public function getAccountId()
+	{
+		return $this->iAccountId;
+	}
+
+	public function setAccountId($iAccountId)
+	{
+		$this->iAccountId = $iAccountId;
+	}
+
 	/**
 	 * Raw full name of the folder the message resides in.
 	 * 
@@ -409,6 +433,21 @@ class Message
 	public function getUid()
 	{
 		return $this->iUid;
+	}
+
+	/**
+	 * Unified UID value of the message.
+	 * 
+	 * @return int
+	 */
+	public function getUnifiedUid()
+	{
+		return $this->sUnifiedUid;
+	}
+
+	public function setUnifiedUid($sUnifiedUid)
+	{
+		$this->sUnifiedUid = $sUnifiedUid;
 	}
 
 	/**
@@ -998,7 +1037,6 @@ class Message
 	
 	public function toResponseArray($aParameters = array())
 	{
-		$oMailModule = \Aurora\System\Api::GetModule('Mail'); 
 		$iAccountID = isset($aParameters['Parameters']['AccountID']) ?  $aParameters['Parameters']['AccountID'] : null;
 
 		$oAttachments = $this->getAttachments();
@@ -1010,6 +1048,7 @@ class Message
 		$mResult = array_merge(\Aurora\System\Managers\Response::objectWrapper($this, $aParameters), array(
 			'Folder' => $this->getFolder(),
 			'Uid' => $this->getUid(),
+			'UnifiedUid' => $this->getUnifiedUid(),
 			'Subject' => $this->getSubject(),
 			'MessageId' => $this->getMessageId(),
 			'Size' => $this->getSize(),
@@ -1017,7 +1056,7 @@ class Message
 			'Truncated' => $this->bTruncated,
 			'InternalTimeStampInUTC' => $iInternalTimeStampInUTC,
 			'ReceivedOrDateTimeStampInUTC' => $iReceivedOrDateTimeStampInUTC,
-			'TimeStampInUTC' =>	$oMailModule->getConfig('UseDateFromHeaders', false) && 0 < $iReceivedOrDateTimeStampInUTC ?
+			'TimeStampInUTC' =>	\Aurora\Modules\Mail\Module::getInstance()->getConfig('UseDateFromHeaders', false) && 0 < $iReceivedOrDateTimeStampInUTC ?
 				$iReceivedOrDateTimeStampInUTC : $iInternalTimeStampInUTC,
 			'From' => \Aurora\System\Managers\Response::GetResponseObject($this->getFrom()),
 			'To' => \Aurora\System\Managers\Response::GetResponseObject($this->getTo()),
@@ -1037,7 +1076,7 @@ class Message
 			'Sensitivity' => $this->getSensitivity()
 		));
 
-		$sLowerForwarded = $oMailModule ? strtolower($oMailModule->getConfig('ForwardedFlagName', '')) : '';
+		$sLowerForwarded = strtolower(\Aurora\Modules\Mail\Module::getInstance()->getConfig('ForwardedFlagName', ''));
 		if (!empty($sLowerForwarded))
 		{
 			$mResult['IsForwarded'] = in_array($sLowerForwarded, $aFlags);
@@ -1054,7 +1093,7 @@ class Message
 
 		$mResult['Hash'] = $sHash;
 
-		if (isset($aParameters['Method']) && ('GetMessage' === $aParameters['Method'] || 'GetMessagesBodies' === $aParameters['Method']))
+		if (isset($aParameters['Method']) && ('GetMessage' === $aParameters['Method'] || 'GetMessagesBodies' === $aParameters['Method'] || 'GetMessageByMessageID' === $aParameters['Method']))
 		{
 			$mResult['Headers'] = \MailSo\Base\Utils::Utf8Clear($this->getHeaders());
 			$mResult['InReplyTo'] = $this->getInReplyTo();
@@ -1101,6 +1140,7 @@ class Message
 			}
 
 			$oSettings =& \Aurora\System\Api::GetSettings();
+			$bCreateHtmlLinksFromTextLinksInDOM = \Aurora\Modules\Mail\Module::getInstance()->getConfig('CreateHtmlLinksFromTextLinksInDOM', false);
 			if (0 < \strlen($sHtml) && $oSettings->GetValue('DisplayInlineCss', false))
 			{
 				$oCssToInlineStyles = new \TijsVerkoyen\CssToInlineStyles\CssToInlineStyles($sHtml);
@@ -1108,13 +1148,13 @@ class Message
 				$oCssToInlineStyles->setUseInlineStylesBlock(true);
 
 				$mResult['Html'] = \MailSo\Base\HtmlUtils::ClearHtml($oCssToInlineStyles->convert(), $bHasExternals, $aFoundedCIDs,
-					$aContentLocationUrls, $aFoundedContentLocationUrls, false, true);
+					$aContentLocationUrls, $aFoundedContentLocationUrls, false, $bCreateHtmlLinksFromTextLinksInDOM);
 			}
 			else
 			{
 				$mResult['Html'] = 0 === strlen($sHtml) ? '' :
 					\MailSo\Base\HtmlUtils::ClearHtml($sHtml, $bHasExternals, $aFoundedCIDs,
-						$aContentLocationUrls, $aFoundedContentLocationUrls, false, true);
+						$aContentLocationUrls, $aFoundedContentLocationUrls, false, $bCreateHtmlLinksFromTextLinksInDOM);
 			}
 
 			$mResult['Plain'] = 0 === strlen($sPlain) ? '' : \MailSo\Base\HtmlUtils::ConvertPlainToHtml($sPlain);

@@ -2,13 +2,17 @@
 
 var
 	_ = require('underscore'),
-	$ = require('jquery'),
 	ko = require('knockout'),
 	moment = require('moment'),
 	
+	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
+	
 	aEveryMinuteFunctions = [],
 	aDayOfMonthFunctions = [],
-	koNowDayOfMonth = ko.observable(moment().date())
+	koNowDayOfMonth = ko.observable(moment().date()),
+	
+	aWakeupFunctions = [],
+	oLastCheck = moment()
 ;
 
 window.setInterval(function () {
@@ -17,6 +21,14 @@ window.setInterval(function () {
 	});
 	
 	koNowDayOfMonth(moment().date());
+	
+	if (moment().diff(oLastCheck, 'minute') > 2)
+	{
+		_.each(aWakeupFunctions, function (fWakeup) {
+			fWakeup();
+		});
+	}
+	oLastCheck = moment();
 }, 1000 * 60); // every minute
 
 koNowDayOfMonth.subscribe(function () {
@@ -28,14 +40,21 @@ koNowDayOfMonth.subscribe(function () {
 module.exports = {
 	registerEveryMinuteFunction: function (fEveryMinute)
 	{
-		if ($.isFunction(fEveryMinute))
+		if (_.isFunction(fEveryMinute))
 		{
 			aEveryMinuteFunctions.push(fEveryMinute);
 		}
 	},
+	registerWakeupFunction: function (fWakeup)
+	{
+		if (_.isFunction(fWakeup))
+		{
+			aWakeupFunctions.push(fWakeup);
+		}
+	},
 	registerDayOfMonthFunction: function (fDayOfMonth)
 	{
-		if ($.isFunction(fDayOfMonth))
+		if (_.isFunction(fDayOfMonth))
 		{
 			aDayOfMonthFunctions.push(fDayOfMonth);
 		}

@@ -38,9 +38,10 @@ CVerifyPasswordPopup.prototype.onOpen = function (oKey, fOkCallback)
 	this.fOkCallback = fOkCallback;
 };
 
-CVerifyPasswordPopup.prototype.confirmPasswordAndView = function ()
+CVerifyPasswordPopup.prototype.confirmPasswordAndView = async function ()
 {
-	var oResult = OpenPgp.verifyKeyPassword(this.oKey, this.password());
+	var oResult = await OpenPgp.verifyKeyPassword(this.oKey, this.password());
+
 	if (oResult.errors)
 	{
 		ErrorsUtils.showPgpErrorByCode(oResult);

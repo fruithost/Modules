@@ -4,7 +4,7 @@
 		"bool"
 	],
     "Scopes": [
-        "auth",
+        "",
         "string"
     ]
 }

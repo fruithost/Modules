@@ -1,135 +1,140 @@
 'use strict';
-var $ = require('jquery'), _ = require('underscore'), Promise = require('bluebird');
+import Promise from 'bluebird';
+Promise.config({
+	warnings: {
+		wForgottenReturn: false
+	}
+});
+if (!window.Promise) { window.Promise = Promise; }
+import $ from 'jquery';
+import _ from 'underscore';
+import "core-js";
+import "regenerator-runtime/runtime";
+
 $('body').ready(function () {
 	var oAvailableModules = {};
 	if (window.aAvailableModules) {
+
 		if (window.aAvailableModules.indexOf('AdminPanelWebclient') >= 0) {
-			oAvailableModules['AdminPanelWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/AdminPanelWebclient/js/manager.js'); resolve(oModule); }, 'AdminPanelWebclient');
-			});
+			oAvailableModules['AdminPanelWebclient'] = import(/* webpackChunkName: "AdminPanelWebclient" */ 'modules/AdminPanelWebclient/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('ChangePasswordWebclient') >= 0) {
-			oAvailableModules['ChangePasswordWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/ChangePasswordWebclient/js/manager.js'); resolve(oModule); }, 'ChangePasswordWebclient');
-			});
+			oAvailableModules['ChangePasswordWebclient'] = import(/* webpackChunkName: "ChangePasswordWebclient" */ 'modules/ChangePasswordWebclient/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('ContactsWebclient') >= 0) {
-			oAvailableModules['ContactsWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/ContactsWebclient/js/manager.js'); resolve(oModule); }, 'ContactsWebclient');
-			});
+			oAvailableModules['ContactsWebclient'] = import(/* webpackChunkName: "ContactsWebclient" */ 'modules/ContactsWebclient/js/manager.js').then(function (module) { return module.default});
 		}
+
+		if (window.aAvailableModules.indexOf('CpanelIntegrator') >= 0) {
+			oAvailableModules['CpanelIntegrator'] = import(/* webpackChunkName: "CpanelIntegrator" */ 'modules/CpanelIntegrator/js/manager.js').then(function (module) { return module.default});
+		}
+
 		if (window.aAvailableModules.indexOf('Dropbox') >= 0) {
-			oAvailableModules['Dropbox'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/Dropbox/js/manager.js'); resolve(oModule); }, 'Dropbox');
-			});
+			oAvailableModules['Dropbox'] = import(/* webpackChunkName: "Dropbox" */ 'modules/Dropbox/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('Facebook') >= 0) {
-			oAvailableModules['Facebook'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/Facebook/js/manager.js'); resolve(oModule); }, 'Facebook');
-			});
+			oAvailableModules['Facebook'] = import(/* webpackChunkName: "Facebook" */ 'modules/Facebook/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('Google') >= 0) {
-			oAvailableModules['Google'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/Google/js/manager.js'); resolve(oModule); }, 'Google');
-			});
+			oAvailableModules['Google'] = import(/* webpackChunkName: "Google" */ 'modules/Google/js/manager.js').then(function (module) { return module.default});
 		}
+
+		if (window.aAvailableModules.indexOf('ImportExportMailPlugin') >= 0) {
+			oAvailableModules['ImportExportMailPlugin'] = import(/* webpackChunkName: "ImportExportMailPlugin" */ 'modules/ImportExportMailPlugin/js/manager.js').then(function (module) { return module.default});
+		}
+
 		if (window.aAvailableModules.indexOf('LogsViewerWebclient') >= 0) {
-			oAvailableModules['LogsViewerWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/LogsViewerWebclient/js/manager.js'); resolve(oModule); }, 'LogsViewerWebclient');
-			});
+			oAvailableModules['LogsViewerWebclient'] = import(/* webpackChunkName: "LogsViewerWebclient" */ 'modules/LogsViewerWebclient/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('MailChangePasswordPoppassdPlugin') >= 0) {
-			oAvailableModules['MailChangePasswordPoppassdPlugin'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/MailChangePasswordPoppassdPlugin/js/manager.js'); resolve(oModule); }, 'MailChangePasswordPoppassdPlugin');
-			});
+			oAvailableModules['MailChangePasswordPoppassdPlugin'] = import(/* webpackChunkName: "MailChangePasswordPoppassdPlugin" */ 'modules/MailChangePasswordPoppassdPlugin/js/manager.js').then(function (module) { return module.default});
 		}
+
+		if (window.aAvailableModules.indexOf('MailLoginFormWebclient') >= 0) {
+			oAvailableModules['MailLoginFormWebclient'] = import(/* webpackChunkName: "MailLoginFormWebclient" */ 'modules/MailLoginFormWebclient/js/manager.js').then(function (module) { return module.default});
+		}
+
+		if (window.aAvailableModules.indexOf('MailMasterPassword') >= 0) {
+			oAvailableModules['MailMasterPassword'] = import(/* webpackChunkName: "MailMasterPassword" */ 'modules/MailMasterPassword/js/manager.js').then(function (module) { return module.default});
+		}
+
 		if (window.aAvailableModules.indexOf('MailNotesPlugin') >= 0) {
-			oAvailableModules['MailNotesPlugin'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/MailNotesPlugin/js/manager.js'); resolve(oModule); }, 'MailNotesPlugin');
-			});
+			oAvailableModules['MailNotesPlugin'] = import(/* webpackChunkName: "MailNotesPlugin" */ 'modules/MailNotesPlugin/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('MailSaveMessageAsPdfPlugin') >= 0) {
-			oAvailableModules['MailSaveMessageAsPdfPlugin'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/MailSaveMessageAsPdfPlugin/js/manager.js'); resolve(oModule); }, 'MailSaveMessageAsPdfPlugin');
-			});
+			oAvailableModules['MailSaveMessageAsPdfPlugin'] = import(/* webpackChunkName: "MailSaveMessageAsPdfPlugin" */ 'modules/MailSaveMessageAsPdfPlugin/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('MailSensitivityWebclientPlugin') >= 0) {
-			oAvailableModules['MailSensitivityWebclientPlugin'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/MailSensitivityWebclientPlugin/js/manager.js'); resolve(oModule); }, 'MailSensitivityWebclientPlugin');
-			});
+			oAvailableModules['MailSensitivityWebclientPlugin'] = import(/* webpackChunkName: "MailSensitivityWebclientPlugin" */ 'modules/MailSensitivityWebclientPlugin/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('MailTnefWebclientPlugin') >= 0) {
-			oAvailableModules['MailTnefWebclientPlugin'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/MailTnefWebclientPlugin/js/manager.js'); resolve(oModule); }, 'MailTnefWebclientPlugin');
-			});
+			oAvailableModules['MailTnefWebclientPlugin'] = import(/* webpackChunkName: "MailTnefWebclientPlugin" */ 'modules/MailTnefWebclientPlugin/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('MailWebclient') >= 0) {
-			oAvailableModules['MailWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/MailWebclient/js/manager.js'); resolve(oModule); }, 'MailWebclient');
-			});
+			oAvailableModules['MailWebclient'] = import(/* webpackChunkName: "MailWebclient" */ 'modules/MailWebclient/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('MailZipWebclientPlugin') >= 0) {
-			oAvailableModules['MailZipWebclientPlugin'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/MailZipWebclientPlugin/js/manager.js'); resolve(oModule); }, 'MailZipWebclientPlugin');
-			});
+			oAvailableModules['MailZipWebclientPlugin'] = import(/* webpackChunkName: "MailZipWebclientPlugin" */ 'modules/MailZipWebclientPlugin/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('OAuthIntegratorWebclient') >= 0) {
-			oAvailableModules['OAuthIntegratorWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/OAuthIntegratorWebclient/js/manager.js'); resolve(oModule); }, 'OAuthIntegratorWebclient');
-			});
+			oAvailableModules['OAuthIntegratorWebclient'] = import(/* webpackChunkName: "OAuthIntegratorWebclient" */ 'modules/OAuthIntegratorWebclient/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('OfficeDocumentViewer') >= 0) {
-			oAvailableModules['OfficeDocumentViewer'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/OfficeDocumentViewer/js/manager.js'); resolve(oModule); }, 'OfficeDocumentViewer');
-			});
+			oAvailableModules['OfficeDocumentViewer'] = import(/* webpackChunkName: "OfficeDocumentViewer" */ 'modules/OfficeDocumentViewer/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('OpenPgpWebclient') >= 0) {
-			oAvailableModules['OpenPgpWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/OpenPgpWebclient/js/manager.js'); resolve(oModule); }, 'OpenPgpWebclient');
-			});
+			oAvailableModules['OpenPgpWebclient'] = import(/* webpackChunkName: "OpenPgpWebclient" */ 'modules/OpenPgpWebclient/js/manager.js').then(function (module) { return module.default});
 		}
+
+		if (window.aAvailableModules.indexOf('RecaptchaWebclientPlugin') >= 0) {
+			oAvailableModules['RecaptchaWebclientPlugin'] = import(/* webpackChunkName: "RecaptchaWebclientPlugin" */ 'modules/RecaptchaWebclientPlugin/js/manager.js').then(function (module) { return module.default});
+		}
+
 		if (window.aAvailableModules.indexOf('SessionTimeoutWebclient') >= 0) {
-			oAvailableModules['SessionTimeoutWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/SessionTimeoutWebclient/js/manager.js'); resolve(oModule); }, 'SessionTimeoutWebclient');
-			});
+			oAvailableModules['SessionTimeoutWebclient'] = import(/* webpackChunkName: "SessionTimeoutWebclient" */ 'modules/SessionTimeoutWebclient/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('SettingsWebclient') >= 0) {
-			oAvailableModules['SettingsWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/SettingsWebclient/js/manager.js'); resolve(oModule); }, 'SettingsWebclient');
-			});
+			oAvailableModules['SettingsWebclient'] = import(/* webpackChunkName: "SettingsWebclient" */ 'modules/SettingsWebclient/js/manager.js').then(function (module) { return module.default});
 		}
+
 		if (window.aAvailableModules.indexOf('StandardLoginFormWebclient') >= 0) {
-			oAvailableModules['StandardLoginFormWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/StandardLoginFormWebclient/js/manager.js'); resolve(oModule); }, 'StandardLoginFormWebclient');
-			});
+			oAvailableModules['StandardLoginFormWebclient'] = import(/* webpackChunkName: "StandardLoginFormWebclient" */ 'modules/StandardLoginFormWebclient/js/manager.js').then(function (module) { return module.default});
 		}
-		if (window.aAvailableModules.indexOf('StandardRegisterFormWebclient') >= 0) {
-			oAvailableModules['StandardRegisterFormWebclient'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/StandardRegisterFormWebclient/js/manager.js'); resolve(oModule); }, 'StandardRegisterFormWebclient');
-			});
-		}
+
 		if (window.aAvailableModules.indexOf('TwoFactorAuth') >= 0) {
-			oAvailableModules['TwoFactorAuth'] = new Promise(function(resolve, reject) {
-				require.ensure([], function(require) {var oModule = require('modules/TwoFactorAuth/js/manager.js'); resolve(oModule); }, 'TwoFactorAuth');
-			});
+			oAvailableModules['TwoFactorAuth'] = import(/* webpackChunkName: "TwoFactorAuth" */ 'modules/TwoFactorAuth/js/manager.js').then(function (module) { return module.default});
 		}
 	}
 	Promise.all(_.values(oAvailableModules)).then(function(aModules){
-	var
-		ModulesManager = require('modules/CoreWebclient/js/ModulesManager.js'),
-		App = require('modules/CoreWebclient/js/App.js'),
-		bSwitchingToMobile = App.checkMobile()
-	;
-	if (!bSwitchingToMobile)
-	{
-		if (window.isPublic) {
-			App.setPublic();
+		var
+			ModulesManager = require('modules/CoreWebclient/js/ModulesManager.js'),
+			App = require('modules/CoreWebclient/js/App.js'),
+			bSwitchingToMobile = App.checkMobile()
+		;
+		if (!bSwitchingToMobile) {
+			if (window.isPublic) {
+				App.setPublic();
+			}
+			if (window.isNewTab) {
+				App.setNewTab();
+			}
+			ModulesManager.init(_.object(_.keys(oAvailableModules), aModules));
+			App.init();
 		}
-		if (window.isNewTab) {
-			App.setNewTab();
-		}
-		ModulesManager.init(_.object(_.keys(oAvailableModules), aModules));
-		App.init();
-	}
-	});
+	}).catch(function (oError) { console.error('An error occurred while loading the component:'); console.error(oError); });
 });
+

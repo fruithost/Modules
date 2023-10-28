@@ -58,7 +58,11 @@ CFetcherModel.prototype.parse = function (oData)
 	this.userName(Types.pString(oData.Name));
 	this.folder(Types.pString(oData.Folder));
 	this.useSignature(!!oData.UseSignature);
-	this.signature(Types.pString(oData.Signature));
+	var sSignature = Types.pString(oData.Signature);
+	if (sSignature.indexOf('<') !== 0) {
+		sSignature = '<div>' + sSignature + '</div>';
+	}
+	this.signature = ko.observable(sSignature);
 	this.incomingServer(Types.pString(oData.IncomingServer));
 	this.incomingPort(Types.pInt(oData.IncomingPort));
 	this.incomingUseSsl(!!oData.IncomingUseSsl);

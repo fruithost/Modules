@@ -1,0 +1,23 @@
+<div class="popup add_account" style="display: none;">
+	<div class="mask" data-bind="click: cancelPopup"></div>
+	<div class="popup_panel">
+		<span class="close" data-bind="click: cancelPopup"></span>
+		<span class="popup_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_CREATE_ALIAS'}"></span>
+		<div class="fields">
+			<div class="fieldset">
+				<div class="row">
+					<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ALIAS_NAME'}"></span>
+					<input class="value input" spellcheck="false" type="text" maxlength="255" data-bind="value: aliasName, valueUpdate: 'afterkeydown', onEnter: save, style: {'width': '200px'}"/>
+					<span style="margin-right: 15px">@</span>
+					<select class="value input" data-bind="value: selectedDomain, options: domainList, style: {'width': '150px'}"></select>
+				</div>
+			</div>
+			<div class="buttons">
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}, click: save, visible: !loading()"></span>
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}, visible: loading()"></span>
+				<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: cancelPopup"></span>
+			</div>
+		</div>
+	</div>
+	<span class="helper"></span>
+</div>

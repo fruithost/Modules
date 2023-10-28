@@ -33,7 +33,10 @@ body {
 	height: 100%;
 	
 	.screen {
-		height: 100%;
-		overflow: auto;
+		height: calc(100% ~"-" @theme-tabs-height);
+		
+		&.AdminPanelLayout {
+			height: 100%;
+		}
 	}
 }

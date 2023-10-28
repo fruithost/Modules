@@ -9,28 +9,28 @@ var
 module.exports = {
 	ServerModuleName: 'Google',
 	HashModuleName: 'google',
-	
+
 	Connected: false,
-	
+
 	EnableModule: false,
 	Id: '',
 	Secret: '',
 	Key: '',
 	Scopes: [],
-	
+
 	/**
 	 * Initializes settings from AppData object sections.
-	 * 
+	 *
 	 * @param {Object} oAppData Object contained modules settings.
 	 */
 	init: function (oAppData)
 	{
 		var oAppDataSection = _.extend({}, oAppData[this.ServerModuleName] || {}, oAppData['%ModuleName%'] || {});
-		
+
 		if (!_.isEmpty(oAppDataSection))
 		{
 			this.Connected = Types.pBool(oAppDataSection.Connected, this.Connected);
-			
+
 			this.EnableModule = Types.pBool(oAppDataSection.EnableModule, this.EnableModule);
 			this.Id = Types.pString(oAppDataSection.Id, this.Id);
 			this.Secret = Types.pString(oAppDataSection.Secret, this.Secret);
@@ -38,10 +38,10 @@ module.exports = {
 			this.Scopes = Types.pArray(oAppDataSection.Scopes, this.Scopes);
 		}
 	},
-	
+
 	/**
 	 * Returns copy of Scopes with observable Value parameter.
-	 * 
+	 *
 	 * @returns {Array}
 	 */
 	getScopesCopy: function ()
@@ -56,10 +56,10 @@ module.exports = {
 		});
 		return aScopesCopy;
 	},
-	
+
 	/**
 	 * Updates Connected and Scopes parameters.
-	 * 
+	 *
 	 * @param {boolean} bConnected New value of Connected parameter.
 	 * @param {array} aScopes New value of Scopes parameter.
 	 */
@@ -76,10 +76,10 @@ module.exports = {
 		this.Connected = bConnected;
 		this.Scopes = aNewScopes;
 	},
-	
+
 	/**
 	 * Updates settings that is edited by administrator.
-	 * 
+	 *
 	 * @param {boolean} bEnableModule New value of EnableModule parameter.
 	 * @param {string} sId New value of Id parameter.
 	 * @param {string} sSecret New value of Secret parameter.

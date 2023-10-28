@@ -188,11 +188,12 @@ module.exports = {
 			aElements = _.map($Addresses, function (oElement) {
 				return $(oElement);
 			}),
+			iMaxEmailCount = 100, // interface freezes if message in preview pane has too many highlighted recipients
 			aEmails = _.uniq(_.map(aElements, function ($Element) {
 				return $Element && $Element.attr('data-email');
-			}))
+			})).slice(0, iMaxEmailCount)
 		;
-
+		
 		ContactsCache.getContactsByEmails(aEmails, _.bind(OnContactResponse, {}, aElements));
 	}
 };

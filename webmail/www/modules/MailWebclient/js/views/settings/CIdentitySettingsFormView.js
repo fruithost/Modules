@@ -39,7 +39,10 @@ function CIdentitySettingsFormView(oParent, bCreate)
 
 	this.isDefault = ko.observable(false);
 	this.email = ko.observable('');
-	this.accountPart = ko.observable(false);
+	this.emailList = ko.observableArray([]);
+	this.selectedEmail = ko.observable('');
+	this.disableEditEmail = ko.observable(Settings.OnlyUserEmailsInIdentities);
+	this.disableRemoveIdentity = ko.observable(bCreate);
 	this.friendlyName = ko.observable('');
 	this.friendlyNameHasFocus = ko.observable(false);
 }
@@ -82,7 +85,7 @@ CIdentitySettingsFormView.prototype.getParametersForSave = function ()
 		if (!this.identity().bAccountPart)
 		{
 			_.extendOwn(oParameters, {
-				'Email': $.trim(this.email())
+				'Email': this.emailList().length > 0 ? $.trim(this.selectedEmail()) : $.trim(this.email())
 			});
 
 			if (!this.bCreate)
@@ -170,7 +173,26 @@ CIdentitySettingsFormView.prototype.populate = function ()
 	{
 		this.isDefault(oIdentity.isDefault());
 		this.email(oIdentity.email());
-		this.accountPart(oIdentity.bAccountPart);
+		this.disableEditEmail(Settings.OnlyUserEmailsInIdentities || oIdentity.bAccountPart);
+		this.disableRemoveIdentity(this.bCreate || oIdentity.bAccountPart);
+		
+		this.emailList([]);
+		if (Settings.OnlyUserEmailsInIdentities && !oIdentity.bAccountPart)
+		{
+			var aAliases = [];
+			var oAccount = AccountList.getAccount(oIdentity.accountId());
+			if (oAccount)
+			{
+				aAliases = oAccount.aExtend.Aliases;
+			}
+			if (Types.isNonEmptyArray(aAliases))
+			{
+				this.emailList(_.clone(aAliases));
+				this.emailList.unshift(oIdentity.email());
+				this.selectedEmail(oIdentity.email());
+			}
+		}
+		
 		this.friendlyName(oIdentity.friendlyName());
 
 		this.disableCheckbox(oIdentity.isDefault());

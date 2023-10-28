@@ -5,10 +5,13 @@
 			onEnter: function () { saveEntity($parents, $root); }" />
 	</span>
 </div>
-<div class="row" style="display: none;">
-	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ROLE'}"></span>
+<div class="row" data-bind="visible: bAllowMakeTenant">
 	<span class="value">
-		<select class="input start" data-bind="value: role, options: aRoles, optionsText: 'text', optionsValue: 'value'"></select>
+		<label class="custom_checkbox checked" data-bind="css: {'checked': tenantAdminSelected}">
+			<span class="icon"></span>
+			<input type="checkbox" id="tenantAdminSelected" data-bind="checked: tenantAdminSelected">
+		</label>
+		<label for="tenantAdminSelected" data-bind="i18n: {'key': 'ADMINPANELWEBCLIENT/LABEL_USER_IS_TENANT_ADMIN'}"></label>
 	</span>
 </div>
 <div class="row" data-bind="visible: id() !== 0"> 

@@ -1,0 +1,43 @@
+<div class="popup" style="display: none;">
+	<div class="mask"></div>
+	<div class="popup_panel popup_configure_authenticator_app">
+		<span class="close" data-bind="click: cancelPopup"></span>
+		<div class="fields">
+			<h1 data-bind="i18n: {'key': '%MODULENAME%/HEADING_AUTHENTICATOR_APP'}"></h1>
+			<div class="fieldset">
+				<div class="row hint">
+					<span data-bind="i18n: {'key': '%MODULENAME%/HINT_ABOUT_TWOFACTORAUTH_USE'}"></span>
+				</div>
+				<div class="fieldgroup">
+					<h3 data-bind="i18n: {'key': '%MODULENAME%/LABEL_QR_CODE'}"></h3>
+					<div class="authenticator_app_qr_code">
+						<div class="authenticator_app_qr_code_inprogress" data-bind="visible: qrCodeIsLoading"></div>
+						<img data-bind="attr: {src: authenticatorQRCodeUrl}, visible: authenticatorQRCodeUrl, event: { load: function () { qrCodeIsLoading(false); } }" />
+					</div>
+				</div>
+				<div class="fieldgroup">
+					<h3 data-bind="i18n: {'key': '%MODULENAME%/LABEL_SECRET_KEY'}"></h3>
+					<div class="authenticator_app_secret" data-bind="text: authenticatorSecret"></div>
+				</div>
+				<div class="fieldgroup">
+					<div class="row hint">
+						<span data-bind="i18n: {'key': '%MODULENAME%/HINT_ENTER_CODE'}"></span>
+					</div>
+					<input autocomplete="false" class="input" type="text" data-bind="value: authenticatorCode, hasFocus: authenticatorCodeFocus, valueUpdate: 'afterkeydown', onEnter: save">
+					<div class="buttons">
+						<span class="button" data-bind="command: saveCommand, visible: !saveInProgress()">
+							<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}"></span>
+						</span>
+						<span class="button" data-bind="visible: saveInProgress">
+							<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}"></span>
+						</span>
+						<span class="button secondary_button" data-bind="click: closePopup">
+							<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}"></span>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<span class="helper"></span>
+</div>

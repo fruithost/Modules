@@ -33,8 +33,10 @@ function CCommonSettingsFormView()
 	CAbstractSettingsFormView.call(this);
 	
 	this.bAdmin = App.getUserRole() === Enums.UserRole.SuperAdmin;
+	this.bMobile = App.isMobile();
 	
 	this.aThemes = UserSettings.ThemeList;
+	this.aMobileThemes = UserSettings.MobileThemeList;
 	this.aLanguages = _.clone(UserSettings.LanguageList);
 	this.aDateFormats = SettingsUtils.getDateFormatsForSelector();
 	
@@ -55,7 +57,8 @@ function CCommonSettingsFormView()
 	
 	/* Editable fields */
 	this.siteName = ko.observable(UserSettings.SiteName);
-	this.selectedTheme = ko.observable(this.getGlobalTheme());
+	this.selectedTheme = ko.observable(this.getGlobalTheme(this.aThemes, UserSettings.Theme));
+	this.selectedMobileTheme = ko.observable(this.getGlobalTheme(this.aMobileThemes, UserSettings.MobileTheme));
 	this.selectedLanguage = ko.observable(this.getGlobalLanguage());
 	this.autoRefreshInterval = ko.observable(this.getGlobalAutoRefreshIntervalMinutes());
 	this.timeFormat = ko.observable(UserSettings.timeFormat());
@@ -96,6 +99,7 @@ CCommonSettingsFormView.prototype.getCurrentValues = function ()
 	return [
 		this.siteName(),
 		this.selectedTheme(),
+		this.selectedMobileTheme(),
 		this.selectedLanguage(),
 		this.autoRefreshInterval(),
 		this.timeFormat(),
@@ -122,21 +126,21 @@ CCommonSettingsFormView.prototype.getGlobalLanguage = function ()
 	return oFoundLang ? oFoundLang.value : (this.aLanguages.length > 0 ? this.aLanguages[0].value : '');
 };
 
-CCommonSettingsFormView.prototype.getGlobalTheme = function ()
+CCommonSettingsFormView.prototype.getGlobalTheme = function (aThemes, sGlobalTheme)
 {
 	var
-		sFoundTheme = _.find(this.aThemes, function (sThemeItem) {
-			return sThemeItem === UserSettings.Theme;
+		sFoundTheme = _.find(aThemes, function (sThemeItem) {
+			return sThemeItem === sGlobalTheme;
 		})
 	;
 	if (!sFoundTheme)
 	{
-		sFoundTheme = _.find(this.aThemes, function (sThemeItem) {
+		sFoundTheme = _.find(aThemes, function (sThemeItem) {
 			return sThemeItem === 'Default';
 		});
 	}
 	
-	return sFoundTheme ? sFoundTheme : (this.aThemes.length > 0 ? this.aThemes[0] : '');
+	return sFoundTheme ? sFoundTheme : (aThemes.length > 0 ? aThemes[0] : '');
 };
 
 CCommonSettingsFormView.prototype.getGlobalAutoRefreshIntervalMinutes = function ()
@@ -162,7 +166,8 @@ CCommonSettingsFormView.prototype.getGlobalAutoRefreshIntervalMinutes = function
 CCommonSettingsFormView.prototype.revertGlobalValues = function ()
 {
 	this.siteName(UserSettings.SiteName);
-	this.selectedTheme(this.getGlobalTheme());
+	this.selectedTheme(this.getGlobalTheme(this.aThemes, UserSettings.Theme));
+	this.selectedMobileTheme(this.getGlobalTheme(this.aMobileThemes, UserSettings.MobileTheme));
 	this.selectedLanguage(this.getGlobalLanguage());
 	this.autoRefreshInterval(this.getGlobalAutoRefreshIntervalMinutes());
 	this.timeFormat(UserSettings.timeFormat());
@@ -179,6 +184,7 @@ CCommonSettingsFormView.prototype.getParametersForSave = function ()
 {
 	var oParameters = {
 		'Theme': this.selectedTheme(),
+		'MobileTheme': this.selectedMobileTheme(),
 		'TimeFormat': this.timeFormat()
 	};
 	
@@ -216,14 +222,14 @@ CCommonSettingsFormView.prototype.getParametersForSave = function ()
  */
 CCommonSettingsFormView.prototype.applySavedValues = function (oParameters)
 {
-	if (oParameters.Theme !== UserSettings.Theme || oParameters.Language !== UserSettings.Language && !this.bAdmin)
+	if (oParameters.Theme !== UserSettings.Theme && !this.bMobile || oParameters.MobileTheme !== UserSettings.MobileTheme && this.bMobile || oParameters.Language !== UserSettings.Language && !this.bAdmin)
 	{
 		window.location.reload();
 	}
 	else
 	{
 		UserSettings.update(oParameters.SiteName, oParameters.AutoRefreshIntervalMinutes,
-			oParameters.Theme, oParameters.Language,
+			oParameters.Theme, oParameters.MobileTheme, oParameters.Language,
 			oParameters.TimeFormat, oParameters.DateFormat, oParameters.AllowDesktopNotifications);
 	}
 };

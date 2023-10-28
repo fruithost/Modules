@@ -1,15 +1,17 @@
 <?php
-
-/*
- * Copyright 2004-2015, AfterLogic Corp.
- * Licensed under AGPLv3 license or AfterLogic license
+/**
+ * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
- * See the LICENSE file for a full license statement.
+ * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
  */
 
 namespace MailSo\Imap;
 
 /**
+ * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
+ * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
+ *
  * @category MailSo
  * @package Imap
  */
@@ -293,6 +295,16 @@ class ImapClient extends \MailSo\Net\NetClient
 		$this->aCapabilityItems = null;
 
 		return $this;
+	}
+
+	public static function GetXOAuthKeyStatic($sEmail, $sAccessToken)
+	{
+		if ($sEmail == null || empty($sEmail) || $sAccessToken == null || empty($sAccessToken))
+		{
+			throw new \MailSo\Base\Exceptions\InvalidArgumentException();
+		}
+
+		return \base64_encode('user='.$sEmail."\1".'auth=Bearer '.$sAccessToken."\1\1");
 	}
 
 	/**
@@ -1023,6 +1035,7 @@ class ImapClient extends \MailSo\Net\NetClient
 						$aReturn[2] = (int) $oImapResponse->ResponseList[3][4];
 						$aReturn[3] = (int) $oImapResponse->ResponseList[3][5];
 					}
+					break;
 				}
 			}
 		}

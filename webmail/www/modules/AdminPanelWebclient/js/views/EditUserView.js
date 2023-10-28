@@ -7,8 +7,10 @@ var
 	
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
 	
+	App = require('%PathToCoreWebclientModule%/js/App.js'),
 	Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
-	App = require('%PathToCoreWebclientModule%/js/App.js')
+	
+	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
 
 /**
@@ -18,12 +20,8 @@ function CEditUserView()
 {
 	this.id = ko.observable(0);
 	this.publicId = ko.observable('');
-	this.aRoles = [
-		{text: TextUtils.i18n('%MODULENAME%/LABEL_ADMINISTRATOR'), value: Enums.UserRole.SuperAdmin},
-		{text: TextUtils.i18n('%MODULENAME%/LABEL_USER'), value: Enums.UserRole.NormalUser},
-		{text: TextUtils.i18n('%MODULENAME%/LABEL_GUEST'), value: Enums.UserRole.Customer}
-	];
-	this.role = ko.observable(Enums.UserRole.NormalUser);
+	this.bAllowMakeTenant = Settings.EnableMultiTenant && App.getUserRole() === Enums.UserRole.SuperAdmin;
+	this.tenantAdminSelected = ko.observable(false);
 	this.writeSeparateLog = ko.observable(false);
 	
 	this.sHeading = TextUtils.i18n('%MODULENAME%/HEADING_CREATE_USER');
@@ -41,7 +39,7 @@ CEditUserView.prototype.getCurrentValues = function ()
 	return [
 		this.id(),
 		this.publicId(),
-		this.role(),
+		this.tenantAdminSelected(),
 		this.writeSeparateLog()
 	];
 };
@@ -50,7 +48,7 @@ CEditUserView.prototype.clearFields = function ()
 {
 	this.id(0);
 	this.publicId('');
-	this.role(Enums.UserRole.NormalUser);
+	this.tenantAdminSelected(false);
 	this.writeSeparateLog(false);
 };
 
@@ -60,7 +58,7 @@ CEditUserView.prototype.parse = function (iEntityId, oResult)
 	{
 		this.id(iEntityId);
 		this.publicId(oResult.PublicId);
-		this.role(oResult.Role);
+		this.tenantAdminSelected(oResult.Role === Enums.UserRole.TenantAdmin);
 		this.writeSeparateLog(!!oResult.WriteSeparateLog);
 	}
 	else
@@ -82,21 +80,22 @@ CEditUserView.prototype.isValidSaveData = function ()
 CEditUserView.prototype.getParametersForSave = function ()
 {
 	return {
-		Id: this.id(),
+		UserId: this.id(),
 		PublicId: $.trim(this.publicId()),
-		Role: this.role(),
-		WriteSeparateLog: this.writeSeparateLog()
+		Role: this.tenantAdminSelected() ? Enums.UserRole.TenantAdmin : Enums.UserRole.NormalUser,
+		WriteSeparateLog: this.writeSeparateLog(),
+		Forced: true
 	};
 };
 
 CEditUserView.prototype.saveEntity = function (aParents, oRoot)
 {
 	_.each(aParents, function (oParent) {
-		if (oParent.constructor.name === 'CEntitiesView' && _.isFunction(oParent.createEntity))
+		if (_.isFunction(oParent.createEntity))
 		{
 			oParent.createEntity();
 		}
-		if (oParent.constructor.name === 'CCommonSettingsPaneView' && _.isFunction(oParent.save))
+		else if (_.isFunction(oParent.save))
 		{
 			oParent.save(oRoot);
 		}

@@ -3,7 +3,7 @@ var
 	argv = require('./argv.js'),
 	gulp = require('gulp'),
 	less = require('gulp-less'),
-	gutil = require('gulp-util'),
+	log = require('fancy-log'),
 	concat = require('gulp-concat-util'),
 	plumber = require('gulp-plumber'),
 	fs = require('fs'),
@@ -19,7 +19,8 @@ var
 	
 	sTenantPathPrefix = sTenanthash ? 'tenants/' + sTenanthash + '/' : '',
 	
-	sPathToCoreWebclient = 'modules/CoreWebclient'
+	sPathToCoreWebclient = 'modules/CoreWebclient',
+	sPathToCoreMobileWebclient = 'modules/CoreMobileWebclient'
 ;
 
 aModulesNames.forEach(function (sModuleName) {
@@ -35,7 +36,7 @@ function BuildLibsCss()
 		aLibsFiles = [
 			sPathToCoreWebclient + '/styles/vendors/normalize.css',
 			sPathToCoreWebclient + '/styles/vendors/jquery/jquery-ui-1.10.4.custom.min.css',
-			sPathToCoreWebclient + '/styles/vendors/fullcalendar-2.2.3.min.css',
+			//sPathToCoreWebclient + '/styles/vendors/fullcalendar-2.2.3.min.css',
 			sPathToCoreWebclient + '/styles/vendors/inputosaurus.css'
 		],
 		sDestPath = 'static/styles/libs/',
@@ -43,7 +44,7 @@ function BuildLibsCss()
 			gulp.src(aLibsFiles)
 				.pipe(concat('libs.css'))
 				.pipe(gulp.dest(sDestPath))
-				.on('error', gutil.log);
+				.on('error', log);
 		}
 	;
 	
@@ -53,13 +54,19 @@ function BuildLibsCss()
 function BuildThemeCss(sTheme, bMobile)
 {
 	var
+		sCoreModule = bMobile ? 'CoreMobileWebclient' : 'CoreWebclient',
 		aModulesFiles = [],
-		aSkinSpecyficFiles = [],
-		aSkinSpecyficDefaultFiles = [],
+		aThemeSpecyficFiles = [],
+		aThemeSpecyficDefaultFiles = [],
 		sPostfix = bMobile ? '-mobile' : '',
-		iCoreModuleIndex = aModulesNames.indexOf('CoreWebclient')
+		iCoreModuleIndex = aModulesNames.indexOf(sCoreModule)
 	;
 
+	if (!fs.existsSync('modules/' + sCoreModule + '/styles/themes/' + sTheme + '/styles' + sPostfix + '.less'))
+	{
+		return;
+	}
+	
 	if (iCoreModuleIndex >= 0)
 	{
 		aModulesNames.unshift(aModulesNames.splice(iCoreModuleIndex, 1)[0]);
@@ -78,32 +85,42 @@ function BuildThemeCss(sTheme, bMobile)
 				aModulesFiles.push('modules/' + sModuleName + '/styles/styles' + sPostfix + '.less');
 			}
 		}
-		if (sModuleName !== 'CoreWebclient' && fs.existsSync('modules/' + sModuleName + '/styles/images'))
+		if (sModuleName !== sCoreModule && fs.existsSync('modules/' + sModuleName + '/styles/images' + sPostfix))
 		{
-			MoveFiles('modules/' + sModuleName + '/styles/images', 'static/styles/images/modules/' + sModuleName);
+			MoveFiles('modules/' + sModuleName + '/styles/images' + sPostfix, 'static/styles/images' + sPostfix + '/modules/' + sModuleName);
 		}
 	});
 	
-	//get skin specific files
+	//get theme specific files
 	aModulesFiles.forEach(function (sFilePath) {
-		var sThemePath = sFilePath.replace('styles' + sPostfix + '.less', 'themes/' + sTheme + '/styles.less');
+		var sThemePath = sFilePath.replace('styles' + sPostfix + '.less', 'themes/' + sTheme + '/styles' + sPostfix + '.less');
 				
 		if (fs.existsSync(sThemePath))
 		{
-			aSkinSpecyficFiles.push(sThemePath);
+			aThemeSpecyficFiles.push(sThemePath);
+		
+			var sThemeImagesPath = sFilePath.replace('styles' + sPostfix + '.less', 'themes/' + sTheme + '/images' + sPostfix);
+			if (fs.existsSync(sThemeImagesPath))
+			{
+				var aPathParts = sThemeImagesPath.split('styles/themes');
+				if (aPathParts.length > 1)
+				{
+					MoveFiles(sThemeImagesPath, 'static/styles/themes' + aPathParts[1]);
+				}
+			}
 		}
 	});
 	
 	aModulesFiles.forEach(function (sFilePath) {
-		var sThemePath = sFilePath.replace('styles' + sPostfix + '.less', 'themes/_default.less');
+		var sThemePath = sFilePath.replace('styles' + sPostfix + '.less', 'themes/_default' + sPostfix + '.less');
 				
 		if (fs.existsSync(sThemePath))
 		{
-			aSkinSpecyficDefaultFiles.push(sThemePath);
+			aThemeSpecyficDefaultFiles.push(sThemePath);
 		}
 	});
 	
-	aModulesFiles = aSkinSpecyficDefaultFiles.concat(aSkinSpecyficFiles.concat(aModulesFiles));
+	aModulesFiles = aThemeSpecyficDefaultFiles.concat(aThemeSpecyficFiles.concat(aModulesFiles));
 
 	gulp.src(aModulesFiles)
 		.pipe(concat('styles' + sPostfix + '.css', {
@@ -113,7 +130,7 @@ function BuildThemeCss(sTheme, bMobile)
 //				;
 //				
 //				if ( fs.existsSync(sThemePath)) {
-//					aSkinSpecyficFiles.push('@import "' + sThemePath + '";\r\n');
+//					aThemeSpecyficFiles.push('@import "' + sThemePath + '";\r\n');
 //				}
 		
 				return '@import "' + sFilePath + '";\r\n'; 
@@ -124,13 +141,12 @@ function BuildThemeCss(sTheme, bMobile)
 		.pipe(plumber({
 			errorHandler: function (err) {
 				console.log(err.toString());
-				gutil.beep();
 				this.emit('end');
 			}
 		}))
 		.pipe(less())
 		.pipe(gulp.dest(sTenantPathPrefix + 'static/styles/themes/' + sTheme))
-		.on('error', gutil.log);
+		.on('error', log);
 }
 
 function CheckFolderAndCallHandler(sDir, fHandler)
@@ -170,7 +186,7 @@ function MoveFiles(sFromDir, sToDir)
 			});	
 		}
 	;
-//	console.log(sFromDir);
+	
 	if (fs.existsSync(sFromDir))
 	{
 		CheckFolderAndCallHandler(sToDir, fCopyDir);
@@ -193,7 +209,7 @@ function MoveSharingCss()
 	CheckFolderAndCallHandler('static/styles', fCopySharing);
 }
 
-gulp.task('styles', function () {
+gulp.task('styles', function (done) {
 	if (!sTenanthash)
 	{
 		BuildLibsCss();
@@ -207,19 +223,28 @@ gulp.task('styles', function () {
 	_.each(aThemes, function (sTheme) {
 		BuildThemeCss(sTheme, false);
 		BuildThemeCss(sTheme, true);
-		MoveFiles(sPathToCoreWebclient + '/styles/themes/' + sTheme, sTenantPathPrefix + 'static/styles/themes/' + sTheme);
 	});
+	
+	done();
 });
 
-gulp.task('cssonly', function () {
+gulp.task('cssonly', function (done) {
 	_.each(aThemes, function (sTheme) {
 		BuildThemeCss(sTheme, false);
 		BuildThemeCss(sTheme, true);
 	});
+	done();
 });
 
-gulp.task('styles:watch', ['styles'], function () {
-	gulp.watch(aModulesWatchPaths, {interval: 500}, ['cssonly']);
-});
+gulp.task('styles:watch',  gulp.series('styles', function (done) {
+	gulp.watch(aModulesWatchPaths, {interval: 500}, function (done) {
+		_.each(aThemes, function (sTheme) {
+			BuildThemeCss(sTheme, false);
+			BuildThemeCss(sTheme, true);
+		});
+		done();
+	});
+	done();
+}));
 
 module.exports = {};

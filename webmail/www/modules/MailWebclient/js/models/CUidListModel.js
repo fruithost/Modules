@@ -4,6 +4,10 @@ var
 	_ = require('underscore'),
 	ko = require('knockout'),
 	
+	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
+	
+	MailCache = null,
+	MessagesDictionary = require('modules/%ModuleName%/js/MessagesDictionary.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
 
@@ -16,15 +20,28 @@ var
  */
 function CUidListModel()
 {
-	this.resultCount = ko.observable(-1);
-	
+	this.iAccountId = 0;
+	this.sFullName = '';
 	this.search = ko.observable('');
 	this.filters = ko.observable('');
+	this.sortBy = ko.observable(Settings.MessagesSortBy.DefaultSortBy);
+	this.sortOrder = ko.observable(Settings.MessagesSortBy.DefaultSortOrder);
 	
+	this.resultCount = ko.observable(-1);
 	this.collection = ko.observableArray([]);
-	
 	this.threadUids = {};
 }
+
+/**
+ * Requires MailCache. It cannot be required earlier because it is not initialized yet.
+ */
+CUidListModel.prototype.requireMailCache = function ()
+{
+	if (MailCache === null)
+	{
+		MailCache = require('modules/%ModuleName%/js/Cache.js');
+	}
+};
 
 /**
  * @param {string} sUid
@@ -39,15 +56,16 @@ CUidListModel.prototype.addThreadUids = function (sUid, aThreadUids)
 };
 
 /**
+ * @param {int} iOffset
  * @param {Object} oResult
  */
-CUidListModel.prototype.setUidsAndCount = function (oResult)
+CUidListModel.prototype.setUidsAndCount = function (iOffset, oResult)
 {
 	if (oResult['@Object'] === 'Collection/MessageCollection')
 	{
 		_.each(oResult.Uids, function (sUid, iIndex) {
 			
-			this.collection()[iIndex + oResult.Offset] = sUid.toString();
+			this.collection()[iIndex + iOffset] = sUid.toString();
 
 		}, this);
 
@@ -57,14 +75,17 @@ CUidListModel.prototype.setUidsAndCount = function (oResult)
 
 /**
  * @param {number} iOffset
- * @param {Object} oMessages
  */
-CUidListModel.prototype.getUidsForOffset = function (iOffset, oMessages)
+CUidListModel.prototype.getUidsForOffset = function (iOffset)
 {
+	this.requireMailCache();
+	
 	var
 		iIndex = 0,
 		iLen = this.collection().length,
 		sUid = '',
+		iAccountId = this.iAccountId,
+		sFullName = this.sFullName,
 		iExistsCount = 0,
 		aUids = [],
 		oMsg = null
@@ -72,9 +93,18 @@ CUidListModel.prototype.getUidsForOffset = function (iOffset, oMessages)
 	
 	for(; iIndex < iLen; iIndex++)
 	{
-		if (iIndex >= iOffset && iExistsCount < Settings.MailsPerPage) {
+		if (iIndex >= iOffset && iExistsCount < Settings.MailsPerPage)
+		{
 			sUid = this.collection()[iIndex];
-			oMsg = oMessages[sUid];
+			var sUidForDict = sUid;
+			if (sUid !== undefined && this.sFullName === MailCache.oUnifiedInbox.fullName())
+			{
+				var aParts = sUid.split(':');
+				iAccountId = Types.pInt(aParts[0]);
+				sFullName = 'INBOX';
+				sUidForDict = aParts[1];
+			}
+			oMsg = (sUid === undefined) ? null : MessagesDictionary.get([iAccountId, sFullName, sUidForDict]);
 
 			if (oMsg && !oMsg.deleted() || sUid === undefined)
 			{
@@ -118,6 +148,16 @@ CUidListModel.prototype.deleteUids = function (aUids)
 	
 	this.collection(aNewCollection);
 	this.resultCount(this.resultCount() - iDiff);
+};
+
+/**
+ * Clears data when cache should be cleared.
+ */
+CUidListModel.prototype.clearData = function ()
+{
+	this.resultCount(-1);
+	this.collection([]);
+	this.threadUids = {};
 };
 
 module.exports = CUidListModel;

@@ -18,7 +18,10 @@ var Settings = {
 	ServerModuleName: 'Core',
 	HashModuleName: 'core',
 	
+	DebugMode: Types.isString(UrlUtils.getRequestParam('debugmode')),
+	
 	// Settings from Core module
+	AuthTokenCookieExpireTime: 30,
 	AutodetectLanguage: false,
 	UserSelectsDateFormat: false,
 	dateFormat: ko.observable('DD/MM/YYYY'),
@@ -30,6 +33,7 @@ var Settings = {
 	ShortLanguage: 'en',
 	SiteName: 'Afterlogic Platform',
 	SocialName: '',
+	StoreAuthTokenInDB: false,
 	TenantName: '',
 	timeFormat: ko.observable('0'), // 0 - 24, 1 - 12
 	timezone: ko.observable(''),
@@ -37,6 +41,9 @@ var Settings = {
 	PasswordMinLength: 0,
 	PasswordMustBeComplex: false,
 	CookiePath: '/',
+	CookieSecure: false,
+	Version: '',
+	ProductName: '',
 	
 	// Settings from Core module only for super admin
 	AdminHasPassword: '',
@@ -53,7 +60,6 @@ var Settings = {
 	AllowChangeSettings: false,
 	AllowClientDebug: false,
 	AllowDesktopNotifications: false,
-	AllowIosProfile: false,
 	AllowMobile: false,
 	AllowPrefetch: true,
 	AttachmentSizeLimit: 0,
@@ -66,16 +72,20 @@ var Settings = {
 	IsDemo: false,
 	IsMobile: -1,
 	LanguageList: [{name: 'English', text: 'English'}],
+	MultipleFilesUploadLimit: 50,
 	ShowQuotaBar: false,
 	QuotaWarningPerc: 0,
-	SyncIosAfterLogin: false,
 	Theme: 'Default',
-	ThemeList: [],
-	Version: '',
-	ProductName: '',
+	ThemeList: ['Default'],
+	
+	// Settings from CoreMobileWebclient module
+	MobileTheme: 'Default',
+	MobileThemeList: ['Default'],
 	
 	// Settings from BrandingWebclient module
 	LogoUrl: '',
+	TopIframeUrl: '',
+	TopIframeHeightPx: 0,
 	
 	// Settings from HTML
 	IsRTL: bRtl,
@@ -90,15 +100,20 @@ var Settings = {
 		var
 			oAppDataCoreSection = oAppData[Settings.ServerModuleName],
 			oAppDataCoreWebclientSection = oAppData['%ModuleName%'],
+			oAppDataCoreMobileWebclientSection = oAppData['CoreMobileWebclient'],
 			oAppDataBrandingWebclientSection = oAppData['BrandingWebclient']
 		;
 		
 		if (!_.isEmpty(oAppDataCoreSection))
 		{
+			this.AuthTokenCookieExpireTime = Types.pInt(oAppDataCoreSection.AuthTokenCookieExpireTime, this.AuthTokenCookieExpireTime);
 			this.AutodetectLanguage = Types.pBool(oAppDataCoreSection.AutodetectLanguage, this.AutodetectLanguage);
 			this.UserSelectsDateFormat = Types.pBool(oAppDataCoreSection.UserSelectsDateFormat, this.UserSelectsDateFormat);
 			this.dateFormat(Types.pString(oAppDataCoreSection.DateFormat, this.dateFormat()));
 			this.DateFormatList = Types.pArray(oAppDataCoreSection.DateFormatList, this.DateFormatList);
+			if (_.indexOf(this.DateFormatList, this.dateFormat()) === -1) {
+				this.DateFormatList.unshift(this.dateFormat());
+			}
 			this.EUserRole = Types.pObject(oAppDataCoreSection.EUserRole, this.EUserRole);
 			this.IsSystemConfigured = Types.pBool(oAppDataCoreSection.IsSystemConfigured, this.IsSystemConfigured);
 			this.Language = Types.pString(oAppDataCoreSection.Language, this.Language);
@@ -106,6 +121,7 @@ var Settings = {
 			this.ShortLanguage = Types.pString(oAppDataCoreSection.ShortLanguage, this.ShortLanguage);
 			this.SiteName = Types.pString(oAppDataCoreSection.SiteName, this.SiteName);
 			this.SocialName = Types.pString(oAppDataCoreSection.SocialName, this.SocialName);
+			this.StoreAuthTokenInDB = Types.pBool(oAppDataCoreSection.StoreAuthTokenInDB, this.StoreAuthTokenInDB);
 			this.TenantName = Types.pString(oAppDataCoreSection.TenantName || UrlUtils.getRequestParam('tenant'), this.TenantName);
 			this.timeFormat(Types.pString(oAppDataCoreSection.TimeFormat, this.timeFormat()));
 			this.timezone(Types.pString(oAppDataCoreSection.Timezone, this.timezone()));
@@ -117,6 +133,9 @@ var Settings = {
 			{
 				this.CookiePath = '/';
 			}
+			this.CookieSecure = Types.pBool(oAppDataCoreSection.CookieSecure, this.CookieSecure);
+			this.Version = Types.pString(oAppDataCoreSection.Version, this.Version);
+			this.ProductName = Types.pString(oAppDataCoreSection.ProductName, this.ProductName);
 			
 			//only for admin
 			this.AdminHasPassword = Types.pBool(oAppDataCoreSection.AdminHasPassword, this.AdminHasPassword);
@@ -127,8 +146,6 @@ var Settings = {
 			this.DbLogin = Types.pString(oAppDataCoreSection.DBLogin, this.DbLogin);
 			this.DbName = Types.pString(oAppDataCoreSection.DBName, this.DbName);
 			this.SaltNotEmpty = Types.pBool(oAppDataCoreSection.SaltNotEmpty, this.SaltNotEmpty);
-			this.Version = oAppDataCoreSection.Version;
-			this.ProductName = oAppDataCoreSection.ProductName;
 		}
 		
 		if (!_.isEmpty(oAppDataCoreWebclientSection))
@@ -136,7 +153,6 @@ var Settings = {
 			this.AllowChangeSettings = Types.pBool(oAppDataCoreWebclientSection.AllowChangeSettings, this.AllowChangeSettings);
 			this.AllowClientDebug = Types.pBool(oAppDataCoreWebclientSection.AllowClientDebug, this.AllowClientDebug);
 			this.AllowDesktopNotifications = Types.pBool(oAppDataCoreWebclientSection.AllowDesktopNotifications, this.AllowDesktopNotifications);
-			this.AllowIosProfile = Types.pBool(oAppDataCoreWebclientSection.AllowIosProfile, this.AllowIosProfile);
 			this.AllowMobile = Types.pBool(oAppDataCoreWebclientSection.AllowMobile, this.AllowMobile);
 			this.AllowPrefetch = Types.pBool(oAppDataCoreWebclientSection.AllowPrefetch, this.AllowPrefetch);
 			this.AttachmentSizeLimit = Types.pNonNegativeInt(oAppDataCoreWebclientSection.AttachmentSizeLimit, this.AttachmentSizeLimit);
@@ -149,16 +165,24 @@ var Settings = {
 			this.IsDemo = Types.pBool(oAppDataCoreWebclientSection.IsDemo, this.IsDemo);
 			this.IsMobile = Types.pInt(oAppDataCoreWebclientSection.IsMobile, this.IsMobile);
 			this.LanguageList = Types.pArray(oAppDataCoreWebclientSection.LanguageListWithNames, this.LanguageList);
+			this.MultipleFilesUploadLimit = Types.pNonNegativeInt(oAppDataCoreWebclientSection.MultipleFilesUploadLimit, this.MultipleFilesUploadLimit);
 			this.ShowQuotaBar = Types.pBool(oAppDataCoreWebclientSection.ShowQuotaBar, this.ShowQuotaBar);
 			this.QuotaWarningPerc = Types.pInt(oAppDataCoreWebclientSection.QuotaWarningPerc, this.QuotaWarningPerc);
-			this.SyncIosAfterLogin = Types.pBool(oAppDataCoreWebclientSection.SyncIosAfterLogin, this.SyncIosAfterLogin);
 			this.Theme = Types.pString(oAppDataCoreWebclientSection.Theme, this.Theme);
 			this.ThemeList = Types.pArray(oAppDataCoreWebclientSection.ThemeList, this.ThemeList);
+		}
+
+		if (!_.isEmpty(oAppDataCoreMobileWebclientSection))
+		{
+			this.MobileTheme = Types.pString(oAppDataCoreMobileWebclientSection.Theme, this.MobileTheme);
+			this.MobileThemeList = Types.pArray(oAppDataCoreMobileWebclientSection.ThemeList, this.MobileThemeList);
 		}
 
 		if (!_.isEmpty(oAppDataBrandingWebclientSection))
 		{
 			this.LogoUrl = Types.pString(oAppDataBrandingWebclientSection.TabsbarLogo, this.LogoUrl);
+			this.TopIframeUrl = Types.pString(oAppDataBrandingWebclientSection.TopIframeUrl, this.TopIframeUrl);
+			this.TopIframeHeightPx = Types.pString(oAppDataBrandingWebclientSection.TopIframeHeightPx, this.TopIframeHeightPx);
 		}
 		
 		if (moment.locale() !== this.ShortLanguage && this.Language !== 'Arabic' && this.Language !== 'Persian')
@@ -171,11 +195,8 @@ var Settings = {
 	
 	initTimezone: function ()
 	{
-		var
-			Enums = window.Enums,
-			App = require('%PathToCoreWebclientModule%/js/App.js')
-		;
-		if (App.getUserRole() === Enums.UserRole.NormalUser)
+		var App = require('%PathToCoreWebclientModule%/js/App.js');
+		if (App.isUserNormalOrTenant())
 		{
 			var
 				TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
@@ -229,12 +250,13 @@ var Settings = {
 	 * @param {string} sSiteName
 	 * @param {number} iAutoRefreshIntervalMinutes
 	 * @param {string} sDefaultTheme
+	 * @param {string} sDefaultMobileTheme
 	 * @param {string} sLanguage
 	 * @param {string} sTimeFormat
 	 * @param {string} sDateFormat
 	 * @param {boolean} bAllowDesktopNotifications
 	 */
-	update: function (sSiteName, iAutoRefreshIntervalMinutes, sDefaultTheme, sLanguage, sTimeFormat, sDateFormat, bAllowDesktopNotifications)
+	update: function (sSiteName, iAutoRefreshIntervalMinutes, sDefaultTheme, sDefaultMobileTheme, sLanguage, sTimeFormat, sDateFormat, bAllowDesktopNotifications)
 	{
 		if (typeof(sSiteName) === 'string')
 		{
@@ -264,6 +286,10 @@ var Settings = {
 		if (typeof(sDefaultTheme) === 'string')
 		{
 			this.Theme = sDefaultTheme;
+		}
+		if (typeof(sDefaultMobileTheme) === 'string')
+		{
+			this.MobileTheme = sDefaultMobileTheme;
 		}
 	},
 	

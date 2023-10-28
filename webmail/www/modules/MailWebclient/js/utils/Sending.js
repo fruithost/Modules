@@ -47,9 +47,12 @@ SendingUtils.setReplyData = function (sText, sDraftUid)
  * @param {Function} fSendMessageResponseHandler
  * @param {Object} oSendMessageResponseContext
  * @param {boolean=} bPostponedSending = false
+ * @param {boolean=} bAddToSentFolder = true
  */
-SendingUtils.send = function (sMethod, oParameters, bShowLoading, fSendMessageResponseHandler, oSendMessageResponseContext, bPostponedSending)
+SendingUtils.send = function (sMethod, oParameters, bShowLoading, fSendMessageResponseHandler, oSendMessageResponseContext, bPostponedSending, bAddToSentFolder)
 {
+	bAddToSentFolder = (typeof bAddToSentFolder === 'boolean') ? bAddToSentFolder : true;
+
 	var
 		iAccountID = oParameters.AccountID,
 		oAccount = AccountList.getAccount(iAccountID),
@@ -74,20 +77,32 @@ SendingUtils.send = function (sMethod, oParameters, bShowLoading, fSendMessageRe
 	{
 		case 'SendMessage':
 			sLoadingMessage = TextUtils.i18n('COREWEBCLIENT/INFO_SENDING');
-			oParameters.SentFolder = sSentFolder;
-			if (oParameters.DraftUid !== '')
+			if (bAddToSentFolder)
 			{
-				oParameters.DraftFolder = sDraftFolder;
-				if (MainTab)
+				if (!Types.isNonEmptyString(oParameters.SentFolder))
 				{
-					MainTab.removeOneMessageFromCacheForFolder(oParameters.AccountID, oParameters.DraftFolder, oParameters.DraftUid);
-					MainTab.replaceHashWithoutMessageUid(oParameters.DraftUid);
+					oParameters.SentFolder = sSentFolder;
 				}
-				else
+				if (oParameters.DraftUid !== '')
 				{
-					MailCache.removeOneMessageFromCacheForFolder(oParameters.AccountID, oParameters.DraftFolder, oParameters.DraftUid);
-					Routing.replaceHashWithoutMessageUid(oParameters.DraftUid);
+					oParameters.DraftFolder = sDraftFolder;
+					if (MainTab)
+					{
+						MainTab.removeOneMessageFromCacheForFolder(oParameters.AccountID, oParameters.DraftFolder, oParameters.DraftUid);
+						MainTab.replaceHashWithoutMessageUid(oParameters.DraftUid);
+					}
+					else
+					{
+						MailCache.removeOneMessageFromCacheForFolder(oParameters.AccountID, oParameters.DraftFolder, oParameters.DraftUid);
+						Routing.replaceHashWithoutMessageUid(oParameters.DraftUid);
+					}
 				}
+			}
+			else
+			{
+				delete oParameters.SentFolder;
+				delete oParameters.DraftUid;
+				delete oParameters.DraftFolder;
 			}
 			break;
 		case 'SaveMessage':
@@ -196,8 +211,9 @@ SendingUtils.sendReplyMessage = function (sMethod, sText, sDraftUid, fSendMessag
 
 		if (oFetcherOrIdentity)
 		{
+			oParameters.IdentityID = oFetcherOrIdentity && oFetcherOrIdentity.IDENTITY ? oFetcherOrIdentity.id() : '';
+			oParameters.AliasID = oFetcherOrIdentity && oFetcherOrIdentity.ALIAS ? oFetcherOrIdentity.id() : '';
 			oParameters.FetcherID = oFetcherOrIdentity && oFetcherOrIdentity.FETCHER ? oFetcherOrIdentity.id() : '';
-			oParameters.IdentityID = oFetcherOrIdentity && !oFetcherOrIdentity.FETCHER ? oFetcherOrIdentity.id() : '';
 		}
 
 		oParameters.Bcc = '';
@@ -355,6 +371,16 @@ SendingUtils.onSendOrSaveMessageResponse = function (oResponse, oRequest, bRequi
 	return {Method: oRequest.Method, Result: bResult, NewUid: oResponse.Result ? oResponse.Result.NewUid : ''};
 };
 
+SendingUtils.getReplytoAddresses = function (oMessage)
+{
+	var oReplytoAddresses = oMessage.oReplyTo;
+	if (oReplytoAddresses.getFull() === '' || oMessage.oFrom.getFirstEmail() === oReplytoAddresses.getFirstEmail() && oReplytoAddresses.getFirstName() === '')
+	{
+		oReplytoAddresses = oMessage.oFrom;
+	}
+	return oReplytoAddresses;
+};
+
 /**
  * @param {Object} oMessage
  * @param {string} sReplyType
@@ -382,14 +408,9 @@ SendingUtils.getReplyDataFromMessage = function (oMessage, sReplyType, iAccountI
 			References: this.getReplyReferences(oMessage)
 		},
 		aAttachmentsLink = [],
-		sToAddr = oMessage.oReplyTo.getFull(),
-		sTo = oMessage.oTo.getFull()
+		oReplytoAddresses = this.getReplytoAddresses(oMessage),
+		sToAddr = oReplytoAddresses.getFull()
 	;
-	
-	if (sToAddr === '' || oMessage.oFrom.getFirstEmail() === oMessage.oReplyTo.getFirstEmail() && oMessage.oReplyTo.getFirstName() === '')
-	{
-		sToAddr = oMessage.oFrom.getFull();
-	}
 	
 	if (!sText || sText === '')
 	{
@@ -435,7 +456,7 @@ SendingUtils.getReplyDataFromMessage = function (oMessage, sReplyType, iAccountI
 		case Enums.ReplyType.ReplyAll:
 			oReplyData.DraftInfo = [Enums.ReplyType.ReplyAll, oMessage.uid(), oMessage.folder()];
 			oReplyData.To = sToAddr;
-			oReplyData.Cc = GetReplyAllCcAddr(oMessage, iAccountId, oFetcherOrIdentity);
+			oReplyData.Cc = this.getReplyAllCcAddr(oMessage, iAccountId, oFetcherOrIdentity);
 			oReplyData.Subject = this.getReplySubject(oMessage.subject(), true);
 			aAttachmentsLink = _.filter(oMessage.attachments(), function (oAttach) {
 				return oAttach.linked();
@@ -443,7 +464,7 @@ SendingUtils.getReplyDataFromMessage = function (oMessage, sReplyType, iAccountI
 			break;
 		case Enums.ReplyType.Resend:
 			oReplyData.DraftInfo = [Enums.ReplyType.Resend, oMessage.uid(), oMessage.folder(), oMessage.cc(), oMessage.bcc()];
-			oReplyData.To = sTo;
+			oReplyData.To = oMessage.oTo.getFull();
 			oReplyData.Subject = oMessage.subject();
 			aAttachmentsLink = oMessage.attachments();
 			break;
@@ -642,6 +663,15 @@ SendingUtils.getAccountFetchersIdentitiesList = function (oAccount)
 				'result': oIdnt
 			});
 		});
+		
+		_.each(oAccount.aliases(), function (oAlias) {
+			aList.push({
+				'email': oAlias.email(),
+				'name': oAlias.friendlyName(),
+				'isDefault': false,
+				'result': oAlias
+			});
+		});
 	}
 
 	return aList;
@@ -679,7 +709,7 @@ SendingUtils.hasReplyAllCcAddrs = function (oMessage)
 		iAccountId = oMessage.accountId(),
 		aRecipients = oMessage.oTo.aCollection.concat(oMessage.oCc.aCollection),
 		oFetcherOrIdentity = this.getFirstFetcherOrIdentityByRecipientsOrDefault(aRecipients, oMessage.accountId()),
-		sCcAddrs = GetReplyAllCcAddr(oMessage, iAccountId, oFetcherOrIdentity)
+		sCcAddrs = this.getReplyAllCcAddr(oMessage, iAccountId, oFetcherOrIdentity)
 	;
 	return sCcAddrs !== '';
 };
@@ -693,7 +723,7 @@ SendingUtils.hasReplyAllCcAddrs = function (oMessage)
  * 
  * @return {string}
  */
-function GetReplyAllCcAddr(oMessage, iAccountId, oFetcherOrIdentity)
+SendingUtils.getReplyAllCcAddr = function (oMessage, iAccountId, oFetcherOrIdentity)
 {
 	var
 		oAddressList = new CAddressListModel(),
@@ -703,16 +733,17 @@ function GetReplyAllCcAddr(oMessage, iAccountId, oFetcherOrIdentity)
 			return oAccount.id() === iAccountId;
 		}, this),
 		oCurrAccAddress = new CAddressModel(),
-		oFetcherAddress = new CAddressModel()
+		oFetcherAddress = new CAddressModel(),
+		oReplytoAddresses = this.getReplytoAddresses(oMessage)
 	;
-
+	
 	oCurrAccAddress.sEmail = oCurrAccount.email();
 	oFetcherAddress.sEmail = oFetcherOrIdentity ? oFetcherOrIdentity.email() : '';
 	oAddressList.addCollection(aAddrCollection);
-	oAddressList.excludeCollection(_.union(oMessage.oFrom.aCollection, [oCurrAccAddress, oFetcherAddress]));
+	oAddressList.excludeCollection(_.union(oReplytoAddresses.aCollection, [oCurrAccAddress, oFetcherAddress]));
 
 	return oAddressList.getFull();
-}
+};
 
 /**
  * Obtains a subject of the message, which is the answer (reply or forward):

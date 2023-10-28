@@ -1,18 +1,16 @@
 language: "php"
 
 php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
-  - hhvm
+  - 7.2
+  - 7.3
+  - 7.4
 
 before_script: 
 - "composer require codeclimate/php-test-reporter --dev"
 - "composer install"
 
 script: 
-- "phpunit --testsuite=unit --coverage-text --coverage-clover build/logs/clover.xml"
+- "./vendor/bin/phpunit --testsuite=unit --coverage-text --coverage-clover build/logs/clover.xml"
 
 after_script:
 - CODECLIMATE_REPO_TOKEN="0e043fdece23b7c9b6fabd55ce12cb93ae81376b4fb2fe574ff47444111ff039" vendor/bin/test-reporter --stdout > codeclimate.json

@@ -239,6 +239,18 @@
 					</div>
 				</div>
 
+				<div class="fields groups" data-bind="visible: !pgpSettingsEmpty()">
+					<h2 class="subheading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_PGP_SETTINGS'}"></h2>
+					<div class="fieldset">
+						<div class="row key" data-bind="visible: '' !== publicPgpKey()">
+							<span class="label">
+								<span class="text" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PUBLIC_PGP_KEY'}"></span>:
+							</span>
+							<span class="value" data-bind="text: publicPgpKeyView()"></span>
+						</div>
+					</div>
+				</div>
+
 				<div class="fields groups" data-bind="visible: !team() && 0 < $root.groupsInContactView($data).length">
 					<h2 class="subheading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_GROUPS'}"></h2>
 					<div class="fieldset">

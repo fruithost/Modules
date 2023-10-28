@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,7 +10,7 @@ namespace Aurora\System;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  */
 abstract class AbstractSettings
 {
@@ -30,9 +30,9 @@ abstract class AbstractSettings
 	/**
 	 * @var bool
 	 */
-	protected $bIsLoaded;	
-	#</editor-fold>	
-	
+	protected $bIsLoaded;
+	#</editor-fold>
+
 	/**
 	 * @param string $sSettingsPath
 	 *
@@ -46,7 +46,7 @@ abstract class AbstractSettings
 	}
 
 	/**
-	 * 
+	 *
 	 * @param type $sName
 	 */
 	public function __isset($sName)
@@ -58,22 +58,22 @@ abstract class AbstractSettings
 
 		return isset($this->aContainer[$sName]);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param type $sName
 	 * @param type $mValue
 	 */
-	public function __set($sName, $mValue) 
+	public function __set($sName, $mValue)
 	{
 		$this->SetValue($sName, $mValue);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param type $sName
 	 */
-	public function __get($sName) 
+	public function __get($sName)
 	{
 		return $this->GetValue($sName);
 	}
@@ -85,9 +85,9 @@ abstract class AbstractSettings
 	{
 		return $this->aContainer;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return string
 	 */
 	public function GetPath()
@@ -120,7 +120,7 @@ abstract class AbstractSettings
 
 	/**
 	 * @deprecated
-	 * 
+	 *
 	 * @param string $sKey
 	 *
 	 * @return mixed
@@ -128,7 +128,7 @@ abstract class AbstractSettings
 	public function GetConf($sKey, $mDefault = null)
 	{
 		return $this->GetValue($sKey, $mDefault);
-	}	
+	}
 
 	/**
 	 * @param string $sKey
@@ -163,7 +163,11 @@ abstract class AbstractSettings
 				$mValue = $this->specValidate($mValue, $this->aContainer[$sKey]->SpecType);
 				break;
 			case 'array':
-				$mValue = $mValue;
+				if (!Utils::IsAssocArray($mValue))
+				{
+					// rebuild array indexes
+					$mValue = array_values($mValue);
+				}
 				break;
 			default:
 				$mValue = null;
@@ -177,7 +181,7 @@ abstract class AbstractSettings
 
 	/**
 	 * @deprecated
-	 * 
+	 *
 	 * @param string $sKey
 	 * @param mixed $mValue = null
 	 *
@@ -210,7 +214,7 @@ abstract class AbstractSettings
 		$sJsonFile = $this->sPath;
 		if (!\file_exists(\dirname($sJsonFile)))
 		{
-			\set_error_handler(function() {});					
+			\set_error_handler(function() {});
 			\mkdir(\dirname($sJsonFile), 0777);
 			\restore_error_handler();
 			$bResult = \file_exists(\dirname($sJsonFile));
@@ -223,14 +227,14 @@ abstract class AbstractSettings
 	{
 		$sJsonFile = $this->sPath;
 		return (bool) \file_put_contents(
-			$sJsonFile, 
+			$sJsonFile,
 			\json_encode(
-				$aData, 
+				$aData,
 				JSON_PRETTY_PRINT | JSON_OBJECT_AS_ARRAY
 			)
 		);
 	}
-	
+
 	public function ParseData($aData)
 	{
 		$aContainer = [];
@@ -280,8 +284,8 @@ abstract class AbstractSettings
 					$aContainer[$sKey] = new SettingsProperty($sKey, $mValue, $sType, $sSpecType);
 				}
 			}
-		}	
-		
+		}
+
 		return $aContainer;
 	}
 
@@ -311,7 +315,7 @@ abstract class AbstractSettings
 	public function Load()
 	{
 		$bResult = false;
-		
+
 		$mData = $this->LoadDataFromFile($this->sPath);
 
 		if (!$mData)
@@ -320,10 +324,6 @@ abstract class AbstractSettings
 			if ($mData)
 			{
 				\copy($this->sPath.'.bak', $this->sPath);
-			}
-			else
-			{
-				$this->Save();
 			}
 		}
 
@@ -352,13 +352,13 @@ abstract class AbstractSettings
 				$aValue[] = $mValue->SpecType;
 			}
 			\array_unshift(
-				$aValue, 
-				$mValue->Value, 
+				$aValue,
+				$mValue->Value,
 				$mValue->Type
 			);
 
 			$aResult[$sKey] = $aValue;
-		}		
+		}
 
 		return $aResult;
 	}
@@ -388,7 +388,7 @@ abstract class AbstractSettings
 
 		return $bResult;
 	}
-	
+
 	/**
 	 * @param string $sValue
 	 * @param string $sEnumName
@@ -404,7 +404,7 @@ abstract class AbstractSettings
 		}
 
 		return $mResult;
-	}		
+	}
 
 	/**
 	 * @param string $sValue
@@ -421,7 +421,7 @@ abstract class AbstractSettings
 		}
 		return $mResult;
 	}
-	
+
 	/**
 	 * @param string $sValue
 	 * @param string $sEnumName
@@ -436,7 +436,7 @@ abstract class AbstractSettings
 		}
 
 		return $this->specValidate($mResult, $sEnumName);
-	}		
+	}
 
 	/**
 	 * @return void

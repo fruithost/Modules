@@ -8,6 +8,8 @@
 namespace Aurora\Modules\DropboxAuthWebclient;
 
 /**
+ * Adds ability to login using Dropbox account.
+ *
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
@@ -17,21 +19,21 @@ namespace Aurora\Modules\DropboxAuthWebclient;
 class Module extends \Aurora\System\Module\AbstractWebclientModule
 {
 	protected $sService = 'dropbox';
-	
+
 	protected $aRequireModules = array(
-		'OAuthIntegratorWebclient', 
+		'OAuthIntegratorWebclient',
 		'Dropbox'
 	);
-	
+
 	/***** private functions *****/
 	protected function issetScope($sScope)
 	{
 		return in_array($sScope, explode(' ', $this->getConfig('Scopes')));
 	}
-	
+
 	/**
 	 * Initializes DropBoxAuthWebclient Module.
-	 * 
+	 *
 	 * @ignore
 	 */
 	public function init()
@@ -41,10 +43,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		$this->subscribeEvent('Dropbox::GetSettings', array($this, 'onGetSettings'));
 		$this->subscribeEvent('Dropbox::UpdateSettings::after', array($this, 'onAfterUpdateSettings'));
 	}
-	
+
 	/**
 	 * Adds service name to array passed by reference.
-	 * 
+	 *
 	 * @ignore
 	 * @param array $aArgs
 	 * @param array $aServices Array with services names passed by reference.
@@ -57,16 +59,16 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			$sId = $oModule->getConfig('Id', '');
 			$sSecret = $oModule->getConfig('Secret', '');
 
-			if ($oModule->getConfig('EnableModule', false) && $this->issetScope('auth') && !empty($sId) && !empty($sSecret))	
+			if ($oModule->getConfig('EnableModule', false) && $this->issetScope('auth') && !empty($sId) && !empty($sSecret))
 			{
 				$aServices[] = $this->sService;
 			}
 		}
-	}	
-	
+	}
+
 	/**
 	 * Passes data to connect to service.
-	 * 
+	 *
 	 * @ignore
 	 * @param string $aArgs Service type to verify if data should be passed.
 	 * @param boolean|array $mResult variable passed by reference to take the result.
@@ -81,7 +83,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			if ($oConnector)
 			{
 				$mResult = $oConnector->Init(
-					\Aurora\System\Api::GetModule('Dropbox')->getConfig('Id'), 
+					\Aurora\System\Api::GetModule('Dropbox')->getConfig('Id'),
 					\Aurora\System\Api::GetModule('Dropbox')->getConfig('Secret'),
 					$sScopes
 				);
@@ -89,10 +91,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			return true;
 		}
 	}
-	
+
 	/**
 	 * Passes data to connect to service.
-	 * 
+	 *
 	 * @ignore
 	 * @param string $aArgs Service type to verify if data should be passed.
 	 * @param boolean|array $mResult variable passed by reference to take the result.
@@ -100,7 +102,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	public function onGetSettings($aArgs, &$mResult)
 	{
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
-		
+
 		if (!empty($oUser))
 		{
 			$aScope = array(
@@ -113,7 +115,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 				$aScope['Value'] = $this->issetScope('auth');
 				$mResult['Scopes'][] = $aScope;
 			}
-			if ($oUser->Role === \Aurora\System\Enums\UserRole::NormalUser)
+			if ($oUser->isNormalOrTenant())
 			{
 				if ($aArgs['OAuthAccount'] instanceof \Aurora\Modules\OAuthIntegratorWebclient\Classes\Account)
 				{
@@ -126,7 +128,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			}
 		}
 	}
-	
+
 	public function onAfterUpdateSettings($aArgs, &$mResult)
 	{
 		$sScope = '';

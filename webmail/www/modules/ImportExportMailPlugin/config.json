@@ -1,0 +1,10 @@
+{
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"UploadSizeLimitMb": [
+		100,
+		"int"
+	]
+}

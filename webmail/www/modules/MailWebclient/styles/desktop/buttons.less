@@ -1,4 +1,6 @@
 .buttons {
+	margin-left: 7px;
+
 	.add_account_button {
 		.button_mixin(@theme-add-account-button-color);
 	}
@@ -15,10 +17,33 @@
 	.toolbar & {
 		margin: 0;
 		padding: 0;
-		
+
 		.button {
 			padding: 5px 20px 4px;
 			text-shadow: none;
+		}
+	}
+
+	.compose &.group {
+		.item, .item:hover {
+			background: none;
+			border: 0px;
+		}
+	}
+
+	.item.buttons_send_arrow {
+		padding-left: 0 !important;
+		margin-left: -11px !important;
+
+		.button {
+			height: 100%;
+			padding: 0 7px;
+			vertical-align: middle;
+		}
+
+		.arrow {
+			margin-top: 7px;
+			font-family: 'afterlogic';
 		}
 	}
 }

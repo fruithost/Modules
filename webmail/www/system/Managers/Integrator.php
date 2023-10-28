@@ -8,11 +8,9 @@
 namespace Aurora\System\Managers;
 
 /**
- * Aurora\System\Managers\Integrator class summary
- *
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @package Integrator
  */
@@ -69,11 +67,11 @@ class Integrator extends AbstractManager
 	public static function getInstance()
 	{
 		static $oInstance = null;
-		if(is_null($oInstance)) 
-		{ 
-			$oInstance = new self(); 
-		} 
-		return $oInstance; 
+		if(is_null($oInstance))
+		{
+			$oInstance = new self();
+		}
+		return $oInstance;
 	}
 
 	/**
@@ -112,16 +110,16 @@ class Integrator extends AbstractManager
 
 	/**
 	 * @TODO use tenants modules if exist
-	 * 
+	 *
 	 * @return string
 	 */
 	public function compileTemplates()
 	{
 		$sHash = \Aurora\System\Api::GetModuleManager()->GetModulesHash();
-		
+
 		$sCacheFileName = '';
 		$oSettings =& \Aurora\System\Api::GetSettings();
-		if ($oSettings->GetConf('CacheTemplates', $this->bCache))
+		if ($oSettings && $oSettings->GetConf('CacheTemplates', $this->bCache))
 		{
 			$sCacheFileName = 'templates-'.md5(\Aurora\System\Api::Version().$sHash).'.cache';
 			$sCacheFullFileName = \Aurora\System\Api::DataPath().'/cache/'.$sCacheFileName;
@@ -133,7 +131,7 @@ class Integrator extends AbstractManager
 
 		$sResult = '';
 		$sPath =\Aurora\System\Api::WebMailPath().'modules';
-		
+
 		$aModuleNames = \Aurora\System\Api::GetModuleManager()->GetAllowedModulesName();
 
 		foreach ($aModuleNames as $sModuleName)
@@ -175,13 +173,13 @@ class Integrator extends AbstractManager
 
 		$sResult = trim($sResult);
 		$oSettings =& \Aurora\System\Api::GetSettings();
-		if ($oSettings->GetConf('CacheTemplates', $this->bCache))
+		if ($oSettings && $oSettings->GetConf('CacheTemplates', $this->bCache))
 		{
 			if (!is_dir(dirname($sCacheFullFileName)))
 			{
 				mkdir(dirname($sCacheFullFileName), 0777, true);
 			}
-			
+
 			$sResult = '<!-- '.$sCacheFileName.' -->'.$sResult;
 			file_put_contents($sCacheFullFileName, $sResult);
 		}
@@ -219,9 +217,9 @@ class Integrator extends AbstractManager
 		return $sLanguage;
 	}
 
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public function GetUser($iUserId)
 	{
@@ -229,15 +227,15 @@ class Integrator extends AbstractManager
 		$oUser = \Aurora\System\Managers\Eav::getInstance()->getEntity($iUserId, \Aurora\Modules\Core\Classes\User::class);
 
 		if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
-		{	
+		{
 			$mResult = $oUser;
 		}
 
 		return $mResult;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public function GetAdminUser()
 	{
@@ -245,7 +243,7 @@ class Integrator extends AbstractManager
 		$oUser->EntityId = -1;
 		$oUser->Role = \Aurora\System\Enums\UserRole::SuperAdmin;
 		$oUser->PublicId = 'Administrator';
-		
+
 		return $oUser;
 	}
 
@@ -259,12 +257,12 @@ class Integrator extends AbstractManager
 	{
 		$sLanguage = $this->validatedLanguageValue($sLanguage);
 		$sResult = "";
-		
+
 		$sHash = \Aurora\System\Api::GetModuleManager()->GetModulesHash();
 
 		$sCacheFileName = '';
 		$oSettings =& \Aurora\System\Api::GetSettings();
-		if ($oSettings->GetConf('CacheLangs', $this->bCache))
+		if ($oSettings && $oSettings->GetConf('CacheLangs', $this->bCache))
 		{
 			$sCacheFileName = 'langs-' . $sLanguage . '-' . md5(\Aurora\System\Api::Version().$sHash) . '.cache';
 			$sCacheFullFileName = \Aurora\System\Api::DataPath() . '/cache/' . $sCacheFileName;
@@ -273,7 +271,7 @@ class Integrator extends AbstractManager
 				$sResult = file_get_contents($sCacheFullFileName);
 			}
 		}
-		
+
 		if ($sResult === "")
 		{
 			$aResult = array();
@@ -290,7 +288,7 @@ class Integrator extends AbstractManager
 				if (file_exists($sFileName))
 				{
 					$aLangContent = @parse_ini_string(file_get_contents($sFileName), true);
-				} 
+				}
 				else if (file_exists($sPath . '/' . $sModuleName . '/i18n/English.ini'))
 				{
 					$aLangContent = @parse_ini_string(file_get_contents($sPath . '/' . $sModuleName . '/i18n/English.ini'), true);
@@ -308,11 +306,11 @@ class Integrator extends AbstractManager
 					}
 				}
 			}
-			
+
 			$sResult .= json_encode($aResult);
-			
+
 			$oSettings =& \Aurora\System\Api::GetSettings();
-			if ($oSettings->GetConf('CacheLangs', $this->bCache))
+			if ($oSettings && $oSettings->GetConf('CacheLangs', $this->bCache))
 			{
 				if (!is_dir(dirname($sCacheFullFileName)))
 				{
@@ -347,7 +345,7 @@ class Integrator extends AbstractManager
 		}
 		return $oUser;
 	}
-	
+
 	/**
 	 * @param int $iUserId Default value is empty string.
 	 *
@@ -355,7 +353,7 @@ class Integrator extends AbstractManager
 	 */
 	public function getAuthenticatedUserByIdHelper($iUserId)
 	{
-		
+
 		$oUser = null;
 		if (0 < $iUserId)
 		{
@@ -368,12 +366,12 @@ class Integrator extends AbstractManager
 		return $oUser;
 	}
 
-	
+
 	public function validateAuthToken($sAuthToken)
 	{
 		return (\Aurora\System\Api::UserSession()->Get($sAuthToken) !== false);
 	}
-	
+
 	/**
 	 * @param string $sAuthToken Default value is empty string.
 	 *
@@ -389,8 +387,8 @@ class Integrator extends AbstractManager
 		$aAccountHashTable = \Aurora\System\Api::UserSession()->Get($sAuthToken);
 		if (is_array($aAccountHashTable) && isset($aAccountHashTable['token']) &&
 			'auth' === $aAccountHashTable['token'] && 0 < strlen($aAccountHashTable['id'])) {
-			
-			$oUser = $this->GetUser((int) $aAccountHashTable['id']);				
+
+			$oUser = $this->GetUser((int) $aAccountHashTable['id']);
 			if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
 			{
 				$aInfo = array(
@@ -434,39 +432,12 @@ class Integrator extends AbstractManager
 	}
 
 	/**
-	 * @return \Aurora\Modules\StandardAuth\Classes\Account|null
-	 */
-	public function getAuthenticatedDefaultAccount($sAuthToken = '')
-	{
-		$oResult = null;
-		$iUserId = \Aurora\System\Api::getAuthenticatedUserId($sAuthToken);
-		if (0 < $iUserId)
-		{
-//			$oApiUsers =\Aurora\System\Api::GetSystemManager('users');
-			if ($oApiUsers)
-			{
-				$iAccountId = $oApiUsers->getDefaultAccountId($iUserId);
-				if (0 < $iAccountId)
-				{
-					$oAccount = $oApiUsers->getAccountById($iAccountId);
-					$oResult = $oAccount instanceof \Aurora\Modules\StandardAuth\Classes\Account ? $oAccount : null;
-				}
-			}
-		}
-		else 
-		{
-			$this->logoutAccount();
-		}
-
-		return $oResult;
-	}
-
-	/**
 	 * @param int $iCode
 	 */
 	public function setLastErrorCode($iCode)
 	{
-		@\setcookie(self::TOKEN_LAST_CODE, $iCode, 0, \Aurora\System\Api::getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_LAST_CODE, $iCode, 0, \Aurora\System\Api::getCookiePath(), null,
+				\Aurora\System\Api::getCookieSecure());
 	}
 
 	/**
@@ -483,18 +454,20 @@ class Integrator extends AbstractManager
 		{
 			unset($_COOKIE[self::TOKEN_LAST_CODE]);
 		}
-		
-		@\setcookie(self::TOKEN_LAST_CODE, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
+
+		@\setcookie(self::TOKEN_LAST_CODE, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath(),
+				null, \Aurora\System\Api::getCookieSecure());
 	}
 
 	/**
 	 * @param string $sAuthToken Default value is empty string.
-	 * 
+	 *
  	 * @return bool
 	 */
 	public function logoutAccount($sAuthToken = '')
 	{
-		@\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
+		@\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', \strtotime('-1 hour'),
+				\Aurora\System\Api::getCookiePath(), null, \Aurora\System\Api::getCookieSecure());
 		return true;
 	}
 
@@ -512,8 +485,9 @@ class Integrator extends AbstractManager
 
 		\Aurora\System\Api::LogObject($aHashTable);
 
-		$_COOKIE[self::TOKEN_HD_THREAD_ID] =\Aurora\System\Api::EncodeKeyValues($aHashTable);
-		@\setcookie(self::TOKEN_HD_THREAD_ID,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, \Aurora\System\Api::getCookiePath(), null, null, true);
+		$_COOKIE[self::TOKEN_HD_THREAD_ID] = \Aurora\System\Api::EncodeKeyValues($aHashTable);
+		@\setcookie(self::TOKEN_HD_THREAD_ID, \Aurora\System\Api::EncodeKeyValues($aHashTable), 0,
+				\Aurora\System\Api::getCookiePath(), null, \Aurora\System\Api::getCookieSecure());
 	}
 
 	/**
@@ -541,7 +515,8 @@ class Integrator extends AbstractManager
 				unset($_COOKIE[self::TOKEN_HD_THREAD_ID]);
 			}
 
-			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
+			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath(),
+					null, \Aurora\System\Api::getCookieSecure());
 		}
 
 		return $aHdThreadId;
@@ -553,7 +528,8 @@ class Integrator extends AbstractManager
 		{
 			$_COOKIE[self::TOKEN_HD_ACTIVATED] = '';
 			unset($_COOKIE[self::TOKEN_HD_ACTIVATED]);
-			@\setcookie(self::TOKEN_HD_ACTIVATED, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
+			@\setcookie(self::TOKEN_HD_ACTIVATED, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath(),
+					null, \Aurora\System\Api::getCookieSecure());
 		}
 	}
 
@@ -572,7 +548,8 @@ class Integrator extends AbstractManager
 		);
 
 		$_COOKIE[self::TOKEN_HD_ACTIVATED] =\Aurora\System\Api::EncodeKeyValues($aHashTable);
-		@\setcookie(self::TOKEN_HD_ACTIVATED,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, \Aurora\System\Api::getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_HD_ACTIVATED,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0,
+				\Aurora\System\Api::getCookiePath(), null, \Aurora\System\Api::getCookieSecure());
 	}
 
 	/**
@@ -599,7 +576,8 @@ class Integrator extends AbstractManager
 				unset($_COOKIE[self::TOKEN_HD_ACTIVATED]);
 			}
 
-			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
+			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath(),
+					null, \Aurora\System\Api::getCookieSecure());
 		}
 
 		return $sEmail;
@@ -619,12 +597,12 @@ class Integrator extends AbstractManager
 			'id' => $oAccount->IdUser,
 			'email' => $oAccount->Email
 		);
-		
+
 		$iTime = $bSignMe ? time() + 60 * 60 * 24 * 30 : 0;
 		$sAccountHashTable = \Aurora\System\Api::EncodeKeyValues($aAccountHashTable);
-		
+
 		$sAuthToken = \md5($oAccount->IdUser.$oAccount->IncomingLogin.\microtime(true).\rand(10000, 99999));
-		
+
 		return \Aurora\System\Api::Cacher()->Set('AUTHTOKEN:'.$sAuthToken, $sAccountHashTable) ? $sAuthToken : '';
 	}
 
@@ -633,13 +611,15 @@ class Integrator extends AbstractManager
 	 */
 	public function logoutHelpdeskUser()
 	{
-		@\setcookie(self::AUTH_HD_KEY, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
+		@\setcookie(self::AUTH_HD_KEY, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath(),
+				null, \Aurora\System\Api::getCookieSecure());
 		return true;
 	}
 
 	public function skipMobileCheck()
 	{
-		@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '1', 0, \Aurora\System\Api::getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '1', 0, \Aurora\System\Api::getCookiePath(),
+				null, \Aurora\System\Api::getCookieSecure());
 	}
 
 	/**
@@ -649,7 +629,8 @@ class Integrator extends AbstractManager
 	{
 		if (isset($_COOKIE[self::TOKEN_SKIP_MOBILE_CHECK]) && '1' === (string) $_COOKIE[self::TOKEN_SKIP_MOBILE_CHECK])
 		{
-			@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
+			@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath(),
+					null, \Aurora\System\Api::getCookieSecure());
 			return 0;
 		}
 
@@ -663,7 +644,8 @@ class Integrator extends AbstractManager
 	 */
 	public function setMobile($bMobile)
 	{
-		@\setcookie(self::MOBILE_KEY, $bMobile ? '1' : '0', \strtotime('+200 days'), \Aurora\System\Api::getCookiePath());
+		@\setcookie(self::MOBILE_KEY, $bMobile ? '1' : '0', \strtotime('+200 days'), \Aurora\System\Api::getCookiePath(),
+				null, \Aurora\System\Api::getCookieSecure());
 		return true;
 	}
 
@@ -676,7 +658,7 @@ class Integrator extends AbstractManager
 			if (isset($aHelpdeskHashTable['sign-me']) && $aHelpdeskHashTable['sign-me'])
 			{
 				@\setcookie(self::AUTH_HD_KEY,\Aurora\System\Api::EncodeKeyValues($aHelpdeskHashTable),
-					\strtotime('+30 days'), \Aurora\System\Api::getCookiePath(), null, null, true);
+					\strtotime('+30 days'), \Aurora\System\Api::getCookiePath(), null, \Aurora\System\Api::getCookieSecure());
 			}
 		}
 	}
@@ -854,10 +836,11 @@ class Integrator extends AbstractManager
 	public function getLanguageList()
 	{
 		static $aList = null;
-		
+
 		if (null === $aList)
 		{
 			$aList = array();
+			$sEnglishLang = null;
 			$sPath =\Aurora\System\Api::WebMailPath().'modules';
 
 			$aModuleNames = \Aurora\System\Api::GetModuleManager()->GetAllowedModulesName();
@@ -874,13 +857,13 @@ class Integrator extends AbstractManager
 						while (($sFile = @readdir($rDirH)) !== false)
 						{
 							$sLanguage = substr($sFile, 0, -4);
-							if ('.' !== $sFile{0} && is_file($sModuleLangsDir.'/'.$sFile) && '.ini' === substr($sFile, -4))
+							if ('.' !== $sFile[0] && is_file($sModuleLangsDir.'/'.$sFile) && '.ini' === substr($sFile, -4))
 							{
 								if (0 < strlen($sLanguage) && !in_array($sLanguage, $aList))
 								{
 									if ('english' === strtolower($sLanguage))
 									{
-										array_unshift($aList, $sLanguage);
+										$sEnglishLang = $sLanguage;
 									}
 									else
 									{
@@ -891,17 +874,23 @@ class Integrator extends AbstractManager
 						}
 						@closedir($rDirH);
 					}
-				} 
+				}
+			}
+			
+			sort($aList);
+			if ($sEnglishLang !== null)
+			{
+				array_unshift($aList, $sEnglishLang);
 			}
 		}
-		
+
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		$aLanguageList = $oModuleManager->getModuleConfigValue('Core', 'LanguageList');
 		if (is_array($aLanguageList) && count($aLanguageList) > 0)
 		{
 			$aList = array_intersect($aLanguageList, $aList);
 		}
-		
+
 		return $aList;
 	}
 
@@ -910,28 +899,30 @@ class Integrator extends AbstractManager
 	 */
 	public function getThemeList()
 	{
-		static $sList = null;
-		if (null === $sList)
+		static $aList = null;
+		if (null === $aList)
 		{
-			$sList = array();
+			$aList = array();
 
 			$oModuleManager = \Aurora\System\Api::GetModuleManager();
-			$aThemes = $oModuleManager->getModuleConfigValue('CoreWebclient', 'ThemeList');
+			$sCoreWebclientModule = \Aurora\System\Api::IsMobileApplication() ? 'CoreMobileWebclient' : 'CoreWebclient';
+			$aThemes = $oModuleManager->getModuleConfigValue($sCoreWebclientModule, 'ThemeList');
 			$sDir =\Aurora\System\Api::WebMailPath().'static/styles/themes/';
 
 			if (is_array($aThemes))
 			{
+				$sPostfix = \Aurora\System\Api::IsMobileApplication() ? '-mobile' : '';
 				foreach ($aThemes as $sTheme)
 				{
-					if (file_exists($sDir.'/'.$sTheme.'/styles.css'))
+					if (file_exists($sDir . '/' . $sTheme . '/styles' . $sPostfix . '.css'))
 					{
-						$sList[] = $sTheme;
+						$aList[] = $sTheme;
 					}
 				}
 			}
 		}
 
-		return $sList;
+		return $aList;
 	}
 
 	/**
@@ -947,10 +938,10 @@ class Integrator extends AbstractManager
 				'PublicId' => '',
 			)
 		);
-		
+
 		// AuthToken reads from cookie for HTML
 		$sAuthToken = isset($_COOKIE[\Aurora\System\Application::AUTH_TOKEN_KEY]) ? $_COOKIE[\Aurora\System\Application::AUTH_TOKEN_KEY] : '';
-		
+
 		$oUser = null;
 		try
 		{
@@ -965,19 +956,15 @@ class Integrator extends AbstractManager
 			try
 			{
 				$oDecorator = \Aurora\System\Api::GetModuleDecorator($sModuleName);
-					
+
 				$aModuleAppData = $oDecorator->GetSettings();
 				if (is_array($aModuleAppData))
 				{
 					$aAppData[$oModule::GetName()] = $aModuleAppData;
 				}
-				
-				$aModuleErrors = $oDecorator->GetErrors();
-				if (is_array($aModuleErrors))
-				{
-					$aAppData['module_errors'][$oModule::GetName()] = $aModuleErrors;
-				}
-				
+
+				$aAppData['module_errors'][$oModule::GetName()] =  $oDecorator->GetErrors();
+
 				$aAdditionalEntityFieldsToEdit = $oDecorator->GetAdditionalEntityFieldsToEdit();
 				if (is_array($aAdditionalEntityFieldsToEdit) && !empty($aAdditionalEntityFieldsToEdit))
 				{
@@ -988,7 +975,7 @@ class Integrator extends AbstractManager
 			{
 			}
 		}
-		
+
 		if ($oUser)
 		{
 			$aAppData['User'] = array(
@@ -1051,21 +1038,22 @@ class Integrator extends AbstractManager
 		{
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
 			$oModuleManager = \Aurora\System\Api::GetModuleManager();
-			
+
 			$sLanguage = \Aurora\System\Api::GetLanguage();
 			$sLanguage = $this->validatedLanguageValue($sLanguage);
-			
-			$sTheme = $oUser ? $oUser->{'CoreWebclient::Theme'} : $oModuleManager->getModuleConfigValue('CoreWebclient', 'Theme');
+
+			$sCoreWebclientModule = \Aurora\System\Api::IsMobileApplication() ? 'CoreMobileWebclient' : 'CoreWebclient';
+			$sTheme = $oUser ? $oUser->{$sCoreWebclientModule . '::Theme'} : $oModuleManager->getModuleConfigValue($sCoreWebclientModule, 'Theme');
 			$sTheme = $this->validatedThemeValue($sTheme);
 		}
-		
+
 		/*** temporary fix to the problems in mobile version in rtl mode ***/
-		
+
 		if (in_array($sLanguage, array('Arabic', 'Hebrew', 'Persian')) /* && $oApiCapability->isNotLite()*/ && 1 === $this->isMobile()) // todo
 		{
 			$sLanguage = 'English';
 		}
-		
+
 		/*** end of temporary fix to the problems in mobile version in rtl mode ***/
 
 		return array($sLanguage, $sTheme);
@@ -1073,7 +1061,7 @@ class Integrator extends AbstractManager
 
 	/**
 	 * Indicates if rtl interface should be turned on.
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function IsRtl()
@@ -1081,10 +1069,10 @@ class Integrator extends AbstractManager
 		list($sLanguage, $sTheme) = $this->getThemeAndLanguage();
 		return \in_array($sLanguage, array('Arabic', 'Hebrew', 'Persian'));
 	}
-	
+
 	/**
 	 * Returns css links for building in html.
-	 * 
+	 *
 	 * @return string
 	 */
 	public function buildHeadersLink()
@@ -1093,7 +1081,7 @@ class Integrator extends AbstractManager
 		$sMobileSuffix = \Aurora\System\Api::IsMobileApplication() ? '-mobile' : '';
 //		$sTenantName = \Aurora\System\Api::getTenantName();
 //		$oSettings =&\Aurora\System\Api::GetSettings();
-		
+
 //		We don't have ability to have different modules set for different tenants for now.
 //		So we don't use tenants folder for static files.
 //		if ($oSettings->GetConf('EnableMultiTenant') && $sTenantName)
@@ -1108,10 +1096,10 @@ class Integrator extends AbstractManager
 '<link type="text/css" rel="stylesheet" href="./static/styles/libs/libs.css'.'?'.\Aurora\System\Api::VersionJs().'" />'.
 '<link type="text/css" rel="stylesheet" href="./static/styles/themes/'.$sTheme.'/styles'.$sMobileSuffix.'.css'.'?'.\Aurora\System\Api::VersionJs().'" />';
 //		}
-		
+
 		return $sS;
 	}
-	
+
 	public function GetClientModuleNames()
 	{
 		$aClientModuleNames = [];
@@ -1121,11 +1109,11 @@ class Integrator extends AbstractManager
 		foreach ($aModuleNames as $sModuleName)
 		{
 			$this->populateClientModuleNames($sModulesPath, $sModuleName, $bIsMobileApplication, $aClientModuleNames, false);
-		}		
-		
+		}
+
 		return $aClientModuleNames;
 	}
-	
+
 	public function GetBackendModules()
 	{
 		$aBackendModuleNames = [];
@@ -1140,7 +1128,7 @@ class Integrator extends AbstractManager
 		}
 		return $aBackendModuleNames;
 	}
-	
+
 	/**
 	 * Returns JS links for building in HTML.
 	 * @param array $aConfig
@@ -1150,19 +1138,19 @@ class Integrator extends AbstractManager
 	{
 		$oSettings =& \Aurora\System\Api::GetSettings();
 		$sPostfix = '';
-		
-		if ($oSettings->GetConf('UseAppMinJs', false))
+
+		if ($oSettings && $oSettings->GetConf('UseAppMinJs', false))
 		{
 			$sPostfix .= '.min';
 		}
-		
+
 //		We don't have ability to have different modules set for different tenants for now.
 //		So we don't use tenants folder for static files.
 //		$sTenantName = \Aurora\System\Api::getTenantName();
 //		$sJsScriptPath = $oSettings->GetConf('EnableMultiTenant') && $sTenantName ? "./tenants/".$sTenantName."/" : "./";
-		
+
 		$sJsScriptPath = "./";
-		
+
 		$aClientModuleNames = [];
 		if (isset($aConfig['modules_list']))
 		{
@@ -1172,17 +1160,17 @@ class Integrator extends AbstractManager
 		{
 			$aClientModuleNames = $this->GetClientModuleNames();
 		}
-		
+
 		$bIsPublic = isset($aConfig['public_app']) ? (bool)$aConfig['public_app'] : false;
 		$bIsNewTab = isset($aConfig['new_tab']) ? (bool)$aConfig['new_tab'] : false;
-		
+
 		return '<script>window.isPublic = '.($bIsPublic ? 'true' : 'false').
 				'; window.isNewTab = '.($bIsNewTab ? 'true' : 'false').
 				'; window.aAvailableModules = ["'.implode('","', $aClientModuleNames).'"]'.
 				'; window.aAvailableBackendModules = ["'.implode('","', $this->GetBackendModules()).'"];</script>
 		<script src="'.$sJsScriptPath."static/js/app".$sPostfix.".js?".\Aurora\System\Api::VersionJs().'"></script>';
 	}
-	
+
 	/**
 	 * Populates array with names of modules that should be loaded on client side.
 	 * @param string $sModulesPath Path to folder with modules.
@@ -1196,7 +1184,7 @@ class Integrator extends AbstractManager
 		if (!in_array($sModuleName, $aClientModuleNames))
 		{
 			$bAddModuleName = $bAddAnyway;
-			
+
 			$oModuleManager = \Aurora\System\Api::GetModuleManager();
 			if (!$bAddModuleName && $bIsMobileApplication)
 			{
@@ -1206,7 +1194,7 @@ class Integrator extends AbstractManager
 			{
 				$bAddModuleName = $oModuleManager->getModuleConfigValue($sModuleName, 'IncludeInDesktop', true);
 			}
-			
+
 			if ($bAddModuleName && \file_exists($sModulesPath . $sModuleName . '/js/manager.js'))
 			{
 				$aClientModuleNames[] = $sModuleName;
@@ -1224,10 +1212,10 @@ class Integrator extends AbstractManager
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns application html.
-	 * 
+	 *
 	 * @param array $aConfig
 	 * @return string
 	 */
@@ -1239,10 +1227,10 @@ class Integrator extends AbstractManager
 			$this->compileLanguage($sLanguage)."\r\n".
 			$this->compileAppData()."\r\n".
 			$this->compileJS($aConfig).
-			"\r\n".'<!-- '.\Aurora\System\Api::Version().' -->'
+			"\r\n".'<!-- '.\Aurora\System\Api::VersionFull().' -->'
 		;
 	}
-	
+
 	public function GetModulesForEntry($sEntryModule)
 	{
 		$aResModuleList = [$sEntryModule];
@@ -1264,7 +1252,7 @@ class Integrator extends AbstractManager
 				}
 			}
 		}
-		
+
 		return $aResModuleList;
 	}
 }

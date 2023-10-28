@@ -93,7 +93,7 @@
 					<div>
 						<span class="value" data-bind="text: subject"></span>
 						<br/>
-						<span class="value" data-bind="text: '(' + start + ' - ' + end + ')'"></span>
+						<span class="link" data-bind="text: '(' + start + ' - ' + end + ')', click: function(oEvent) { $root.viewEvent(oEvent.calendarId, oEvent.id, oEvent.start); }"></span>
 						<br/><br/>
 					</div>
 				</div>

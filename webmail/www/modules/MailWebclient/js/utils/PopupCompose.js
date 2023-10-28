@@ -19,24 +19,26 @@ PopupComposeUtils.composeMessage = function ()
 };
 
 /**
+ * @param {int} iAccountId
  * @param {string} sFolder
  * @param {string} sUid
  */
-PopupComposeUtils.composeMessageFromDrafts = function (sFolder, sUid)
+PopupComposeUtils.composeMessageFromDrafts = function (iAccountId, sFolder, sUid)
 {
-	var aParams = LinksUtils.getComposeFromMessage('drafts', sFolder, sUid);
+	var aParams = LinksUtils.getComposeFromMessage('drafts', iAccountId, sFolder, sUid);
 	aParams.shift();
 	Popups.showPopup(GetComposePopup(), [aParams]);
 };
 
 /**
  * @param {string} sReplyType
+ * @param {int} iAccountId
  * @param {string} sFolder
  * @param {string} sUid
  */
-PopupComposeUtils.composeMessageAsReplyOrForward = function (sReplyType, sFolder, sUid)
+PopupComposeUtils.composeMessageAsReplyOrForward = function (sReplyType, iAccountId, sFolder, sUid)
 {
-	var aParams = LinksUtils.getComposeFromMessage(sReplyType, sFolder, sUid);
+	var aParams = LinksUtils.getComposeFromMessage(sReplyType, iAccountId, sFolder, sUid);
 	aParams.shift();
 	Popups.showPopup(GetComposePopup(), [aParams]);
 };
@@ -51,12 +53,19 @@ PopupComposeUtils.composeMessageToAddresses = function (sToAddresses)
 	Popups.showPopup(GetComposePopup(), [aParams]);
 };
 
+PopupComposeUtils.composeMessageWithData = function (oData)
+{
+	var aParams = LinksUtils.getComposeWithData(oData);
+	aParams.shift();
+	Popups.showPopup(GetComposePopup(), [aParams]);
+};
+
 /**
  * @param {Object} oMessage
  */
 PopupComposeUtils.composeMessageWithEml = function (oMessage)
 {
-	var aParams = LinksUtils.getComposeWithEmlObject(oMessage.folder(), oMessage.uid(), oMessage);
+	var aParams = LinksUtils.getComposeWithEmlObject(oMessage.accountId(), oMessage.folder(), oMessage.uid(), oMessage);
 	aParams.shift();
 	Popups.showPopup(GetComposePopup(), [aParams]);
 };
@@ -71,9 +80,13 @@ PopupComposeUtils.composeMessageWithAttachments = function (aFileItems)
 	Popups.showPopup(GetComposePopup(), [aParams]);
 };
 
-PopupComposeUtils.closeComposePopup = function ()
+PopupComposeUtils.closeComposePopup = function (iAccountId)
 {
-	Popups.showPopup(GetComposePopup(), [['close']]);
+	var ComposePopup = GetComposePopup();
+	if (ComposePopup.opened() && (!iAccountId || ComposePopup.senderAccountId() === iAccountId))
+	{
+		Popups.showPopup(ComposePopup, [['close']]);
+	}
 };
 
 module.exports = PopupComposeUtils;

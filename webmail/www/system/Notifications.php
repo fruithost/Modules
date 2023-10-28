@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This code is licensed under AGPLv3 license or Afterlogic Software License
  * if commercial version of the product was purchased.
  * For full statements of the licenses see LICENSE-AFTERLOGIC and LICENSE-AGPL3 files.
@@ -10,7 +10,7 @@ namespace Aurora\System;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2018, Afterlogic Corp.
+ * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
  * @category Core
  */
@@ -25,12 +25,13 @@ class Notifications
 	const CaptchaError = 107;
 	const AccessDenied = 108;
 	const UnknownEmail = 109;
-	const UserNotAllowed = 110;
+	const HttpsApiAccess = 110;
 	const UserAlreadyExists = 111;
 	const SystemNotConfigured = 112;
 	const ModuleNotFound = 113;
 	const MethodNotFound = 114;
 	const LicenseLimit = 115;
+	const MethodAccessDenied= 116;
 
 	const CanNotSaveSettings = 501;
 	const CanNotChangePassword = 502;
@@ -71,6 +72,7 @@ class Notifications
 	const FileAlreadyExists = 813;
 	const FileNotFound = 814;
 	const CanNotUploadFileLimit = 815;
+	const CanNotUploadFileErrorData = 816;
 
 	const MailServerError = 901;
 	const UnknownError = 999;

@@ -90,7 +90,12 @@ var inputosaurustext = {
 		},
 		sourceResponseItems: null,
 		selectedItem: null,
-		autoCompleteDeleteItem: function () {}
+		autoCompleteDeleteItem: function () {},
+
+		allowFlip: false,
+		disableCalcMeasurements: false,
+		allowEditCapsules: true,
+		filterValues: null // should be a function
 	},
 
 	_create: function(e) {
@@ -173,13 +178,18 @@ var inputosaurustext = {
 		if(this.options.autoCompleteSource){
 			var
 				widget = this,
-				sOrigSearch = ''
+				sOrigSearch = '',
+				oPosition = {
+					of : this.elements.ul
+				}
 			;
 
+			if (this.options.allowFlip) {
+				oPosition['collision'] = 'flip';
+			}
+
 			this.elements.input.autocomplete({
-				position : {
-					of : this.elements.ul
-				},
+				position : oPosition,
 				source : function (oRequest, fResponse) {
 					sOrigSearch = oRequest.term;
 					widget.options.sourceResponse = fResponse;
@@ -199,6 +209,10 @@ var inputosaurustext = {
 					}
 
 					ev.preventDefault();
+					if (_.isFunction(widget.options.addRecipientInfo))
+					{
+						widget.options.addRecipientInfo(ui.item);
+					}
 					widget.elements.input.val(ui.item.value);
 					widget.parseInput();
 				},
@@ -211,11 +225,13 @@ var inputosaurustext = {
 
 					if (menu)
 					{
-						menu.element.width(0 + widget.elements.ul.outerWidth(false) - 20);
+						if (!widget.options.disableCalcMeasurements) {
+							menu.element.width(0 + widget.elements.ul.outerWidth(false) - 20);
 
-						// set max-height
-						maxHeight = $(window).height() - widget.elements.ul.outerHeight() - widget.elements.ul.offset().top + window.pageYOffset;
-						menu.element.css('max-height', maxHeight > 200 ? maxHeight - 50 : maxHeight - 2);
+							// set max-height
+							maxHeight = $(window).height() - widget.elements.ul.outerHeight() - widget.elements.ul.offset().top + window.pageYOffset;
+							menu.element.css('max-height', maxHeight > 200 ? maxHeight - 50 : maxHeight - 2);
+						}
 
 						// auto-activate the result if it's the only one
 						if(widget.options.activateFinalResult)
@@ -223,7 +239,7 @@ var inputosaurustext = {
 							$menuItems = menu.element.find('li');
 
 							// activate single item to allow selection upon pressing 'Enter'
-							if($menuItems.size() === 1){
+							if($menuItems.length === 1){
 								menu[menu.activate ? 'activate' : 'focus']($.Event('click'), $menuItems);
 							}
 						}
@@ -267,8 +283,8 @@ var inputosaurustext = {
 			sLastSymbol = (val && val.length > 0) ? val[val.length - 1] : '',
 			aRecipients = AddressUtils.getArrayRecipients(val, false),
 			bPressedDelimiter = aRecipients.length > 0 && $.inArray(sLastSymbol, [',', ';', ' ']) > -1,
-			bPressedEnter = !ev || ev.which === $.ui.keyCode.ENTER && !$('.ui-menu-item .ui-state-focus').size() && !$('#ui-active-menuitem').size(),
-			bLostFocus = ev && ev.type === 'blur' && !$('#ui-active-menuitem').size();
+			bPressedEnter = !ev || ev.which === $.ui.keyCode.ENTER && !$('.ui-menu-item .ui-state-focus').length && !$('#ui-active-menuitem').length,
+			bLostFocus = ev && ev.type === 'blur' && !$('#ui-active-menuitem').length;
 
 		if (bPressedDelimiter || bPressedEnter || bLostFocus)
 		{
@@ -291,6 +307,10 @@ var inputosaurustext = {
 		{
 			widget.elements.input.val('');
 			widget._resizeInput();
+			if (_.isFunction(widget.options.filterValues))
+			{
+				values = widget.options.filterValues(values);
+			}
 			widget._setChosen(values);
 		}
 		widget._resetPlaceholder();
@@ -437,7 +457,7 @@ var inputosaurustext = {
 		// IE goes back in history if the event isn't stopped
 		ev.stopPropagation();
 
-		if((!$(ev.currentTarget).val() || (('selectionStart' in ev.currentTarget) && ev.currentTarget.selectionStart === 0 && ev.currentTarget.selectionEnd === 0)) && lastTag.size()){
+		if((!$(ev.currentTarget).val() || (('selectionStart' in ev.currentTarget) && ev.currentTarget.selectionStart === 0 && ev.currentTarget.selectionEnd === 0)) && lastTag.length){
 			ev.preventDefault();
 			lastTag.find('a').focus();
 		}
@@ -445,11 +465,16 @@ var inputosaurustext = {
 	},
 
 	_editTag : function(ev) {
-		var widget = (ev && ev.data.widget) || this,
+		var widget = (ev && ev.data.widget) || this;
+		if (!widget.options || !widget.options.allowEditCapsules) {
+			return;
+		}
+
+		var
 			tagName = '',
 			$li = $(ev.currentTarget).closest('li'),
-			tagKey = $li.data('inputosaurus');
-
+			tagKey = $li.data('inputosaurus')
+		;
 		if (!tagKey) {
 			return;
 		}
@@ -607,7 +632,7 @@ var inputosaurustext = {
 	_setChosen : function(valArr) {
 		var self = this;
 
-		if (!_.isArray(valArr)) {
+		if (!_.isArray(valArr) || valArr.length === 0) {
 			return;
 		}
 
@@ -688,19 +713,20 @@ var inputosaurustext = {
 	_createTag: function (key, fullValue) {
 		var
 			oEmail = AddressUtils.getEmailParts(fullValue, true),
-			name = oEmail.name ? oEmail.name : oEmail.email,
+			name = TextUtils.encodeHtml(oEmail.name ? oEmail.name : oEmail.email),
 			title = fullValue ?
 				' title="' + TextUtils.i18n('%MODULENAME%/ACTION_EDIT_ADDRESS', {'EMAIL': fullValue.replace(/"/g, '&quot;')}) + '"' :
 				'',
 			deleteTitle = TextUtils.i18n('%MODULENAME%/ACTION_DELETE_ADDRESS'),
 			deleteHtml = '<a href="javascript:void(0);" class="ficon" title="' + deleteTitle + '">&#x2716;</a>',
 			li = null,
-			widget = this
+			widget = this,
+			sKeyHtml = (_.isFunction(widget.options.getRecipientPgpKeyHtml)) ? widget.options.getRecipientPgpKeyHtml(fullValue) : ''
 		;
 
 		if (name !== undefined)
 		{
-			li = $('<li class="address_capsule" data-inputosaurus="' + key + '"' + title + '>' + deleteHtml + '<span>' + name + '</span></li>');
+			li = $('<li class="address_capsule" data-inputosaurus="' + key + '"' + title + '>' + deleteHtml + '<span>' + name + '</span>' + sKeyHtml + '</li>');
 			if (!widget.options.mobileDevice)
 			{
 				li.data('full', fullValue);
@@ -753,14 +779,17 @@ var inputosaurustext = {
 	_removeLiTag : function ($li, widget) {
 		var key = $li.data('inputosaurus'),
 			indexFound = false;
-
+	
 		$.each(widget._chosenValues, function(k,v) {
 			if(key === v.key){
 				indexFound = k;
 			}
 		});
 
-		indexFound !== false && widget._chosenValues.splice(indexFound, 1);
+		if (indexFound !== false)
+		{
+			widget._chosenValues.splice(indexFound, 1);
+		}
 
 		widget._setValue(widget._buildValue());
 

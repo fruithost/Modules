@@ -1,61 +1,210 @@
-<div class="panel_top">
-	<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_SETTINGS_TAB'}"></h2>
+<div class="panel_top panel_security_two_factor" data-bind="visible: visibleHeading">
+	<h2 class="settings_heading">
+		<span class="back-to-security-icon" data-bind="visible: passwordVerified, click: clearAll, customTooltip: '%MODULENAME%/ACTION_BACK'"></span>
+		<span data-bind="i18n: {'key': '%MODULENAME%/HEADING_SETTINGS_TAB'}"></span>
+	</h2>
 </div>
 
-<div class="panel_center">
+<div class="panel_center panel_security_two_factor">
 	<div class="fields">
-		<div class="fieldset" data-bind="visible: !isEnabledTwoFactorAuth() && !isShowSecret()">
-			<div class="buttons">
-				<span class="button" data-bind="click: confirmePassword" style="float: left;">
-					<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_ENABLE_TWOFACTORAUTH'}"></span>
-				</span>
-			</div>
-			<div class="row">
-				<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/HINT_ABOUT_TWOFACTORAUTH'}"></div>
-			</div>
-		</div>
-		<div class="fieldset" data-bind="visible: isEnabledTwoFactorAuth() && !isShowSecret()">
-			<div class="buttons">
-				<span class="button" data-bind="click: confirmePassword" style="float: left;">
-					<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_CONFIGURE'}"></span>
-				</span>
-			</div>
-			<div class="row">
-				<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/HINT_ABOUT_TWOFACTORAUTH_ENABLED'}"></div>
-			</div>
-		</div>
-		<div class="fieldset" data-bind="visible: isShowSecret()">
-			<div class="buttons" data-bind="visible: isEnabledTwoFactorAuth()">
-				<span class="button" data-bind="click: disable" style="float: left;">
-					<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_DISABLE'}"></span>
-				</span>
-			</div>
-			<div class="row">
-				<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/HINT_ABOUT_TWOFACTORAUTH_USE'}"></div>
-			</div>
-			<div class="fieldgroup">
-				<h2 data-bind="i18n: {'key': '%MODULENAME%/LABEL_QR_CODE'}"></h2>
-				<span class="QRCode">
-					<img data-bind="attr: {src: QRCodeSrc}" />
-				</span>
-			</div>
-			<div class="fieldgroup">
-				<h2 data-bind="i18n: {'key': '%MODULENAME%/LABEL_SECRET_KEY'}"></h2>
-				<span class="secret" data-bind="text: secret"></span>
-			</div>
-			<div class="fieldgroup">
-				<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/HINT_PIN_DESCRIPTION'}"></div>
-				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_PIN'}"></span>
-				<input id="pin" class="value input" type="text" data-bind="value: pin, valueUpdate: 'afterkeydown', onEnter: validatePin">
+		<!-- ko if: !passwordVerified() -->
+			<div class="fieldset" data-bind="visible: (bAllowSecurityKeys || bAllowAuthenticatorApp) && !isEnabledTwoFactorAuth()">
+				<div class="row">
+					<h3>
+						<span data-bind="i18n: {'key': '%MODULENAME%/HEADING_TWA_VERIFICATION'}"></span>
+					</h3>
+				</div>
+				<div class="row hint">
+					<span data-bind="i18n: {'key': '%MODULENAME%/HINT_ABOUT_TWOFACTORAUTH'}"></span>
+				</div>
 				<div class="buttons">
-					<span class="button" data-bind="click: validatePin, visible: !isValidatingPin()">
-						<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}"></span>
+					<span class="button" data-bind="click: confirmPassword">
+						<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_ENABLE_TWOFACTORAUTH'}"></span>
 					</span>
-					<span class="button" data-bind="visible: isValidatingPin()">
-						<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}"></span>
+					<span class="button contour_button" data-bind="click: disableShowRecommendation, visible: showRecommendationToConfigure">
+						<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_REFUSE_CONFIGURE'}"></span>
 					</span>
 				</div>
 			</div>
-		</div>
+			<div class="fieldset" data-bind="visible: (bAllowSecurityKeys || bAllowAuthenticatorApp) && isEnabledTwoFactorAuth()">
+				<div class="row">
+					<h3>
+						<span data-bind="i18n: {'key': '%MODULENAME%/HEADING_TWA_VERIFICATION'}"></span>
+					</h3>
+				</div>
+				<div class="row hint">
+					<span data-bind="i18n: {'key': '%MODULENAME%/HINT_ABOUT_TWOFACTORAUTH_ENABLED'}"></span>
+				</div>
+				<div class="buttons">
+					<span class="button" data-bind="click: confirmPassword">
+						<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_CONFIGURE'}"></span>
+					</span>
+				</div>
+			</div>
+		<!-- /ko -->
+		
+		<!-- ko if: passwordVerified() -->
+			<div class="fieldset">
+				<div class="row hint">
+					<span data-bind="i18n: {'key': '%MODULENAME%/HINT_TWA_OPTIONS'}"></span>
+				</div>
+			</div>
+
+			<div class="fieldset" data-bind="visible: bAllowSecurityKeys">
+				<div class="fieldgroup">
+					<div class="row">
+						<h3>
+							<span data-bind="i18n: {'key': '%MODULENAME%/HEADING_SECURITY_KEYS'}"></span>
+							<label class="custom_checkbox round checked" data-bind="visible: securityKeys().length > 0">
+								<span class="icon"></span>
+							</label>
+						</h3>
+					</div>
+					<div class="row hint">
+						<span data-bind="i18n: {'key': '%MODULENAME%/HINT_SECURITY_KEYS'}"></span>
+					</div>
+					<div class="row folders" data-bind="visible: securityKeys().length > 0">
+						<div class="folders items_list">
+							<div data-bind="foreach: securityKeys">
+								<div class="item canSelect">
+									<span class="title">
+										<span class="controls">
+											<span class="button rename" data-bind="
+													click: function () { $parent.askNewSecurityKeyName(Id, keyName()); },
+													customTooltip: '%MODULENAME%/ACTION_RENAME'">
+											</span>
+											<span class="button delete" data-bind="
+													click: function () { $parent.askRemoveSecurityKey(Id, keyName()); },
+													customTooltip: 'COREWEBCLIENT/ACTION_DELETE'">
+											</span>
+										</span>
+										<span class="name">
+											<span class="text" data-bind="text: keyName(), visible: keyName"></span>
+											<span class="text name_empty" data-bind="i18n: {'key': '%MODULENAME%/LABEL_SECURITY_KEY_EMPTY_NAME'}, visible: !keyName()"></span>
+										</span>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row buttons">
+						<span class="button" data-bind="click: addSecurityKey">
+							<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_ADD_SECURITY_KEY'}"></span>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="fieldset" data-bind="visible: bAllowAuthenticatorApp">
+				<div class="fieldgroup">
+					<div class="row">
+						<h3>
+							<span data-bind="i18n: {'key': '%MODULENAME%/HEADING_AUTHENTICATOR_APP'}"></span>
+							<label class="custom_checkbox round checked" data-bind="visible: hasAuthenticatorApp">
+								<span class="icon"></span>
+							</label>
+						</h3>
+					</div>
+					<div class="row hint">
+						<span data-bind="i18n: {'key': '%MODULENAME%/HINT_AUTHENTICATOR_APP'}"></span>
+					</div>
+					<div class="row buttons">
+						<span class="button" data-bind="click: setupAuthenticatorApp, visible: !hasAuthenticatorApp()">
+							<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_SETUP'}"></span>
+						</span>
+						<span class="button" data-bind="click: setupAuthenticatorApp, visible: hasAuthenticatorApp">
+							<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_CONFIGURE'}"></span>
+						</span>
+						<span class="button" data-bind="click: askDisableAuthenticatorApp, visible: hasAuthenticatorApp()">
+							<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_DISABLE'}"></span>
+						</span>
+					</div>
+				</div>
+			</div>
+			
+			<div class="fieldset" data-bind="visible: allowBackupCodes">
+				<div class="fieldgroup">
+					<div class="row">
+						<h3>
+							<span data-bind="i18n: {'key': '%MODULENAME%/HEADING_BACKUP_CODES'}"></span>
+							<label class="custom_checkbox round checked" data-bind="visible: hasBackupCodes">
+								<span class="icon"></span>
+							</label>
+						</h3>
+					</div>
+					<div class="row hint">
+						<span data-bind="i18n: {'key': '%MODULENAME%/INFO_SETUP_BACKUP_CODES'}, visible: !hasBackupCodes()"></span>
+					</div>
+					<div class="buttons" data-bind="visible: !hasBackupCodes()">
+						<span class="button" data-bind="click: showBackupCodes">
+							<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_SETUP'}"></span>
+						</span>
+					</div>
+					<div class="row hint">
+						<span data-bind="text: infoShowBackupCodes, visible: hasBackupCodes"></span>
+					</div>
+					<div class="buttons" data-bind="visible: hasBackupCodes">
+						<span class="button" data-bind="click: showBackupCodes">
+							<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_SHOW_CODES'}"></span>
+						</span>
+					</div>
+				</div>
+			</div>
+		<!-- /ko -->
+		
+		<!-- ko if: !passwordVerified() && allowUsedDevices() -->
+			<div class="fieldset">
+				<div class="fieldgroup">
+					<div class="row">
+						<h3>
+							<span data-bind="i18n: {'key': '%MODULENAME%/HEADING_YOUR_DEVICES'}"></span>
+						</h3>
+					</div>
+					<div class="row folders">
+						<div class="folders items_list">
+							<div data-bind="foreach: devices">
+								<div class="item canSelect">
+									<span class="title">
+										<span class="controls">
+											<span class="button delete_device" data-bind="
+													visible: !bCurrentDevice,
+													click: function () { $parent.askRemoveDevice(sDeviceId, sDeviceName); },
+													customTooltip: '%MODULENAME%/ACTION_REMOVE_DEVICE'">
+											</span>
+											<span class="button logout" data-bind="
+													visible: $parent.bAllowDeviceLogout && !bCurrentDevice && bAuthenticated,
+													click: function () { $parent.askLogoutFromDevice(sDeviceId, sDeviceName); },
+													customTooltip: '%MODULENAME%/ACTION_LOGOUT_DEVICE'">
+											</span>
+										</span>
+										<span class="name">
+											<span class="text">
+												<span class="device-active-icon" data-bind="visible: bCurrentDevice, customTooltip: '%MODULENAME%/LABEL_CURRENT_DEVICE'"></span>
+												<span data-bind="text: sDeviceName"></span>
+												<span class="text_hint" data-bind="text: sDeviceExpiresDate"></span>
+												<div class="text_hint" data-bind="text: sDeviceLastUsageDate"></div>
+											</span>
+										</span>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+					</div>
+					<div class="row hint">
+						<span data-bind="i18n: {'key': '%MODULENAME%/INFO_TRUST_DEVICES'}"></span>
+					</div>
+					<div class="row hint">
+						<span data-bind="i18n: {'key': '%MODULENAME%/INFO_REVOKE_ALL'}"></span>
+					</div>
+					<div class="row buttons">
+						<span class="button" data-bind="command: revokeAllCommand">
+							<span data-bind="i18n: {'key': '%MODULENAME%/ACTION_REVOKE_ALL'}"></span>
+						</span>
+					</div>
+				</div>
+			</div>
+		<!-- /ko -->
 	</div>
 </div>

@@ -24,14 +24,24 @@ function CHeaderItemView()
 		return TextUtils.i18n('%MODULENAME%/HEADING_UNREAD_MESSAGES_BROWSER_TAB_PLURAL', {'COUNT': this.unseenCount()}, null, this.unseenCount()) + ' - ' + AccountList.getEmail();
 	}, this);
 	
-	this.accounts = Settings.ShowEmailAsTabName ? AccountList.collection : ko.observableArray([]);
+	this.accounts = ko.computed(function () {
+		return Settings.ShowEmailAsTabName ? _.map(AccountList.collection(), function (oAccount) {
+			return {
+				bCurrent: oAccount.isCurrent(),
+				sText: Settings.UserLoginPartInAccountDropdown ? oAccount.email().split('@')[0] : oAccount.email(),
+				changeAccount: oAccount.changeAccount.bind(oAccount)
+			};
+		}) : []
+	}, this);
 	
 	if (Settings.ShowEmailAsTabName)
 	{
 		this.linkText = ko.computed(function () {
-			var sEmail = AccountList.getEmail();
-			return sEmail.length > 0 ? sEmail : TextUtils.i18n('%MODULENAME%/HEADING_BROWSER_TAB');
-		});
+			var oCurrent = _.find(this.accounts(), function (oAccountData) {
+				return oAccountData.bCurrent;
+			})
+			return oCurrent ? oCurrent.sText : TextUtils.i18n('%MODULENAME%/HEADING_BROWSER_TAB');
+		}, this);
 	}
 	
 	this.mainHref = ko.computed(function () {

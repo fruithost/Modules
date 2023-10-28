@@ -1,0 +1,48 @@
+<div class="panel_top">
+	<h2 class="settings_heading" data-bind="i18n: {'key': '%MODULENAME%/HEADING_SETTINGS_TAB'}"></h2>
+</div>
+<div class="panel_center">
+	<div class="fields">
+		<div class="fieldset">
+			<div class="row" data-bind="visible: sEntityType === 'Tenant'" style="margin-bottom: 6px;">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_TENANT_SPACE_LIMIT'}"></span>
+				<span class="value">
+					<input class="input" spellcheck="false" type="text" style="width: 150px; margin-right: 0;"
+						   data-bind="visible: !bTenantAdmin, value: tenantSpaceLimitMb, valueUpdate: 'afterkeydown', onEnter: save"/>
+					<span data-bind="visible: bTenantAdmin, text: tenantSpaceLimitMb"></span>
+					<span data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_MEGABYTES'}"></span>
+				</span>
+			</div>
+			<div class="row hint" data-bind="visible: sEntityType === 'Tenant'">
+				<span class="value" style="margin-left: 150px; display: block;" data-bind="i18n: {'key': '%MODULENAME%/HINT_TENANT_SPACE_LIMIT'}"></span>
+			</div>
+			<div class="row" style="margin-bottom: 6px;" data-bind="visible: allowChangeUserSpaceLimit() || sEntityType === 'User'">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_USER_SPACE_LIMIT'}"></span>
+				<span class="value">
+					<input class="input" spellcheck="false" type="text" style="width: 150px; margin-right: 0;"
+						   data-bind="visible: allowChangeUserSpaceLimit, value: userSpaceLimitMb, valueUpdate: 'afterkeydown', onEnter: save"/>
+					<span data-bind="visible: !allowChangeUserSpaceLimit(), text: userSpaceLimitMb"></span>
+					<span data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_MEGABYTES'}"></span>
+				</span>
+			</div>
+			<div class="row hint" data-bind="visible: sEntityType === 'Tenant' && allowChangeUserSpaceLimit()">
+				<span class="value" style="margin-left: 150px; display: block;" data-bind="i18n: {'key': '%MODULENAME%/HINT_USER_SPACE_LIMIT'}"></span>
+			</div>
+			<div class="row" data-bind="visible: sEntityType === 'Tenant'">
+				<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_ALLOCATED_TENANT_SPACE'}"></span>
+				<span class="value">
+					<span data-bind="text: allocatedTenantSpaceMb"></span>
+					<span data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_MEGABYTES'}"></span>
+				</span>
+			</div>
+		</div>
+		<div class="buttons">
+			<span class="button" data-bind="click: save, visible: !isSaving()">
+				<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}"></span>
+			</span>
+			<span class="button" data-bind="visible: isSaving()">
+				<span data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}"></span>
+			</span>
+		</div>
+	</div>
+</div>

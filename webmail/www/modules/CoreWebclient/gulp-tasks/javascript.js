@@ -1,21 +1,23 @@
-var
-    _ = require('underscore'),
-    argv = require('./argv.js'),
-	fs = require('fs'),
-    gulp = require('gulp'),
-    gutil = require('gulp-util'),
-    concat = require('gulp-concat-util'),
-    plumber = require('gulp-plumber'),
-	webpack = require('webpack'),
-    gulpWebpack = require('webpack-stream'),
-    path = require('path'),
+'use strict';
 
-    sTenantName = argv.getParameter('--tenant'),
-    sOutputName = argv.getParameter('--output'), /* app, app-mobile, app-message-newtab, app-adminpanel, app-files-pub, app-calendar-pub, app-helpdesk*/
-    aModulesNames = argv.getModules(),
+var _ = require('underscore'),
+	argv = require('./argv.js'),
+	fs = require('fs'),
+	gulp = require('gulp'),
+	log = require('fancy-log'),
+	concat = require('gulp-concat-util'),
+	plumber = require('gulp-plumber'),
+	webpack = require('webpack'),
+	gulpWebpack = require('webpack-stream'),
+	path = require('path'),
+	TerserPlugin = require('terser-webpack-plugin'),
+
+	sTenantName = argv.getParameter('--tenant'),
+	sOutputName = argv.getParameter('--output'), /* app, app-mobile, app-message-newtab, app-adminpanel, app-files-pub, app-calendar-pub, app-helpdesk*/
+	aModulesNames = argv.getModules(),
 	sBuild = argv.getParameter('--build'),
-    sPath = sTenantName ? './tenants/' + sTenantName + '/static/js/' : './static/js/',
-    crlf = '\n'
+	sPath = sTenantName ? './tenants/' + sTenantName + '/static/js/' : './static/js/',
+	crlf = '\n'
 ;
 
 if (sOutputName === '')
@@ -24,7 +26,7 @@ if (sOutputName === '')
 }
 
 function GetModuleName(sFilePath) {
-    return sFilePath.replace(/.*modules[\\/](.*?)[\\/]js.*/, "$1");
+	return sFilePath.replace(/.*modules[\\/](.*?)[\\/]js.*/, "$1");
 }
 
 var 
@@ -47,6 +49,8 @@ var
 		return sFoundedFilePath;
 	})),
 	oWebPackConfig = {
+		mode: 'none',
+		// mode: 'production',
 		stats: {
 			source: false
 		},
@@ -56,38 +60,84 @@ var
 			}
 		},
 		resolve: {
-			root: [
-				path.resolve('./')
+			modules: [
+				path.resolve(__dirname, '../../../'),
+				"node_modules"
 			]
 		},
 		module: {
-			loaders: [
-				{
-					include: /\.json$/,
-					loaders: ["json-loader"]
-				},
+			rules: [
 				{
 					test: /[\\\/]modernizr\.js$/,
-					loader: "imports?this=>window!exports?window.Modernizr"
+					use: [
+						'imports-loader?this=>window',
+						'exports-loader?window.Modernizr'
+					]
 				},
 				{
 					test: /\.js$/,
-					loader: 'replace-module-names-loader'
+					use: [
+						{
+							loader: 'replace-module-names-loader'
+						}
+					],
 				},
 				{
-					test: /\.less$/,
-					loader: "style-loader!css-loader!less-loader"
+					test: /(OpenPgpWebclient|OpenPgpFilesWebclient|CoreParanoidEncryptionWebclientPlugin|ComposeWordCounterPlugin|TwoFactorAuth).*\.js$/,
+					exclude: /node_modules/,
+					use: [
+						{
+							loader: 'babel-loader',
+							options: {
+								presets: [
+									[
+										'@babel/preset-env',
+										{
+											useBuiltIns: 'entry',
+											corejs: 'core-js@3'
+										}
+									]
+								],
+								compact: false
+							}
+						}
+					],
 				},
+				// {
+					// test: /\.less$/,
+					// loader: "style-loader!css-loader!less-loader"
+				// },
 				{
 					test: /\.css$/,
-					loader: "style-loader!css-loader"
+					use: [
+						'style-loader',
+						'css-loader'
+					]
 				},
 				{
 					test: /\.(png|jpe?g|gif)$/,
-					loader: 'file-loader'
+					use: [
+						'file-loader'
+					]
 				}
 			]
-		}
+		},
+		optimization: {
+			splitChunks: {
+				// chunks: 'all',
+				cacheGroups: {
+					'default': false
+				}
+			}
+		},
+		plugins: [
+			new webpack.HashedModuleIdsPlugin(), // so that file hashes don't change unexpectedly
+			new webpack.ProvidePlugin({
+				$: "jquery",
+				jQuery: "jquery",
+				"window.jQuery": "jquery"
+			})
+		]
 	},
 	updateVersion = function () {
 		var sVersionFilesName = './VERSION';
@@ -135,10 +185,11 @@ var
 	},
 	compileCallback = function (err, stats) {
 		if (err) {
-			throw new gutil.PluginError(err);
+			log.error(err);
+			log.error(stats);
 		}
 
-		gutil.log(stats.toString({
+		log.info(stats.toString({
 			colors: true,
 			//context: true,
 			hash: false,
@@ -162,128 +213,127 @@ var
 ;
 
 function jsTask(sTaskName, sName, oWebPackConfig) {
-	var
-		bPublic = sName.indexOf('-pub') !== -1,
-		sPublicInit = bPublic ? "\t\t" + "App.setPublic();" + crlf : ''
-	;
+		gulp.src(aModules)
+		// gulp.src('static/js/_app-entry.js')
+			.pipe(plumber({
+				errorHandler: function (err) {
+					console.log(err.toString());
+					this.emit('end');
+				}
+			}))
+			.pipe(concat('_' + sName + '-entry.js', {
+				sep: crlf,
+				process: function (sSrc, sFilePath) {
+					var sModuleName = GetModuleName(sFilePath);
+return `
+		if (window.aAvailableModules.indexOf('${sModuleName}') >= 0) {
+			oAvailableModules['${sModuleName}'] = import(/* webpackChunkName: "${sModuleName}" */ 'modules/${sModuleName}/js/manager.js').then(function (module) { return module.default});
+		}`;
+				}
+			}))
+		.pipe(concat.header(
+`'use strict';
+import Promise from 'bluebird';
+Promise.config({
+	warnings: {
+		wForgottenReturn: false
+	}
+});
+if (!window.Promise) { window.Promise = Promise; }
+import $ from 'jquery';
+import _ from 'underscore';
+import "core-js";
+import "regenerator-runtime/runtime";
 
-    gulp.src(aModules)
-		.pipe(plumber({
-            errorHandler: function (err) {
-                console.log(err.toString());
-                gutil.beep();
-                this.emit('end');
-            }
-        }))
-        .pipe(concat('_' + sName + '-entry.js', {
-            sep: crlf,
-            process: function (sSrc, sFilePath) {
-                var sModuleName = GetModuleName(sFilePath);
-			
-				return "\t\t"+"if (window.aAvailableModules.indexOf('"+sModuleName+"') >= 0) {" + crlf +
-					"\t\t\t"+"oAvailableModules['"+sModuleName+"'] = new Promise(function(resolve, reject) {" + crlf +
-						"\t\t\t\t"+"require.ensure([], function(require) {var oModule = require('modules/"+sModuleName+"/js/manager.js'); resolve(oModule); }, '"+sModuleName+"');" + crlf +
-					"\t\t\t"+"});" + crlf +
-				"\t\t"+"}";
-            }
-        }))
-        .pipe(concat.header("'use strict';" + crlf +
-            "var $ = require('jquery'), _ = require('underscore'), Promise = require('bluebird');" + crlf +
-            "$('body').ready(function () {" + crlf +
-            "\t" + "var oAvailableModules = {};" + crlf +
-            "\t" + "if (window.aAvailableModules) {" + crlf
-        ))
-        .pipe(concat.footer(
-			crlf + "\t}" + crlf +
-		
-			"\t" + "Promise.all(_.values(oAvailableModules)).then(function(aModules){" + crlf +
-			"\t" + "var" + crlf +
-            "\t\t" + "ModulesManager = require('modules/CoreWebclient/js/ModulesManager.js')," + crlf +
-            "\t\t" + "App = require('modules/CoreWebclient/js/App.js')," + crlf +
-            "\t\t" + "bSwitchingToMobile = App.checkMobile()" + crlf +
-            "\t" + ";" + crlf +
-            "\t" + "if (!bSwitchingToMobile)" + crlf +
-            "\t" + "{" + crlf +
-			"\t\t" + "if (window.isPublic) {" + crlf +
-			"\t\t\t" + "App.setPublic();" + crlf +
-			"\t\t" + "}" + crlf +
-			"\t\t" + "if (window.isNewTab) {" + crlf +
-			"\t\t\t" + "App.setNewTab();" + crlf +
-			"\t\t" + "}" + crlf +
-            "\t\t" + "ModulesManager.init(_.object(_.keys(oAvailableModules), aModules));" + crlf +
-            "\t\t" + "App.init();" + crlf +
-            "\t" + "}" + crlf +
-            "\t});" + crlf +
-            "});" + crlf
-        ))
+$('body').ready(function () {
+	var oAvailableModules = {};
+	if (window.aAvailableModules) {
+`
+		))
+		.pipe(concat.footer(
+	`
+	}
+	Promise.all(_.values(oAvailableModules)).then(function(aModules){
+		var
+			ModulesManager = require('modules/CoreWebclient/js/ModulesManager.js'),
+			App = require('modules/CoreWebclient/js/App.js'),
+			bSwitchingToMobile = App.checkMobile()
+		;
+		if (!bSwitchingToMobile) {
+			if (window.isPublic) {
+				App.setPublic();
+			}
+			if (window.isNewTab) {
+				App.setNewTab();
+			}
+			ModulesManager.init(_.object(_.keys(oAvailableModules), aModules));
+			App.init();
+		}
+	}).catch(function (oError) { console.error('An error occurred while loading the component:'); console.error(oError); });
+});
+
+`
+				))
 		.pipe(gulp.dest(sPath))
 		.pipe(gulpWebpack(oWebPackConfig, webpack, compileCallback))
 		.pipe(plumber.stop())
-        .pipe(gulp.dest(sPath))
+		.pipe(gulp.dest(sPath))
 	;
 }
 
-gulp.task('js:build', function () {
+gulp.task('js:build', function (done) {
 	jsTask('js:build', sOutputName, _.defaults({
-		'output':  {
+		'output': {
 			'filename': sOutputName + '.js',
 			'chunkFilename': '[name].' + sOutputName + '.[chunkhash].js',
 			'publicPath': sPath,
-			'pathinfo': true
-		},
-		'plugins': [
-			new webpack.optimize.DedupePlugin(),
-			new webpack.ProvidePlugin({
-				$: "jquery",
-				jQuery: "jquery",
-				"window.jQuery": "jquery"
-			})
-		]
+			'pathinfo': true,
+		}
 	}, oWebPackConfig));
+	done();
 });
 
-gulp.task('js:watch', function () {
+gulp.task('js:watch', function (done) {
 	jsTask('js:watch', sOutputName, _.defaults({
 		'watch': true,
-		'aggregateTimeout': 300,
-		'poll': true,
+		// 'aggregateTimeout': 300,
+		// 'poll': true,
 		'output':  {
 			'filename': sOutputName + '.js',
 			'chunkFilename': '[name].' + sOutputName + '.[chunkhash].js',
 			'publicPath': sPath
-		},
-		'plugins': [
-			new webpack.ProvidePlugin({
-				$: "jquery",
-				jQuery: "jquery",
-				"window.jQuery": "jquery"
-			})
-		]
+		}
 	}, oWebPackConfig));
+	done();
 });
 
-gulp.task('js:min', function () {
+gulp.task('js:min', function (done) {
 	jsTask('js:min', sOutputName, _.defaults({
-		'plugins': [
-			new webpack.optimize.UglifyJsPlugin({
-				compress: {
-					warnings: false,
-					drop_console: true,
-					unsafe: true
+		'mode': 'production',
+		optimization: {
+			splitChunks: {
+				// chunks: 'all',
+				cacheGroups: {
+					'default': false
 				}
-			}),
-			new webpack.ProvidePlugin({
-				$: "jquery",
-				jQuery: "jquery",
-				"window.jQuery": "jquery"
-			})
-		],
+			},
+			minimizer: [
+			  new TerserPlugin({
+				terserOptions: {
+				  output: {
+					comments: false,
+				  },
+				},
+			  }),
+			],
+		  },
 		'output':  {
 			'filename': sOutputName + '.min.js',
 			'chunkFilename': '[name].' + sOutputName + '.[chunkhash].min.js',
 			'publicPath': sPath
 		}
 	}, oWebPackConfig));
+	done();
 });
 
 module.exports = {};

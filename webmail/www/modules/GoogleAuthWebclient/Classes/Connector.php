@@ -7,6 +7,8 @@
 
 namespace Aurora\Modules\GoogleAuthWebclient\Classes;
 
+use Exception;
+
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
@@ -19,27 +21,34 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 {
 	public $Name = 'google';
 
-	public function CreateClient($sId, $sSecret, $sScope = '')
+	/**
+	 *
+	 */
+	public function CreateClient($sId, $sSecret, $sScopes)
 	{
-		$sRedirectUrl = rtrim(\MailSo\Base\Http::SingletonInstance()->GetFullUrl(), '\\/ ').'/?oauth='.$this->Name;
-
+		if (empty($sId) || empty($sSecret))
+		{
+			throw new \Aurora\Modules\OAuthIntegratorWebclient\Exceptions\NotConfigured(
+				\Aurora\Modules\OAuthIntegratorWebclient\Enums\ErrorCodes::NotConfigured
+			);
+		}
 		$oClient = new \oauth_client_class;
 		$oClient->offline = true;
 		$oClient->debug = self::$Debug;
 		$oClient->debug_http = self::$Debug;
 		$oClient->server = 'Google';
-		$oClient->redirect_uri = $sRedirectUrl;
+		$oClient->redirect_uri = $this->GetRedirectUrl();
 		$oClient->client_id = $sId;
 		$oClient->client_secret = $sSecret;
-		$oClient->scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive';
+		$oClient->scope = $sScopes;
 		return $oClient;
 	}
 
-	public function Init($Id, $sSecret, $sScope = '')
+	public function Init($Id, $sSecret, $aScopes = [])
 	{
 		$mResult = false;
 
-		$oClient = $this->CreateClient($Id, $sSecret, $sScope);
+		$oClient = $this->CreateClient($Id, $sSecret, $aScopes[1]);
 		if($oClient)
 		{
 			$oUser = null;
@@ -47,7 +56,12 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 			{
 				if(($bSuccess = $oClient->Process()))
 				{
-					if(strlen($oClient->access_token))
+					if(strlen($oClient->authorization_error))
+					{
+						$oClient->error = $oClient->authorization_error;
+						$bSuccess = false;
+					}
+					elseif(strlen($oClient->access_token))
 					{
 						$bSuccess = $oClient->CallAPI(
 							'https://www.googleapis.com/oauth2/v1/userinfo',
@@ -58,11 +72,6 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 							),
 							$oUser
 						);
-					}
-					else
-					{
-						$oClient->error = $oClient->authorization_error;
-						$bSuccess = false;
 					}
 				}
 				$bSuccess = $oClient->Finalize($bSuccess);
@@ -88,17 +97,20 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 						'expires_in' => $iExpiresIn
 					)),
 					'refresh_token' => $oClient->refresh_token,
-					'scopes' => \explode('|', $sScope)
+					'scopes' => \explode('|', $aScopes[0])
 				);
 			}
 			else
 			{
-				$mResult = false;
+				$mResult = [
+					'type' => $this->Name,
+					'error' => $oClient->error
+				];
 
 				$oClient->ResetAccessToken();
 			}
 		}
-		
+
 		return $mResult;
 	}
 }

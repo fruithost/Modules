@@ -5,14 +5,11 @@ var
 	ko = require('knockout'),
 	
 	TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
-	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 	
-	Browser = require('%PathToCoreWebclientModule%/js/Browser.js'),
+	Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 	ModulesManager = require('%PathToCoreWebclientModule%/js/ModulesManager.js'),
-	UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 	CAbstractSettingsFormView = ModulesManager.run('AdminPanelWebclient', 'getAbstractSettingsFormViewClass'),
 	
-	MailUtils = require('modules/%ModuleName%/js/utils/Mail.js'),
 	Settings = require('modules/%ModuleName%/js/Settings.js')
 ;
 
@@ -30,7 +27,7 @@ function CMailAdminSettingsFormView()
 		{ text: TextUtils.i18n('%MODULENAME%/LABEL_HORIZ_SPLIT_LAYOUT'), value: true }
 	];
 	
-	this.bAllowMultiAccounts = Settings.AllowMultiAccounts;
+	this.allowMultiAccounts = ko.observable(Settings.AllowMultiAccounts);
 	
 	this.autocreateMailAccountOnNewUserFirstLogin = ko.observable(Settings.AutocreateMailAccountOnNewUserFirstLogin);
 	this.allowAddAccounts = ko.observable(Settings.AllowAddAccounts);
@@ -41,16 +38,21 @@ _.extendOwn(CMailAdminSettingsFormView.prototype, CAbstractSettingsFormView.prot
 
 CMailAdminSettingsFormView.prototype.ViewTemplate = '%ModuleName%_Settings_MailAdminSettingsFormView';
 
-CMailAdminSettingsFormView.prototype.registerMailto = function ()
+CMailAdminSettingsFormView.prototype.onRouteChild = function ()
 {
-	MailUtils.registerMailto();
+	Ajax.send(Settings.ServerModuleName, 'GetSettings', {}, function (oResponse) {
+		if (oResponse.Result)
+		{
+			this.allowMultiAccounts(oResponse.Result.AllowMultiAccounts);
+		}
+	}, this);
 };
 
 CMailAdminSettingsFormView.prototype.getCurrentValues = function ()
 {
 	return [
-		this.autocreateMailAccountOnNewUserFirstLogin,
-		this.allowAddAccounts,
+		this.autocreateMailAccountOnNewUserFirstLogin(),
+		this.allowAddAccounts(),
 		this.horizontalLayoutByDefault()
 	];
 };

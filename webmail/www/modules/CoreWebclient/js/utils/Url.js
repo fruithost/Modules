@@ -24,14 +24,14 @@ UrlUtils.getAppPath = function ()
  *
  * @param {string} sUrl
  */
-UrlUtils.downloadByUrl = function (sUrl)
+UrlUtils.downloadByUrl = function (sUrl, bIsEml)
 {
 	var
 		Browser = require('%PathToCoreWebclientModule%/js/Browser.js'),
 		oIframe = null
 	;
-	
-	if (Browser.mobileDevice)
+
+	if (Browser.mobileDevice || Browser.chrome && bIsEml)
 	{
 		window.open(sUrl);
 	}

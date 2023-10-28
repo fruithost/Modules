@@ -35,6 +35,9 @@ function CLoginView()
 	this.login = ko.observable('');
 	this.password = ko.observable('');
 	
+	this.loginDom = ko.observable(null);
+	this.passwordDom = ko.observable(null);
+	
 	this.loginFocus = ko.observable(false);
 	this.passwordFocus = ko.observable(false);
 
@@ -64,6 +67,14 @@ function CLoginView()
 	this.currentLanguage = ko.observable(UserSettings.Language);
 	this.bAllowChangeLanguage = Settings.AllowChangeLanguage && !App.isMobile();
 	this.bUseDropdownLanguagesView = Settings.UseDropdownLanguagesView;
+	this.headingSelectLanguage = ko.computed(function () {
+		var sSiteName = UserSettings.SiteName;
+		if (_.isEmpty(sSiteName))
+		{
+			sSiteName = TextUtils.i18n('%MODULENAME%/HEADING_DEFAULT_SITENAME');
+		}
+		return TextUtils.i18n('%MODULENAME%/HEADING_SELECT_LANGUAGE', {'SITENAME': sSiteName});
+	}, this);
 
 	this.beforeButtonsControllers = ko.observableArray([]);
 	App.broadcastEvent('AnonymousUserForm::PopulateBeforeButtonsControllers', { ModuleName: '%ModuleName%', RegisterBeforeButtonsController: this.registerBeforeButtonsController.bind(this) });
@@ -99,6 +110,10 @@ CLoginView.prototype.onShow = function ()
  */
 CLoginView.prototype.signIn = function ()
 {
+	// sometimes nockoutjs conflicts with saved passwords in FF
+	this.login($(this.loginDom()).val());
+	this.password($(this.passwordDom()).val());
+	
 	if (!this.loading() && ('' !== $.trim(this.login())))
 	{
 		var oParameters = {
@@ -138,7 +153,7 @@ CLoginView.prototype.onSystemLoginResponseBase = function (oResponse, oRequest)
 	}
 	else
 	{
-		$.cookie('AuthToken', oResponse.Result.AuthToken, { expires: 30 });
+		App.setAuthToken(oResponse.Result.AuthToken);
 		$.removeCookie('aurora-selected-lang');
 
 		if (window.location.search !== '' &&

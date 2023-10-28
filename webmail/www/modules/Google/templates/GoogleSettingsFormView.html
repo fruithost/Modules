@@ -27,7 +27,7 @@
 				<span class="button" data-bind="click: checkAndConnect">
 					<span data-bind="i18n: {'key': '%MODULENAME%/BUTTON_APPLY'}"></span>
 				</span>
-				<span class="button" data-bind="click: checkAndDisconnect, visible: connected">
+				<span class="button" data-bind="click: function () { checkAndDisconnect() }, visible: connected">
 					<span data-bind="i18n: {'key': '%MODULENAME%/BUTTON_DISCONNECT'}"></span>
 				</span>
 			</div>

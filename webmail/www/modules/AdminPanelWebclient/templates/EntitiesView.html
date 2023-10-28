@@ -1,13 +1,13 @@
 <div class="panel_content">
-	<div class="toolbar">
+	<div class="toolbar" data-bind="visible: !bToolbarDisabled">
 		<span class="content">
 			
-			<span class="item delete" data-bind="command: deleteCommand, customTooltip: 'COREWEBCLIENT/ACTION_DELETE'">
+			<span class="item delete" data-bind="command: deleteCommand, customTooltip: 'COREWEBCLIENT/ACTION_DELETE', visible: oEntityData.DeleteRequest">
 				<span class="icon"></span>
 				<span class="hint" data-bind="text: selectedCount, visible: selectedCount() > 0"></span>
 				<span class="text" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_DELETE'}"></span>
 			</span>
-			<span class="item add_new_item" data-bind="click: function () { $root.createEntity(); }, customTooltip: sActionCreateText">
+			<span class="item add_new_item" data-bind="click: function () { $root.openCreateEntity(); }, customTooltip: sActionCreateText, visible: oEntityData.CreateRequest">
 				<span class="icon"></span>
 				<span class="text" data-bind="text: sActionCreateText"></span>
 			</span>
@@ -23,7 +23,7 @@
 		</span>
 	</div>
 	<div class="middle_bar">
-		<div class="panel_top">
+		<div class="panel_top" data-bind="visible: !bToolbarDisabled">
 			<span class="custom_checkbox" data-bind="click: groupCheck, css: {'checked': hasCheckedEntities}">
 				<span class="icon"></span>
 			</span>
@@ -47,16 +47,21 @@
 				<span class="list_notification" data-bind="visible: loading()">
 					<span class="description" data-bind="i18n: {'key': 'COREWEBCLIENT/INFO_LOADING'}"></span>
 				</span>
+				<span class="list_notification" data-bind="visible: entities().length === 0 && errorMessage() !== ''">
+					<span class="description" data-bind="text: errorMessage"></span>
+				</span>
 				<div class="items_list" data-bind="foreach: entities, visible: !loading()">
 					<div class="item canSelect" data-bind="click: function () { $root.changeEntity($parent.sType, Id); }, css: {'selected': $parent.current() === Id}">
 						<div class="item_content">
-							<span class="controls">
-								<span class="custom_checkbox" data-bind="click: trottleChecked, css: {'checked': checked()}">
+							<span class="controls" data-bind="visible: !$parent.bToolbarDisabled">
+								<span class="custom_checkbox" data-bind="click: trottleChecked, css: {'checked': checked(), 'disabled': bItsMe || bIsDefault}">
 									<span class="icon"></span>
 								</span>
 							</span>
 							<span class="data">
 								<span class="title" data-bind="text: Name || PublicId"></span>
+								<span data-bind="visible: bItsMe, i18n: {'key': '%MODULENAME%/LABEL_ITS_ME'}" class="me"></span>
+								<span data-bind="visible: bIsDefault, i18n: {'key': '%MODULENAME%/LABEL_DEFAULT'}" class="me"></span>
 								<span style="position: absolute; right: 15px; top: 15px;" data-bind="visible: typeof Count === 'number', text: typeof Count === 'number' ? Count : 0"></span>
 							</span>
 						</div>
@@ -64,6 +69,9 @@
 				</div>
 			</div>
 		</div>
-		<div class="panel_bottom unselectable" data-bind="visible: oPageSwitcher.pages().length > 0, template: {name: oPageSwitcher.ViewTemplate, data: oPageSwitcher}"></div>
+		<div class="panel_bottom unselectable" data-bind="visible: entitiesCountText() !== '' || oPageSwitcher.pages().length > 0">
+			<div style="float: left;" data-bind="text: entitiesCountText, visible: entitiesCountText() !== ''"></div>
+			<!-- ko template: {name: oPageSwitcher.ViewTemplate, data: oPageSwitcher} --><!-- /ko -->
+		</div>
 	</div>
 </div>

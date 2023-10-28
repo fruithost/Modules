@@ -1,6 +1,6 @@
 <div class="fields">
 	<div class="fieldset">
-		<div class="row" data-bind="visible: !isDefaultAccount() && canBeUsedToAuthorize()">
+		<div class="row" data-bind="visible: !isDefaultAccount() && canBeUsedToAuthorize() && isServerOwner()">
 			<span class="value offset">
 				<label class="custom_checkbox" data-bind="css: {'checked': useToAuthorize(), 'disabled': isDisableAuthorize()}">
 					<span class="icon"></span>
@@ -15,22 +15,28 @@
 			<input class="value input" spellcheck="false" type="text" maxlength="65" data-bind="value: friendlyName, valueUpdate: 'afterkeydown', onEnter: save"/>
 		</div>
 
-        <div data-bind="visible: !isDefaultAccount()">
-            <div class="row">
-                <span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_LOGIN'}"></span>
-                <input class="value input" spellcheck="false" type="text" maxlength="255" data-bind="value: incomingLogin, hasfocus: incLoginFocused, valueUpdate: 'afterkeydown', onEnter: save"/>
-            </div>
-            <div class="row">
-                <span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_PASSWORD'}"></span>
-                <input class="value input" spellcheck="false" autocomplete="new-password" type="password" maxlength="255" data-bind="value: incomingPassword, valueUpdate: 'afterkeydown', onEnter: save"/>
-            </div>
+		<div data-bind="visible: !isDefaultAccount()">
+			<!--<div class="row">
+				<span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_LOGIN'}"></span>
+				<input class="value input" spellcheck="false" type="text" maxlength="255" data-bind="value: incomingLogin, hasfocus: incLoginFocused, valueUpdate: 'afterkeydown', onEnter: save"/>
+			</div>-->
+			<div class="row" data-bind="visible: !isDisableAuthorize() && allowSpecifyPassword()">
+				<span class="label required" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_PASSWORD'}"></span>
+				<input class="value input" spellcheck="false" autocomplete="new-password" type="password" maxlength="255" data-bind="value: incomingPassword, valueUpdate: 'afterkeydown', onEnter: save"/>
+			</div>
+			<div class="row hint" style="color: red;" data-bind="visible: !isDisableAuthorize() && allowSpecifyPassword()">
+				<span class="value" data-bind="i18n: {'key': '%MODULENAME%/LABEL_HINT_SPECIFY_PASSWORD'}"></span>
+			</div>
+			<div class="row" style="display: none;"></div>
 			
-			<!-- ko template: {name: oServerPairPropertiesView.ViewTemplate, data: oServerPairPropertiesView} --><!-- /ko -->
+			<!-- ko if: isServerOwner -->
+				<!-- ko template: {name: oServerPairPropertiesView.ViewTemplate, data: oServerPairPropertiesView} --><!-- /ko -->
+			<!-- /ko -->
 			
 		</div>
 		
 		<div class="row" data-bind="visible: enableThreading">
-			<span class="value" data-bind="css: {'offset': !isDefaultAccount()}">
+			<span class="value" data-bind="css: {'offset': !isDefaultAccount() && isServerOwner()}">
 				<label class="custom_checkbox" data-bind="css: {'checked': useThreading()}">
 					<span class="icon"></span>
 					<input type="checkbox" id="useThreading" data-bind="checked: useThreading" />
@@ -39,7 +45,7 @@
 			</span>	
 		</div>
 		<div class="row">
-			<span class="value" data-bind="css: {'offset': !isDefaultAccount()}">
+			<span class="value" data-bind="css: {'offset': !isDefaultAccount() && isServerOwner()}">
 				<label class="custom_checkbox" data-bind="css: {'checked': saveRepliesToCurrFolder}">
 					<span class="icon"></span>
 					<input type="checkbox" id="saveRepliesToCurrFolder" data-bind="checked: saveRepliesToCurrFolder" />
@@ -48,7 +54,7 @@
 			</span>
 		</div>
 		<div class="hint row">
-			<span class="value" data-bind="css: {'offset': !isDefaultAccount()}, i18n: {'key': '%MODULENAME%/INFO_SAVE_REPLIED_TO_CURR_FOLDER'}"></span>
+			<span class="value" data-bind="css: {'offset': !isDefaultAccount() && isServerOwner()}, i18n: {'key': '%MODULENAME%/INFO_SAVE_REPLIED_TO_CURR_FOLDER'}"></span>
 		</div>
 		
 		<div data-bind="visible: !isDefaultAccount()">

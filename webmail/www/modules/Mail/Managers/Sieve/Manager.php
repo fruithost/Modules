@@ -50,6 +50,11 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	protected $sGeneralPassword;
 
 	/**
+	 * @var bool
+	 */
+	protected $bSieveCheckScript;
+
+	/**
 	 * @param \Aurora\System\Module\AbstractModule $oModule
 	 */
 	public function __construct(\Aurora\System\Module\AbstractModule $oModule)
@@ -60,12 +65,14 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		$this->sGeneralPassword = '';
 		$this->sSieveFileName = $oModule->getConfig('SieveFileName', 'sieve');
 		$this->sSieveFolderCharset = $oModule->getConfig('SieveFiltersFolderCharset', 'utf-8');
+		$this->bSieveCheckScript = $oModule->getConfig('SieveCheckScript', false);
 		$this->bSectionsParsed = false;
 		$this->aSectionsData = array();
 		$this->aSectionsOrders = array(
 			'forward',
 			'autoresponder',
-			'filters'
+			'filters',
+			'allow_block_lists'
 		);
 	}
 
@@ -123,6 +130,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		$sText = str_replace(array("\r"), '', trim($sText));
 
 		$sData = '#data='.($bEnabled ? '1' : '0').'~'.base64_encode($sSubject."\x0".$sText)."\n";
+
+		$sSubject = addslashes($sSubject);
+		$sText = addslashes($sText);
+
 		$sScriptText = 'vacation :days 1 :subject "'.$this->_quoteValue($sSubject).'" "'.$this->_quoteValue($sText).'";';
 
 		if ($bEnabled)
@@ -229,6 +240,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			$oFilter->Condition = (int) trim($aData['Condition']);
 			$oFilter->Action = (int) trim($aData['Action']);
 			$oFilter->Filter = (string) trim($aData['Filter']);
+			$oFilter->Email = (string) trim($aData['Email']);
 
 			if (\Aurora\Modules\Mail\Enums\FilterAction::MoveToFolder === $oFilter->Action && isset($aData['FolderFullName']))
 			{
@@ -274,7 +286,8 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 							'Condition' => $aFilter[1],
 							'Action' => $aFilter[4],
 							'Filter' => $aFilter[3],
-							'FolderFullName' => $aFilter[5]
+							'FolderFullName' => $aFilter[5],
+							'Email' => isset($aFilter[6]) ? $aFilter[6] : ''
 						);
 						
 						$oFilter = $this->createFilterInstance($oAccount, $aFilterData);
@@ -362,6 +375,13 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 						'utf7-imap', $this->sSieveFolderCharset);
 				}
 
+				// redirect
+				$sEmail = '';
+				if (\Aurora\Modules\Mail\Enums\FilterAction::Redirect === $oFilter->Action)
+				{
+					$sEmail = $oFilter->Email;
+				}
+
 				// action
 				$sAction = '';
 				switch($oFilter->Action)
@@ -372,6 +392,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 						break;
 					case \Aurora\Modules\Mail\Enums\FilterAction::MoveToFolder:
 						$sAction = 'fileinto "'.$this->_quoteValue($sFolderFullName).'" ;'."\n";
+						$sAction .= 'stop ;';
+						break;
+					case \Aurora\Modules\Mail\Enums\FilterAction::Redirect:
+						$sAction = 'redirect :copy "'.$this->_quoteValue($sEmail).'" ;'."\n";
 						$sAction .= 'stop ;';
 						break;
 				}
@@ -387,7 +411,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 				$sFilters .= "\n".'#sieve_filter:'.implode(';', array(
 					$oFilter->Enable ? '1' : '0', $oFilter->Condition, $oFilter->Field,
-					$oFilter->Filter, $oFilter->Action, $sFolderFullName))."\n";
+					$oFilter->Filter, $oFilter->Action, $sFolderFullName, $sEmail))."\n";
 
 				$sFilters .= $sCondition."\n";
 				$sFilters .= $sAction."\n";
@@ -421,6 +445,99 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 
 		return $this->setForward($oAccount, $sForward, false);
 	}
+
+	public function getAllowBlockLists($oAccount)
+	{
+		$mResult = [
+			'AllowList' => [],
+			'BlockList' => []
+		];
+		$this->_parseSectionsData($oAccount);
+		$sData = $this->_getSectionData('allow_block_lists');
+
+		$aMatch = array();
+		if (!empty($sData) && preg_match('/#data=([^\n]+)~([^\n]+)/', $sData, $aMatch) && isset($aMatch[1]) && isset($aMatch[2]))
+		{
+			$mResult['AllowList'] = \json_decode(\base64_decode($aMatch[1]));
+			$mResult['BlockList'] = \json_decode(\base64_decode($aMatch[2]));
+		}
+		return $mResult;
+	}
+
+	public function setAllowBlockLists($oAccount, $aAllowList, $aBlockList)
+	{
+		if (!is_array($aAllowList)) {
+			$aAllowList = [];
+		}
+		if (!is_array($aBlockList)) {
+			$aBlockList = [];
+		}
+		$sAllowList = \base64_encode(\json_encode($aAllowList));
+		$sBlockList = \base64_encode(\json_encode($aBlockList));
+
+		$aAllowListStr = [];
+		foreach ($aAllowList as $sItem) {
+			if (!empty($sItem)) {
+				if (strpos($sItem, '@') !== false) {
+					$aAllowListStr[] = '	address :is "from" "' . $sItem . '"';
+				}
+				else {
+					$aAllowListStr[] = '	address :domain "from" "' . $sItem . '"';
+				}
+			}
+		}
+
+		$aBlockListStr = [];
+		foreach ($aBlockList as $sItem) {
+			if (!empty($sItem)) {
+				if (strpos($sItem, '@') !== false) {
+					$aBlockListStr[] = '	address :is "from" "' . $sItem . '"';
+				}
+				else {
+					$aBlockListStr[] = '	address :domain "from" "' . $sItem . '"';
+				}
+			}
+		}
+
+		$sAllowListScript = "";
+		if (count ($aAllowListStr) > 0) {
+			$sAllowListScript = "if anyof ( \n" . \implode(",\n", $aAllowListStr) . "\n" .
+		")
+{
+	keep;
+	stop;
+}\n";
+		}
+
+		$sBlockListScript = "";
+		if (count ($aBlockListStr) > 0) {
+			$sBlockListScript = "if anyof ( \n" . \implode(",\n", $aBlockListStr) . "\n" .
+		")
+{
+	fileinto \"Spam\" ;
+	stop;
+}\n";
+		}
+
+		$sData = '#data=' . $sAllowList . '~' . $sBlockList . "\n" . $sAllowListScript . $sBlockListScript . "\n" .
+"# copy Spamassassin-tagged email to Spam folder
+
+if header :contains \"X-Spam-Flag\" \"YES\" {
+#   setflag \"\\seen\";
+	fileinto \"Spam\";
+#   setflag \"\\seen\";
+	stop;
+}";
+
+		$this->_parseSectionsData($oAccount);
+		$this->_setSectionData('allow_block_lists', $sData);
+		if (self::AutoSave)
+		{
+			return $this->_resaveSectionsData($oAccount);
+		}
+		return true;
+	}
+
 
 	/**
 	 * @depricated
@@ -513,7 +630,12 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 				
 				$oServer = $oMailModule->getServersManager()->getServer($oAccount->ServerId);
 				
-				$sHost = $oServer->IncomingServer;
+				$sHost = $oMailModule->getConfig('OverriddenSieveHost', '');
+				if (empty($sHost))
+				{
+					$sHost = $oServer->IncomingServer;
+				}
+
 				$iPort = $oServer->SievePort;
 				$sPassword = 0 === strlen($sGeneralPassword) ? $oAccount->getPassword() : $sGeneralPassword;
 				$bUseStarttls = $this->GetModule()->getConfig('SieveUseStarttls', false);
@@ -582,7 +704,10 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			
 			if ($oSieve)
 			{
-				$oSieve->CheckScript($sText);
+				if ($this->bSieveCheckScript)
+				{
+					$oSieve->CheckScript($sText);
+				}
 				
 				$oSieve->PutScript($this->sSieveFileName, $sText);
 				$oSieve->SetActiveScript($this->sSieveFileName);
@@ -663,7 +788,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 			}
 		}
 
-		$sResult = 'require ["fileinto", "copy", "vacation"] ;'."\n".$sResult;
+		$sResult = 'require ["fileinto", "copy", "vacation","regex","include", "envelope", "imap4flags"] ;'."\n".$sResult;
 		$sResult = "# Sieve filter\n".$sResult;
 		$sResult .= "keep ;\n";
 		return $sResult;

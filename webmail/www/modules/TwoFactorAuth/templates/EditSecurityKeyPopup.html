@@ -1,0 +1,21 @@
+<div class="popup" style="display: none;">
+	<div class="mask"></div>
+	<div class="popup_panel">
+		<div class="fields">
+			<div class="fieldset">
+				<h1 data-bind="i18n: {'key': '%MODULENAME%/HEADING_SECURITY_KEY_NAME'}"></h1>
+				<div class="hint" data-bind="i18n: {'key': '%MODULENAME%/HINT_SECURITY_KEY_NAME'}"></div>
+				<div class="row">
+					<input class="value input" type="text" spellcheck="false" maxlength="255"
+						   data-bind="value: name, hasFocus: nameFocus, valueUpdate: 'afterkeydown', onEnter: save" />
+				</div>
+			</div>
+			<div class="buttons">
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE'}, command: saveCommand, visible: !inProgress()"></span>
+				<span class="button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_SAVE_IN_PROGRESS'}, visible: inProgress()"></span>
+				<span class="button secondary_button" data-bind="i18n: {'key': 'COREWEBCLIENT/ACTION_CANCEL'}, click: cancelPopup"></span>
+			</div>
+		</div>
+	</div>
+	<span class="helper"></span>
+</div>

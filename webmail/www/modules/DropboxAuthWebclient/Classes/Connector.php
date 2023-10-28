@@ -18,9 +18,16 @@ namespace Aurora\Modules\DropboxAuthWebclient\Classes;
 class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connector
 {
 	protected $Name = 'dropbox';
-	
+
 	public function CreateClient($sId, $sSecret, $sScope)
 	{
+		if (empty($sId) || empty($sSecret))
+		{
+			throw new \Aurora\Modules\OAuthIntegratorWebclient\Exceptions\NotConfigured(
+				\Aurora\Modules\OAuthIntegratorWebclient\Enums\ErrorCodes::NotConfigured
+			);
+		}
+
 		$sRedirectUrl = \rtrim(\MailSo\Base\Http::SingletonInstance()->GetFullUrl(), '\\/ ').'/?oauth=' . $this->Name;
 		if (!\strpos($sRedirectUrl, '://localhost'))
 		{
@@ -28,8 +35,8 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 		}
 
 		$oClient = new \oauth_client_class;
-		$oClient->debug = self::$Debug;
-		$oClient->debug_http = self::$Debug;
+		$oClient->debug = true;#self::$Debug;
+		$oClient->debug_http = true;#self::$Debug;
 		$oClient->server = 'Dropbox2v2';
 		$oClient->redirect_uri = $sRedirectUrl;
 		$oClient->client_id = $sId;
@@ -39,16 +46,16 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 		{
 			$oClient->configuration_file = $oOAuthIntegratorWebclientModule->GetPath() .'/Classes/OAuthClient/'.$oClient->configuration_file;
 		}
-		
+
 		return $oClient;
 	}
-	
+
 	public function Init($sId, $sSecret, $sScope = '')
 	{
 		$mResult = false;
 
 		$oClient = $this->CreateClient($sId, $sSecret, $sScope);
-				
+
 		if($oClient)
 		{
 			$oUser = null;
@@ -59,13 +66,13 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 					if(\strlen($oClient->access_token))
 					{
 						$success = $oClient->CallAPI(
-							'https://api.dropbox.com/2/users/get_current_account', 
-							'POST', 
-							null, 
+							'https://api.dropbox.com/2/users/get_current_account',
+							'POST',
+							null,
 							array(
 								'FailOnAccessError' => true,
 								'RequestContentType' => 'application/json'
-							), 
+							),
 							$oUser
 						);
 					}
@@ -87,7 +94,7 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 					'email' => isset($oUser->email) ? $oUser->email : '',
 					'access_token' => $oClient->access_token,
 					'scopes' => \explode('|', $sScope)
-						
+
 				);
 			}
 			else
@@ -96,7 +103,7 @@ class Connector extends \Aurora\Modules\OAuthIntegratorWebclient\Classes\Connect
 				$oClient->ResetAccessToken();
 			}
 		}
-		
+
 		return $mResult;
 	}
 }

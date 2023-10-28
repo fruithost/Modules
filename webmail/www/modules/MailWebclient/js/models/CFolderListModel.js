@@ -5,9 +5,11 @@ var
 	ko = require('knockout'),
 	
 	Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
+	Utils = require('%PathToCoreWebclientModule%/js/utils/Common.js'),
 	
 	Storage = require('%PathToCoreWebclientModule%/js/Storage.js'),
 	
+	MailCache = null,
 	Settings = require('modules/%ModuleName%/js/Settings.js'),
 	CFolderModel = require('modules/%ModuleName%/js/models/CFolderModel.js')
 ;
@@ -91,6 +93,17 @@ function CFolderListModel()
 	this.sDelimiter = '';
 }
 
+/**
+ * Requires MailCache. It cannot be required earlier because it is not initialized yet.
+ */
+CFolderListModel.prototype.requireMailCache = function ()
+{
+	if (MailCache === null)
+	{
+		MailCache = require('modules/%ModuleName%/js/Cache.js');
+	}
+};
+
 CFolderListModel.prototype.getFoldersCount = function ()
 {
 	return this.aLinedCollection.length;
@@ -144,6 +157,8 @@ CFolderListModel.prototype.getNamesOfFoldersToRefresh = function ()
  */
 CFolderListModel.prototype.setCurrentFolder = function (sFolderFullName, sFilters)
 {
+	this.requireMailCache();
+	
 	var
 		oFolder = this.getFolderByFullName(sFolderFullName)
 	;
@@ -164,17 +179,24 @@ CFolderListModel.prototype.setCurrentFolder = function (sFolderFullName, sFilter
 			}
 		}
 		
-		this.currentFolder(oFolder);
-		if (sFilters === Enums.FolderFilter.Flagged)
+		if (sFolderFullName === MailCache.oUnifiedInbox.fullName())
 		{
-			if (this.oStarredFolder)
-			{
-				this.oStarredFolder.selected(true);
-			}
+			this.currentFolder(null);
 		}
 		else
 		{
-			this.currentFolder().selected(true);
+			this.currentFolder(oFolder);
+			if (sFilters === Enums.FolderFilter.Flagged)
+			{
+				if (this.oStarredFolder)
+				{
+					this.oStarredFolder.selected(true);
+				}
+			}
+			else
+			{
+				this.currentFolder().selected(true);
+			}
 		}
 	}
 };
@@ -198,7 +220,7 @@ CFolderListModel.prototype.renameFolder = function (sFullName, sNewFullName, sNe
 	oFolder.fullName(sNewFullName);
 	oFolder.fullNameHash(sNewFullNameHash);
 	this.oNamedCollection[sNewFullName] = oFolder;
-	this.oNamedCollection[sFullName] = undefined;
+	delete this.oNamedCollection[sFullName];
 };
 
 CFolderListModel.prototype.changeTemplateFolder = function (sFolderName, bTemplate)
@@ -237,7 +259,7 @@ CFolderListModel.prototype.parse = function (iAccountId, oData, oNamedFolderList
 	this.iAccountId = iAccountId;
 	this.initialized(true);
 
-	this.bExpandFolders = Settings.AllowExpandFolders && !Storage.hasData('folderAccordion');
+	this.bExpandFolders = Settings.FoldersExpandedByDefault && !Storage.hasData('folderAccordion');
 	if (!Storage.hasData('folderAccordion'))
 	{
 		Storage.setData('folderAccordion', []);
@@ -246,6 +268,20 @@ CFolderListModel.prototype.parse = function (iAccountId, oData, oNamedFolderList
 	this.oNamedCollection = {};
 	this.aLinedCollection = [];
 	this.collection(this.parseRecursively(aCollection, oNamedFolderListOld));
+};
+
+/**
+ * Destroys all the remaining folders before the list will be destroyed itself.
+ */
+CFolderListModel.prototype.destroyFolders = function ()
+{
+	Utils.destroyObjectWithObservables(this, 'oStarredFolder');
+	this.collection.removeAll();
+	this.aLinedCollection = [];
+	for (var sKey in this.oNamedCollection)
+	{
+		Utils.destroyObjectWithObservables(this.oNamedCollection, sKey);
+	}
 };
 
 /**
@@ -284,13 +320,13 @@ CFolderListModel.prototype.parseRecursively = function (aRawCollection, oNamedFo
 		{
 			sFolderFullName = Types.pString(aRawCollection[iIndex].FullNameRaw);
 			oFolderOld = oNamedFolderListOld[sFolderFullName];
-			oFolder = new CFolderModel(this.iAccountId);
+			
+			// Do not create a new folder object if possible. A new object will use memory that is difficult to free.
+			oFolder = oFolderOld ? oFolderOld : new CFolderModel(this.iAccountId);
 			oSubFolders = oFolder.parse(aRawCollection[iIndex], sParentFullName, this.sNamespaceFolder);
-			if (oFolderOld && oFolderOld.hasExtendedInfo() && !oFolder.hasExtendedInfo())
-			{
-				oFolder.setRelevantInformation(oFolderOld.sUidNext, oFolderOld.sHash, 
-					oFolderOld.messageCount(), oFolderOld.unseenMessageCount(), false);
-			}
+			
+			// Remove from the old folder list reference to the folder. The remaining folders will be destroyed.
+			delete oNamedFolderListOld[sFolderFullName];
 
 			if (this.bExpandFolders && oSubFolders !== null)
 			{
@@ -298,7 +334,7 @@ CFolderListModel.prototype.parseRecursively = function (aRawCollection, oNamedFo
 				this.expandNames().push(Types.pString(aRawCollection[iIndex].Name));
 			}
 
-			oFolder.setLevel(iLevel);
+			oFolder.setDisplayedLevel(iLevel);
 
 			switch (oFolder.type())
 			{
@@ -337,12 +373,19 @@ CFolderListModel.prototype.parseRecursively = function (aRawCollection, oNamedFo
 			}
 			else if (oSubFolders !== null)
 			{
-				aSubfolders = this.parseRecursively(oSubFolders['@Collection'], oNamedFolderListOld, iLevel, oFolder.fullName());
+				if(oFolder.bNamespace && oFolder.type() === Enums.FolderTypes.Inbox)
+				{
+					aSubfolders = this.parseRecursively(oSubFolders['@Collection'], oNamedFolderListOld, iLevel - 1, oFolder.fullName());
+				}
+				else
+				{
+					aSubfolders = this.parseRecursively(oSubFolders['@Collection'], oNamedFolderListOld, iLevel, oFolder.fullName());
+				}
 				if(oFolder.type() === Enums.FolderTypes.Inbox)
 				{
+					this.createStarredFolder(oFolder.fullName(), iLevel);
 					if (oFolder.bNamespace)
 					{
-						this.createStarredFolder(oFolder.fullName(), iLevel + 1);
 						if (this.oStarredFolder)
 						{
 							aSubfolders.unshift(this.oStarredFolder);
@@ -350,7 +393,6 @@ CFolderListModel.prototype.parseRecursively = function (aRawCollection, oNamedFo
 					}
 					else
 					{
-						this.createStarredFolder(oFolder.fullName(), iLevel);
 						if (this.oStarredFolder)
 						{
 							aParsedCollection.push(this.oStarredFolder);
@@ -425,7 +467,7 @@ CFolderListModel.prototype.getOptions = function (sFirstItem, bEnableSystem, bHi
 	_.each(this.aLinedCollection, function (oFolder) {
 		if (oFolder && !oFolder.bVirtual && (!bHideInbox || Enums.FolderTypes.Inbox !== oFolder.type()) && (!bIgnoreUnsubscribed || oFolder.subscribed()))
 		{
-			var sPrefix = (new Array(oFolder.iLevel + 1)).join(sDeepPrefix);
+			var sPrefix = (new Array(oFolder.getDisplayedLevel() + 1)).join(sDeepPrefix);
 			aCollection.push({
 				'name': oFolder.name(),
 				'fullName': oFolder.fullName(),

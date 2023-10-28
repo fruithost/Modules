@@ -8,6 +8,8 @@
 namespace Aurora\Modules\FacebookAuthWebclient;
 
 /**
+ * Adds ability to login using Facebook account.
+ * 
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
@@ -110,7 +112,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 				$aScope['Value'] = $this->issetScope('auth');
 				$mResult['Scopes'][] = $aScope;
 			}
-			if ($oUser->Role === \Aurora\System\Enums\UserRole::NormalUser)
+			if ($oUser->isNormalOrTenant())
 			{
 				if ($aArgs['OAuthAccount'] instanceof \Aurora\Modules\OAuthIntegratorWebclient\Classes\Account)
 				{

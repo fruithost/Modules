@@ -21,6 +21,7 @@ function CFilterModel(iAccountID)
 	this.filter = ko.observable('').extend({'reversible': true});
 	this.action = ko.observable('').extend({'reversible': true});
 	this.folder = ko.observable('').extend({'reversible': true});
+	this.email = ko.observable('').extend({'reversible': true});
 }
 
 /**
@@ -35,6 +36,7 @@ CFilterModel.prototype.parse = function (oData)
 	this.filter(Types.pString(oData.Filter));
 	this.action(Types.pInt(oData.Action));
 	this.folder(Types.pString(oData.FolderFullName));
+	this.email(Types.pString(oData.Email));
 	this.commit();
 };
 
@@ -46,6 +48,7 @@ CFilterModel.prototype.revert = function ()
 	this.filter.revert();
 	this.action.revert();
 	this.folder.revert();
+	this.email.revert();
 };
 
 CFilterModel.prototype.commit = function ()
@@ -56,6 +59,7 @@ CFilterModel.prototype.commit = function ()
 	this.filter.commit();
 	this.action.commit();
 	this.folder.commit();
+	this.email.commit();
 };
 
 CFilterModel.prototype.toString = function ()
@@ -66,7 +70,8 @@ CFilterModel.prototype.toString = function ()
 		this.condition(),
 		this.filter(),
 		this.action(),
-		this.folder()
+		this.folder(),
+		this.email()
 	];
 	
 	return aState.join(':');	

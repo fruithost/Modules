@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "core-js": "^2.6.5",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "sweet-modal-vue": "^2.0.0",
     "vue": "^2.6.10",
     "vue-editable": "0.0.1",

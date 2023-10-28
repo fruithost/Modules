@@ -3,21 +3,49 @@
 	
 	class DomainsDaemon {
 		public function __construct() {
+			$this->deleteDomains();
+			$this->createDomains();
+			$this->reloadApache();
+		}
+		
+		protected function deleteDomains() {
+			$domains = $this->getDomains('AND `' . DATABASE_PREFIX . 'domains`.`time_deleted` IS NOT NULL');
+			
+			foreach($domains AS $domain) {
+				print "\033[31;31m\tDelete VHost:\033[39m " . $domain->name . PHP_EOL;
+				
+				
+				$path	= sprintf('%s%s%s', HOST_PATH, $domain->username, $domain->directory);
+				$vhost	= sprintf('/etc/fruithost/config/apache2/vhosts/%s.conf', $domain->name);
+				
+				if(is_dir($path)) {
+					shell_exec(sprintf('rm -R %s', $path));
+				}
+				
+				if(file_exists($vhost)) {
+					unlink($vhost);
+				}
+				
+				Database::delete(DATABASE_PREFIX . 'domains', [
+					'id'			=> $domain->id
+				]);
+			}
+		}
+		
+		protected function createDomains() {
 			$domains = $this->getDomains('AND
 										`' . DATABASE_PREFIX . 'domains`.`time_created` IS NULL
 									AND
 										`' . DATABASE_PREFIX . 'domains`.`time_deleted` IS NULL');
 			
 			foreach($domains AS $domain) {
-				print 'Create VHost for ' . $domain->name . PHP_EOL;
+				print "\033[0;32m\tCreate VHost:\033[39m " . $domain->name . PHP_EOL;
 				$path = $this->createPath($domain->username, $domain->directory);
 				
 				$this->createDocumentRoot($domain, $path);
 				$this->createVirtualHost($domain, $path);
 				$this->updateDomain($domain);
 			}
-			
-			$this->reloadApache();
 		}
 		
 		protected function createPath($username, $directory) {

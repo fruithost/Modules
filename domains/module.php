@@ -14,7 +14,7 @@
 				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
 			])->onSave([ $this, 'onSave' ]));
 			
-			$this->domains = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
+			$this->domains = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
 				'user'	=> Auth::getID()
 			]);
 		}
@@ -28,9 +28,61 @@
 					(new Button())->setName('delete')->setLabel('Delete selected')->addClass('btn-outline-danger')
 				]);				
 			}
-			
-			#$this->assign('ip_address', '127.0.0.1');
-			#$this->addButton((new Button())->setName('save')->setLabel('Save')->addClass('btn-outline-primary'));
+		}
+		
+		public function onPOST($data = []) {
+			if(isset($data['action'])) {
+				switch($data['action']) {
+					case 'delete':
+						if(!isset($data['domain'])) {
+							$this->assign('error', 'Please select the Domains you want to delete!');
+						} else {
+							$deletion	= [];
+							$stop		= false;
+							foreach($data['domain'] AS $domain_id) {
+								$domain = Database::single('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `id`=:domain_id AND `user_id`=:user_id LIMIT 1', [
+									'domain_id'		=> $domain_id,
+									'user_id'		=> Auth::getID()
+								]);
+								
+								if($domain !== false && $domain->id >= 1) {
+									$deletion[$domain->id] = $domain->name;
+								} else {
+									$stop	= true;
+									$unable = Database::exists('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `id`=:domain_id LIMIT 1', [
+										'domain_id'	=> $domain_id
+									]);
+									
+									if(empty($unable)) {
+										$this->assign('error', 'An unknown error has occurred. Please retry your action!');
+									} else {
+										$this->assign('error', sprintf('You have no permissions to delete the Domain <strong>%s</strong>!', $unable->name));
+									}
+									break;
+								}
+							}
+							
+							if(!$stop) {
+								$domains = [];
+								
+								foreach($deletion AS $id => $domain) {
+									$domains[] = $domain;
+									fruithost\Database::update(DATABASE_PREFIX . 'domains', [ 'id', 'user_id' ], [
+										'id'			=> $id,
+										'user_id'		=> Auth::getID(),
+										'time_deleted'	=> date('Y-m-d H:i:s', time())
+									]);
+								}
+								
+								$this->assign('success', sprintf('Following Domains will be deleted: <strong>%s</strong>!', implode(', ', $domains)));
+								$this->domains = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
+									'user'	=> Auth::getID()
+								]);
+							}
+						}
+					break;
+				}
+			}
 		}
 		
 		public function onSave($data = []) {
@@ -39,6 +91,14 @@
 			}
 			
 			// @ToDo validate Domain!!!
+			$domain = Database::single('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `name`=:name AND `user_id`=:user_id LIMIT 1', [
+				'name'		=> $data['domain'],
+				'user_id'	=> Auth::getID()
+			]);
+			
+			if($domain !== false) {
+				return 'Domain already exists.';
+			}
 			
 			if(!isset($data['type']) || empty($data['type'])) {
 				return 'Please select a valid home directory!';

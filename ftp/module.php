@@ -4,33 +4,34 @@
 	use fruithost\Auth;
 	use fruithost\Button;
 	use fruithost\Modal;
+	use fruithost\I18N;
 	
 	class FTP extends ModuleInterface {
 		private $accounts = [];
 		
 		public function init() {
-			$this->addModal((new Modal('create_account', 'Create FTP Account', __DIR__ . '/views/create.php'))->addButton([
-				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
-				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
-			])->onSave([ $this, 'onCreate' ]));
-			
-			$this->addModal((new Modal('change_account', 'Change FTP Account', __DIR__ . '/views/change.php'))->addButton([
-				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
-				(new Button())->setName('update')->setLabel('Update')->addClass('btn-outline-success')
-			])->onSave([ $this, 'onChange' ]));
-			
 			$this->accounts = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'ftp_user` WHERE `user_id`=:user ORDER BY `username` ASC', [
 				'user'	=> Auth::getID()
 			]);
 		}
 		
 		public function load() {
+			$this->addModal((new Modal('create_account', I18N::get('Create FTP Account'), __DIR__ . '/views/create.php'))->addButton([
+				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
+				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
+			])->onSave([ $this, 'onCreate' ]));
+			
+			$this->addModal((new Modal('change_account', I18N::get('Change FTP Account'), __DIR__ . '/views/change.php'))->addButton([
+				(new Button())->setName('cancel')->setLabel(I18N::get('Cancel'))->addClass('btn-outline-danger')->setDismissable(),
+				(new Button())->setName('update')->setLabel(I18N::get('Update'))->addClass('btn-outline-success')
+			])->onSave([ $this, 'onChange' ]));
+			
 			if(empty($this->accounts)) {
-				$this->addButton((new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')->setModal('create_account'));
+				$this->addButton((new Button())->setName('create')->setLabel(I18N::get('Create'))->addClass('btn-outline-success')->setModal('create_account'));
 			} else {
 				$this->addButton([
-					(new Button())->setName('create')->setLabel('Create New')->addClass('btn-outline-success')->setModal('create_account'),
-					(new Button())->setName('delete')->setLabel('Delete selected')->addClass('btn-outline-danger')
+					(new Button())->setName('create')->setLabel(I18N::get('Create New'))->addClass('btn-outline-success')->setModal('create_account'),
+					(new Button())->setName('delete')->setLabel(I18N::get('Delete selected'))->addClass('btn-outline-danger')
 				]);				
 			}
 		}
@@ -40,7 +41,7 @@
 				switch($data['action']) {
 					case 'delete':
 						if(!isset($data['account'])) {
-							$this->assign('error', 'Please select the FTP account you want to delete!');
+							$this->assign('error', I18N::get('Please select the FTP account you want to delete!'));
 						} else {
 							$deletion	= [];
 							$stop		= false;
@@ -55,7 +56,7 @@
 									
 									if(empty($user->username)) {
 										$stop		= true;
-										$this->assign('error', 'You can\'t delete your main account!');
+										$this->assign('error', I18N::get('You can\'t delete your main account!'));
 									} else {
 										$deletion[] = $user;
 									}
@@ -66,11 +67,11 @@
 									]);
 									
 									if(empty($unable)) {
-										$this->assign('error', 'An unknown error has occurred. Please retry your action!');
+										$this->assign('error', I18N::get('An unknown error has occurred. Please retry your action!'));
 									} else if(empty($unable->username)) {
-										$this->assign('error', 'You can\'t delete your main account!');
+										$this->assign('error', I18N::get('You can\'t delete your main account!'));
 									} else {
-										$this->assign('error', sprintf('You have no permissions to delete the account <strong>%s_%s</strong>!', Auth::getUsername($unable->user_id), $unable->username));
+										$this->assign('error', sprintf(I18N::get('You have no permissions to delete the account <strong>%s_%s</strong>!'), Auth::getUsername($unable->user_id), $unable->username));
 									}
 									break;
 								}
@@ -86,7 +87,7 @@
 									]);
 								}
 								
-								$this->assign('success', sprintf('Following users was deleted: <strong>%s</strong>!', implode(', ', $users)));
+								$this->assign('success', sprintf(I18N::get('Following users was deleted: <strong>%s</strong>!'), implode(', ', $users)));
 								$this->accounts = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'ftp_user` WHERE `user_id`=:user ORDER BY `username` ASC', [
 									'user'	=> Auth::getID()
 								]);
@@ -99,28 +100,28 @@
 		
 		public function onChange($data = []) {
 			if(empty($data['user_id']) || mb_strlen($data['user_id']) <= 0) {
-				return 'An error has occurred. Please reload the page and try again!';
+				return I18N::get('An error has occurred. Please reload the page and try again!');
 			}
 			
 			if(!Database::exists('SELECT * FROM `' . DATABASE_PREFIX . 'ftp_user` WHERE `id`=:id AND `user_id`=:user_id LIMIT 1', [
 				'id'			=> $data['user_id'],
 				'user_id'		=> Auth::getID()
 			])) {
-				return 'You have no permission to this FTP account!'; // @ToDo log bad value (because SQL- or XSS-Injection)?
+				return I18N::get('You have no permission to this FTP account!'); // @ToDo log bad value (because SQL- or XSS-Injection)?
 			}
 			
 			if(empty($data['password']) || mb_strlen($data['password']) <= 0) {
-				return 'Please enter a password for the selected ftp account!';
+				return I18N::get('Please enter a password for the selected ftp account!');
 			}
 			
 			if(empty($data['path']) || mb_strlen($data['path']) <= 0) {
-				return 'Please select an valid path for the account!';
+				return I18N::get('Please select an valid path for the account!');
 			}
 			
 			$path = sprintf('%s%s%s', HOST_PATH, Auth::getUsername(), $data['path']);
 			
 			if(!file_exists($path)) {
-				return 'The selected path doesn\'t exists!';
+				return I18N::get('The selected path doesn\'t exists!');
 			}
 			
 			fruithost\Database::update(DATABASE_PREFIX . 'ftp_user', [ 'id', 'user_id' ], [
@@ -136,21 +137,21 @@
 		
 		public function onCreate($data = []) {
 			if(empty($data['username']) || mb_strlen($data['username']) <= 0) {
-				return 'Please enter a username for your ftp account!';
+				return I18N::get('Please enter a username for your ftp account!');
 			}
 			
 			if(empty($data['password']) || mb_strlen($data['password']) <= 0) {
-				return 'Please enter a password for your ftp account!';
+				return I18N::get('Please enter a password for your ftp account!');
 			}
 			
 			if(empty($data['path']) || mb_strlen($data['path']) <= 0) {
-				return 'Please select an valid path for the account!';
+				return I18N::get('Please select an valid path for the account!');
 			}
 			
 			$path = sprintf('%s%s%s', HOST_PATH, Auth::getUsername(), $data['path']);
 			
 			if(!file_exists($path)) {
-				return 'The selected path doesn\'t exists!';
+				return I18N::get('The selected path doesn\'t exists!');
 			}
 			
 			$id = fruithost\Database::insert(DATABASE_PREFIX . 'ftp_user', [

@@ -1,0 +1,63 @@
+msgid "Hello"
+msgstr ""msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: German\n"
+
+msgid "No FTP accounts available!"
+msgstr "Keine FTP-Konten verfügbar!"
+
+msgid "Please create a new account to administer it."
+msgstr "Bitte erstellen Sie ein neues Konto, um es zu verwalten."
+
+msgid "Create new Account"
+msgstr "Neues Konto erstellen"
+
+msgid "Create FTP Account"
+msgstr "FTP-Konto erstellen"
+
+msgid "Change FTP Account"
+msgstr "FTP-Konto ändern"
+
+msgid "Please select the FTP account you want to delete!"
+msgstr "Bitte wählen Sie das FTP-Konto aus, das Sie löschen möchten!"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "Ein unbekannter Fehler ist aufgetreten. "
+
+msgid "You can't delete your main account!"
+msgstr "Sie können Ihr Hauptkonto nicht löschen!"
+
+msgid "You have no permissions to delete the account <strong>%s_%s</strong>!"
+msgstr "Sie haben keine Berechtigung zum Löschen des Kontos <strong>%s_%s</strong>!"
+
+msgid "Following users was deleted: <strong>%s</strong>!"
+msgstr "Folgender Benutzer wurde gelöscht: <strong>%s</strong>!"
+
+msgid "An error has occurred. Please reload the page and try again!"
+msgstr "Es ist ein Fehler aufgetreten. "
+
+msgid "You have no permission to this FTP account!"
+msgstr "Sie haben keine Berechtigung für dieses FTP-Konto!"
+
+msgid "Please enter a password for the selected ftp account!"
+msgstr "Bitte geben Sie ein Passwort für das ausgewählte FTP-Konto ein!"
+
+msgid "Please select an valid path for the account!"
+msgstr "Bitte wählen Sie einen gültigen Pfad für das Konto!"
+
+msgid "The selected path doesn't exists!"
+msgstr "Der ausgewählte Pfad existiert nicht!"
+
+msgid "'Please enter a username for your ftp account!"
+msgstr "'Bitte geben Sie einen Benutzernamen für Ihr FTP-Konto ein!"
+
+msgid "Please enter a password for your ftp account!"
+msgstr "Bitte geben Sie ein Passwort für Ihr FTP-Konto ein!"
+
+msgid "Please select an valid path for the account!"
+msgstr "Bitte wählen Sie einen gültigen Pfad für das Konto!"
+
+msgid "Please select"
+msgstr "Bitte auswählen"

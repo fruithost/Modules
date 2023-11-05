@@ -18,7 +18,7 @@ Be a team-player, all feedbacks of our patrons will have the priority. We will b
 - ✔️ [domains](https://github.com/fruithost/Modules/tree/master/domains)
 - ✔️ [faq](https://github.com/fruithost/Modules/tree/master/faq)
 - ❌ filemanager
-- ❌ ftp
+- ✔️ [ftp](https://github.com/fruithost/Modules/tree/master/ftp)
 - ❌ live-chat
 - ❌ logfiles
 - ❌ mailserver

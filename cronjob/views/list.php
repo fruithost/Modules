@@ -1,14 +1,15 @@
 <?php
 	use fruithost\Auth;
+	use fruithost\I18N;
 ?>
 <table class="table table-borderless table-striped table-hover">
 	<thead>
 		<tr>
-			<th scope="col" colspan="2">Name</th>
-			<th scope="col">Type</th>
-			<th scope="col">Action</th>
-			<th scope="col">Configuration</th>
-			<th scope="col">Status</th>
+			<th scope="col" colspan="2"><?php I18N::__('Name'); ?></th>
+			<th scope="col"><?php I18N::__('Type'); ?></th>
+			<th scope="col"><?php I18N::__('Action'); ?></th>
+			<th scope="col"><?php I18N::__('Configuration'); ?></th>
+			<th scope="col"><?php I18N::__('Status'); ?></th>
 			<th scope="col"></th>
 		</tr>
 	</thead>
@@ -31,8 +32,13 @@
 				}
 				?>
 					<tr>
-						<td scope="row" width="1px"><input type="checkbox" name="cronjob[]" value="<?php print $cronjob->id; ?>" /></td>
-						<td><?php print (empty($cronjob->name) ? '<i>Not named</i>' : $cronjob->name); ?></td>
+						<td scope="row" width="1px">
+							<div class="custom-control custom-checkbox">
+								<input class="custom-control-input" type="checkbox" id="cronjob_<?php print $cronjob->id; ?>" name="cronjob[]" value="<?php print $cronjob->id; ?>" />
+								<label class="custom-control-label" for="cronjob_<?php print $cronjob->id; ?>"></label>
+							</div>
+						</td>
+						<td><?php print (empty($cronjob->name) ? sprintf('<i>%s</i>', I18N::get('Not named')) : $cronjob->name); ?></td>
 						<td><?php print $cronjob->command_type; ?></td>
 						<td><?php print $html; ?></td>
 						<td>
@@ -41,7 +47,7 @@
 						<td>
 							<?php
 								if($cronjob->time_running === null) {
-									print '<span class="text-warning">Never running</span>';
+									printf('<span class="text-warning">%s</span>', I18N::get('Never running'));
 								} else {
 									print '<span class="text-success">' . date(Auth::getSettings('TIME_FORMAT', NULL, 'd.m.Y - H:i'), strtotime($cronjob->time_running)) . '</span>';
 								}
@@ -58,8 +64,8 @@
 								'task_weekday'	=> $cronjob->task_weekday,
 								'command_type'	=> $cronjob->command_type,
 								'command_value'	=> $value
-							]); ?>'>Edit</button>
-							<button class="delete btn btn-sm btn-danger" type="submit" id="button" name="action" id="delete_<?php print $cronjob->id; ?>" value="delete">Delete</button>
+							]); ?>'><?php I18N::__('Edit'); ?></button>
+							<button class="delete btn btn-sm btn-danger" type="submit" id="button" name="action" id="delete_<?php print $cronjob->id; ?>" value="delete"><?php I18N::__('Delete'); ?></button>
 						</td>
 					</tr>
 				<?php

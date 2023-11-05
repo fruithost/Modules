@@ -12,7 +12,7 @@ Be a team-player, all feedbacks of our patrons will have the priority. We will b
 
 ## Completely finished Modules
 - ❌ backup
-- ❌ cronjob
+- ✔️ [cronjob](https://github.com/fruithost/Modules/tree/master/cronjob)
 - ❌ database
 - ❌ dns
 - ✔️ [domains](https://github.com/fruithost/Modules/tree/master/domains)

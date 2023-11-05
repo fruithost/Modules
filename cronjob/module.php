@@ -4,19 +4,20 @@
 	use fruithost\Auth;
 	use fruithost\Button;
 	use fruithost\Modal;
+	use fruithost\I18N;
 	
 	class Cronjob extends ModuleInterface {
 		private $cronjobs = [];
 		
 		public function init() {
-			$this->addModal((new Modal('create_cron', 'Create Cronjob', __DIR__ . '/views/create.php'))->addButton([
-				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
-				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
+			$this->addModal((new Modal('create_cron', I18N::get('Create Cronjob'), __DIR__ . '/views/form.php'))->addButton([
+				(new Button())->setName('cancel')->setLabel(I18N::get('Cancel'))->addClass('btn-outline-danger')->setDismissable(),
+				(new Button())->setName('create')->setLabel(I18N::get('Create'))->addClass('btn-outline-success')
 			])->onSave([ $this, 'onSave' ]));
 			
-			$this->addModal((new Modal('change_cron', 'Create Cronjob', __DIR__ . '/views/change.php'))->addButton([
-				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
-				(new Button())->setName('update')->setLabel('Update')->addClass('btn-outline-success')
+			$this->addModal((new Modal('change_cron', I18N::get('Change Cronjob'), __DIR__ . '/views/form.php'))->addButton([
+				(new Button())->setName('cancel')->setLabel(I18N::get('Cancel'))->addClass('btn-outline-danger')->setDismissable(),
+				(new Button())->setName('update')->setLabel(I18N::get('Update'))->addClass('btn-outline-success')
 			])->onSave([ $this, 'onUpdate' ]));
 			
 			$this->cronjobs = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'cronjobs` WHERE `user_id`=:user ORDER BY `id` ASC', [
@@ -26,44 +27,44 @@
 		
 		public function load() {
 			if(empty($this->cronjobs)) {
-				$this->addButton((new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')->setModal('create_cron'));
+				$this->addButton((new Button())->setName('create')->setLabel(I18N::get('Create'))->addClass('btn-outline-success')->setModal('create_cron'));
 			} else {
 				$this->addButton([
-					(new Button())->setName('create')->setLabel('Create New')->addClass('btn-outline-success')->setModal('create_cron'),
-					(new Button())->setName('delete')->setLabel('Delete selected')->addClass('btn-outline-danger')
+					(new Button())->setName('create')->setLabel(I18N::get('Create New'))->addClass('btn-outline-success')->setModal('create_cron'),
+					(new Button())->setName('delete')->setLabel(I18N::get('Delete selected'))->addClass('btn-outline-danger')
 				]);				
 			}
 		}
 		
 		public function onUpdate($data = []) {
 			if(!isset($data['cron_id']) || empty($data['cron_id'])) {
-				return 'Unknown error occurs!';
+				return I18N::get('Unknown error occurs!');
 			}
 			
 			if(!isset($data['minute']) || !($data['minute'] == '*' || ($data['minute'] >= 0 && $data['minute'] <= 59))) {
-				return 'Please enter a valid minute!';
+				return I18N::get('Please enter a valid minute!');
 			}
 			
 			if(!isset($data['hour']) || !($data['hour'] == '*' || ($data['hour'] >= 0 && $data['hour'] <= 23))) {
-				return 'Please enter a valid hour!';
+				return I18N::get('Please enter a valid hour!');
 			}
 			
 			if(!isset($data['day']) || !($data['day'] == '*' || ($data['day'] >= 1 && $data['day'] <= 31))) {
-				return 'Please enter a valid day!';
+				return I18N::get('Please enter a valid day!');
 			}
 			
 			if(!isset($data['month']) || !($data['month'] == '*' || ($data['month'] >= 1 && $data['month'] <= 12))) {
-				return 'Please enter a valid month!';
+				return I18N::get('Please enter a valid month!');
 			}
 			
 			if(!isset($data['weekday']) || !($data['weekday'] == '*' || ($data['weekday'] >= 0 && $data['weekday'] <= 6))) {
-				return 'Please enter a valid weekday!';
+				return I18N::get('Please enter a valid weekday!');
 			}
 			
 			switch($data['type']) {
 				case 'php':
 					if(!isset($data['php']) || !preg_match('/\.php$/', $data['php'])) {
-						return 'Please enter a valid PHP script!';
+						return I18N::get('Please enter a valid PHP script!');
 					}
 					
 					Database::update(DATABASE_PREFIX . 'cronjobs', [ 'id', 'user_id' ], [
@@ -86,7 +87,7 @@
 				break;
 				case 'url':
 					if(!isset($data['url']) || !preg_match('/^(http|https):\/\//Uis', $data['url'])) {
-						return 'Please enter a valid URL!';
+						return I18N::get('Please enter a valid URL!');
 					}
 					
 					Database::update(DATABASE_PREFIX . 'cronjobs', [ 'id', 'user_id' ], [
@@ -105,7 +106,7 @@
 					return true;
 				break;
 				default:
-					return 'Please enter a valid action!';
+					return I18N::get('Please enter a valid action!');
 				break;
 			}
 		}
@@ -115,7 +116,7 @@
 				switch($data['action']) {
 					case 'delete':
 						if(!isset($data['cronjob'])) {
-							$this->assign('error', 'Please select an Cronjob you want to delete!');
+							$this->assign('error', I18N::get('Please select an Cronjob you want to delete!'));
 						} else {
 							$deletion	= [];
 							$stop		= false;
@@ -135,9 +136,9 @@
 									]);
 									
 									if(empty($unable)) {
-										$this->assign('error', 'An unknown error has occurred. Please retry your action!');
+										$this->assign('error', I18N::get('An unknown error has occurred. Please retry your action!'));
 									} else {
-										$this->assign('error', sprintf('You have no permissions to delete the Cronjob <strong>%s_%s</strong>!', (empty($cronjob->name) ? '<i>Not named</i>' : $cronjob->name)));
+										$this->assign('error', sprintf(I18N::get('You have no permissions to delete the Cronjob <strong>%s_%s</strong>!'), (empty($cronjob->name) ? '<i>Not named</i>' : $cronjob->name)));
 									}
 									break;
 								}
@@ -154,7 +155,7 @@
 									]);
 								}
 								
-								$this->assign('success', sprintf('Following Cronjobs was deleted: <strong><br />- %s</strong>', implode('<br />- ', $cronjobs)));
+								$this->assign('success', sprintf(I18N::get('Following Cronjobs was deleted: <strong><br />- %s</strong>'), implode('<br />- ', $cronjobs)));
 							}
 							
 							$this->cronjobs = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'cronjobs` WHERE `user_id`=:user ORDER BY `id` ASC', [
@@ -168,29 +169,29 @@
 		
 		public function onSave($data = []) {
 			if(!isset($data['minute']) || !($data['minute'] == '*' || ($data['minute'] >= 0 && $data['minute'] <= 59))) {
-				return 'Please enter a valid minute!';
+				return I18N::get('Please enter a valid minute!');
 			}
 			
 			if(!isset($data['hour']) || !($data['hour'] == '*' || ($data['hour'] >= 0 && $data['hour'] <= 23))) {
-				return 'Please enter a valid hour!';
+				return I18N::get('Please enter a valid hour!');
 			}
 			
 			if(!isset($data['day']) || !($data['day'] == '*' || ($data['day'] >= 1 && $data['day'] <= 31))) {
-				return 'Please enter a valid day!';
+				return I18N::get('Please enter a valid day!');
 			}
 			
 			if(!isset($data['month']) || !($data['month'] == '*' || ($data['month'] >= 1 && $data['month'] <= 12))) {
-				return 'Please enter a valid month!';
+				return I18N::get('Please enter a valid month!');
 			}
 			
 			if(!isset($data['weekday']) || !($data['weekday'] == '*' || ($data['weekday'] >= 0 && $data['weekday'] <= 6))) {
-				return 'Please enter a valid weekday!';
+				return I18N::get('Please enter a valid weekday!');
 			}
 			
 			switch($data['type']) {
 				case 'php':
 					if(!isset($data['php']) || !preg_match('/\.php$/', $data['php'])) {
-						return 'Please enter a valid PHP script!';
+						return I18N::get('Please enter a valid PHP script!');
 					}
 					
 					$id = Database::insert(DATABASE_PREFIX . 'cronjobs', [
@@ -215,7 +216,7 @@
 				break;
 				case 'url':
 					if(!isset($data['url']) || !preg_match('/^(http|https):\/\//Uis', $data['url'])) {
-						return 'Please enter a valid URL!';
+						return I18N::get('Please enter a valid URL!');
 					}
 					
 					$id = Database::insert(DATABASE_PREFIX . 'cronjobs', [
@@ -236,7 +237,7 @@
 					return true;
 				break;
 				default:
-					return 'Please enter a valid action!';
+					return I18N::get('Please enter a valid action!');
 				break;
 			}
 		}

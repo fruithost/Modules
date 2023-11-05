@@ -1,0 +1,188 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: German\n"
+
+msgid "Action"
+msgstr "Aktion"
+
+msgid "Not named"
+msgstr "Nicht benannt"
+
+msgid "Never running"
+msgstr "Nie rennen"
+
+msgid "No Cronjobs available!"
+msgstr "Keine Cronjobs verfügbar!"
+
+msgid "Please create a new cronjob to administer it."
+msgstr "Bitte erstellen Sie einen neuen Cronjob, um ihn zu verwalten."
+
+msgid "Create new Cronjob"
+msgstr "Neuen Cronjob erstellen"
+
+msgid "Name"
+msgstr ""
+
+msgid "Name of your Job"
+msgstr "Name Ihres Jobs"
+
+msgid "Template"
+msgstr "Vorlage"
+
+msgid "Common Settings"
+msgstr "Allgemeine Einstellungen"
+
+msgid "Each Minute"
+msgstr "Jede Minute"
+
+msgid "All 5 Minutes"
+msgstr "Alle 5 Minuten"
+
+msgid "'Each 30 Minutes"
+msgstr "'Alle 30 Minuten"
+
+msgid "Each Hour"
+msgstr "Jede Stunde"
+
+msgid "Each 12 Hours"
+msgstr "Alle 12 Stunden"
+
+msgid "Each Day"
+msgstr "Jeden Tag"
+
+msgid "Each Week"
+msgstr "Jede Woche"
+
+msgid "On the 1st and 15th of the Month"
+msgstr "Am 1. und 15. des Monats"
+
+msgid "Each Month"
+msgstr "Jeden Monat"
+
+msgid "Each Year"
+msgstr "Jedes Jahr"
+
+msgid "Minute"
+msgstr ""
+
+msgid "Each two Minutes"
+msgstr "Alle zwei Minuten"
+
+msgid "Each Five Minutes"
+msgstr "Alle fünf Minuten"
+
+msgid "Each Ten Minutes"
+msgstr "Alle zehn Minuten"
+
+msgid "Each Fifteen Minutes"
+msgstr "Alle fünfzehn Minuten"
+
+msgid "Each Thirty Minutes"
+msgstr "Alle dreißig Minuten"
+
+msgid "Minutes"
+msgstr "Minuten"
+
+msgid "At the beginning of the hour"
+msgstr "Zu Beginn der Stunde"
+
+msgid "At one quarter past the hour"
+msgstr "Um Viertel nach der vollen Stunde"
+
+msgid "At half past the hour"
+msgstr "Um halb"
+
+msgid "At one quarter until the hour"
+msgstr "Um Viertel vor der vollen Stunde"
+
+msgid "Hour"
+msgstr "Stunde"
+
+msgid "Every Hour"
+msgstr "Jede Stunde"
+
+msgid "Every Other Hour"
+msgstr "Jede zweite Stunde"
+
+msgid "Every Third Hour"
+msgstr "Jede dritte Stunde"
+
+msgid "Every Fourth Hour"
+msgstr "Jede vierte Stunde"
+
+msgid "Every Sixth Hour"
+msgstr "Jede sechste Stunde"
+
+msgid "Every Twelve Hours"
+msgstr "Alle zwölf Stunden"
+
+msgid "Hours"
+msgstr "Stunden"
+
+msgid "Day"
+msgstr "Tag"
+
+msgid "Every Day"
+msgstr "Jeden Tag"
+
+msgid "Every Other Day"
+msgstr "Jeden zweiten Tag"
+
+msgid "On the 1st and 15th of the Month"
+msgstr "Am 1. und 15. des Monats"
+
+msgid "Days"
+msgstr "Tage"
+
+msgid "Month"
+msgstr "Monat"
+
+msgid "Every Month"
+msgstr "Jeden Monat"
+
+msgid "Every Other Month"
+msgstr "Alle zwei Monate"
+
+msgid "Every Third Month"
+msgstr "Jeden dritten Monat"
+
+msgid "Every Six Months"
+msgstr "Alle sechs Monate"
+
+msgid "Months"
+msgstr "Monate"
+
+msgid "Weekday"
+msgstr "Wochentag"
+
+msgid "Every Day"
+msgstr "Jeden Tag"
+
+msgid "Every Weekday"
+msgstr "Jeden Wochentag"
+
+msgid "Every Weekend Day"
+msgstr "Jeden Wochenendtag"
+
+msgid "Every Monday, Wednesday, and Friday"
+msgstr "Jeden Montag, Mittwoch und Freitag"
+
+msgid "Every Tuesday and Thursday"
+msgstr "Jeden Dienstag und Donnerstag"
+
+msgid "Weekdays"
+msgstr "Wochentage"
+
+msgid "Execute PHP Script"
+msgstr "PHP-Skript ausführen"
+
+msgid "Please Select"
+msgstr "Bitte auswählen"
+
+msgid "Arguments"
+msgstr "Argumente"
+
+msgid "Call URL"
+msgstr "Anruf-URL"

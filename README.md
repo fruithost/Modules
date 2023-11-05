@@ -16,7 +16,7 @@ Be a team-player, all feedbacks of our patrons will have the priority. We will b
 - ❌ database
 - ❌ dns
 - ✔️ [domains](https://github.com/fruithost/Modules/tree/master/domains)
-- ❌ faq
+- ✔️ [faq](https://github.com/fruithost/Modules/tree/master/faq)
 - ❌ filemanager
 - ❌ ftp
 - ❌ live-chat

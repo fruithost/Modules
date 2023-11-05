@@ -1,0 +1,14 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: German\n"
+
+msgid "Enter a question or key word..."
+msgstr "Geben Sie eine Frage oder ein Schlüsselwort ein..."
+
+msgid "Search"
+msgstr "Suchen"
+
+msgid "What can we help you with?"
+msgstr "Wobei können wir Ihnen helfen?"

@@ -1,0 +1,40 @@
+-- Categorys
+ALTER TABLE `[DATABASE_PREFIX]faq_categories` AUTO_INCREMENT=1;
+
+INSERT INTO `[DATABASE_PREFIX]faq_categories` (`id`, `name`) VALUES
+	(1, 'Administration'),
+	(2, 'Domains'),
+	(3, 'E-Mail'),
+	(4, 'DNS'),
+	(5, 'Database'),
+	(6, 'Security'),
+	(7, 'Hosting');
+
+-- Questions
+ALTER TABLE `[DATABASE_PREFIX]faq_entries` AUTO_INCREMENT=1;
+
+INSERT INTO `[DATABASE_PREFIX]faq_entries` (`id`, `category`, `question`, `answer`) VALUES
+	(1, 1, 'How can I see if my service is being extended?', 'We automatically renew all services. You will receive an E-Mail 8 weeks before the renewal date at the E-Mail address you provided. In this E-Mail you will find all necessary information regarding the extension.'),
+	(2, 1, 'Are services automatically renewed?', 'We automatically renew all services.'),
+	(3, 1, 'Where i can change mys address details?', 'You can change your address data easily and quickly via the control panel.'),
+	(4, 2, 'What are your standard name servers?', 'If you have placed your domain name elsewhere, you can refer to our name servers. Our standard name servers:\r\n<br />\r\n<br />ns1.$YourDomain\r\n<br />ns2.$YourDomain'),
+	(5, 3, 'How i can access the webmailer?', 'You can access our webmail over the control panel.  Here you log in with your full E-Mail address and the corresponding password.'),
+	(6, 3, 'Do you support secure E-Mail?', 'Yes, we support secure E-Mail on all our servers. You can enable this setting within your E-Mail program.'),
+	(7, 3, 'Can i deliver my E-Mail to my own mail server?', 'Yes, this is possible. Adjust the desired MX records on the nameserver/DNS on your domain. Please note, incorrectly setting MX records can cause E-Mail to stop working. Consult a web professional where necessary.\r\n<br />\r\n<br />If you\'re using your own service, please note, that we don\'t provide support.'),
+	(8, 3, 'What are the default E-Mail settings?', 'When setting up your E-Mail address within an E-Mail program, you need a number of data, namely:\r\n<br />\r\n<br />Username: your E-Mail address (like YourName@YourDomain)\r\n<br />Password: the corresponding password \r\n<br />Incoming E-Mail server: mail.$YourDomain (port 143) \r\n<br />Outgoing E-Mail server: mail.$YourDomain (port 587)\r\n<br />\r\n<br />For windows mail clients, you can use following subdomains like:\r\n<br />imap.$YourDomain or imaps.$YourDomain\r\n<br />pop3.$YourDomain\r\n<br />and imapauths.$YourDomain'),
+	(9, 3, 'How do i create an E-Mail adress?', 'You can manage all your E-Mail addresses over our control panel. In addition to adding E-Mail addresses, you can also perform the following actions here: \r\n<br />- Change passwords \r\n<br />- Delete E-Mail addresses \r\n<br />- Setup forwarders\r\n<br />- Enable or disable a catch-all\r\n<br />- Enable or disable \r\nan autoresponder'),
+	(10, 3, 'Difference between IMAP and POP3', 'IMAP\r\n<br />\r\n<br />IMAP is very suitable when you use multiple devices for your E-Mail. The content (including folder structure) of the E-Mail box is exactly the same on every computer. All E-Mails can be read everywhere and at all times because they remain on our server.\r\n<br />\r\n<br />IMAP benefits\r\n<br />- Your E-Mails can be read from multiple devices\r\n<br />- The sent items are also the same on each device \r\n<br />- With IMAP you can see on each device which messages have already been read and which are not (useful if you work in the same inbox as your colleagues)\r\n<br />- New folders can be seen on all devices when you create them, including in web mail. Disadvantages IMAP\r\n<br />- All E-Mail remains on the server, your e-mail box will use more of the disk space on the server \r\n<br />\r\n<br />POP3\r\n<br />Your E-Mail program / client retrieves E-Mail to your computer so that you can read it. The messages are stored locally on your computer and no longer on the server.\r\n<br />\r\n<br />Benefits POP3 \r\n<br />- The chance that your E-Mail box consumes the disk space on the server is much smaller than with IMAP Disadvantages POP3 \r\n<br />- Folders are not synchronized on all devices (content may differ per E-Mail program / client)'),
+	(11, 4, 'How i can manage my DNS zone?', 'You can manage the DNS zone of your domain name over the control panel. You have the option here to create the following type of DNS records:\r\n<br />\r\n<br />- A record \r\n<br />- AAAA record \r\n<br />- SRV record \r\n<br />- TXT record \r\n<br />- MX record \r\n<br />- CNAME record \r\n<br />- CAA record \r\n<br />- SPF record \r\n<br />- PTR record \r\n<br />\r\n<br />Please note, incorrectly setting DNS records can cause the website and / or E-Mail to stop working. Consult a web professional where necessary. Your domain must be managed by our nameserver, otherwise you must contact your domain registrar.'),
+	(12, 5, 'What type of database do you use?', 'You can use the MySQL database type on our servers. This is a popular and widely used database and suitable for applications such as WordPress, Joomla and Drupal.'),
+	(13, 5, 'How i can create a database?', 'You can easily and quickly create your database over the control panel.'),
+	(14, 5, 'How i can login with PHPMyAdmin?', 'In our control panel, you can easily log in to PHPMyAdmin. By default, you have a directly access to all your databases.'),
+	(15, 5, 'How i can change the password of my database?', 'You can change the password for each database users on the control panel.\r\n<br />\r\n<br />If necessary, also adjust any configuration files from your application such as WordPress (wp-config.php), Joomla (configuration.php) or other...'),
+	(16, 5, 'Can i create additional databases or users?', 'Yes! Go to the control panel and modify your accounts or databases.'),
+	(17, 6, 'My website has been hacked, what i can do?', 'In many cases, through our proactive monitoring, we are already aware of unlawful use. This way we can inform you in time of problems on your website. However, if you find that your website has been hacked, contact the Support department for customized advice.'),
+	(18, 6, 'What type of SSL certificates do you offer', 'We currently offer the following types of SSL certificates: \r\n<br />\r\n<br />- Let\'s Encrypt\r\n<br />- Selfsigned'),
+	(19, 6, 'Do you use Fail2Ban?', 'Yes, all our servers have Fail2Ban security software as standard to combat brute-force attacks. A familiar feeling.'),
+	(20, 6, 'How do i order an SSL certificate?', 'In our control panel, you can create some certificates on the SSL navigation point.'),
+	(21, 7, 'Is root access possible?', 'No. We have a strict security plan, root access will not permitted.'),
+	(22, 7, 'How i can view the statistics of my website?', 'You can install and use the Webaziler program over the control panel. This program keeps track of how many visitors have been to your website.'),
+	(23, 7, 'How do i get the FTP data?', 'You can consult your FTP data over the control panel. You can also add additional users with some permissions here.'),
+	(24, 8, 'How do i use the FileZilla or WinSCP FTP programm?', 'You can use various FTP programs to publish your website online. Our customers often use the (free) FTP program FileZilla or WinSCP. Below the steps to be taken in a nutshell: \r\n<br />\r\n<br />1. Open the FileZilla or WinSCP program (Download the program via <a href=\"https://filezilla-project.org/download.php?type=client\" target=\"_blank\">https://filezilla-project.org/download.php?type=client</a> or <a href=\"https://winscp.net/eng/download.php\" target=\"_blank\">https://winscp.net/eng/download.php</a> and install it on your computer). \r\n<br />2.  Connect to the FTP server Make a connection to the server using the FTP data that you have received.\r\n<br />3. File transfer  (After the connection is successful you can immediately start transferring files)');

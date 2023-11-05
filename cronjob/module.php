@@ -138,7 +138,7 @@
 									if(empty($unable)) {
 										$this->assign('error', I18N::get('An unknown error has occurred. Please retry your action!'));
 									} else {
-										$this->assign('error', sprintf(I18N::get('You have no permissions to delete the Cronjob <strong>%s_%s</strong>!'), (empty($cronjob->name) ? '<i>Not named</i>' : $cronjob->name)));
+										$this->assign('error', sprintf(I18N::get('You have no permissions to delete the Cronjob <strong>%s_%s</strong>!'), (empty($cronjob->name) ? sprintf('<i>%s</i>', I18N::get('Not named')) : $cronjob->name)));
 									}
 									break;
 								}
@@ -148,7 +148,7 @@
 								$cronjobs = [];
 								
 								foreach($deletion AS $cronjob) {
-									$cronjobs[] = (empty($cronjob->name) ? 'Not named' : $cronjob->name);
+									$cronjobs[] = (empty($cronjob->name) ? I18N::get('Not named') : $cronjob->name);
 									
 									Database::delete(DATABASE_PREFIX . 'cronjobs', [
 										'id'			=> $cronjob->id

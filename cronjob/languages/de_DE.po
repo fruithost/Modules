@@ -186,3 +186,45 @@ msgstr "Argumente"
 
 msgid "Call URL"
 msgstr "Anruf-URL"
+
+msgid "Create Cronjob"
+msgstr "Cronjob erstellen"
+
+msgid "Change Cronjob"
+msgstr "Cronjob ändern"
+
+msgid "Unknown error occurs!"
+msgstr "Unbekannter Fehler tritt auf!"
+
+msgid "Please enter a valid minute!"
+msgstr "Bitte geben Sie eine gültige Minute ein!"
+
+msgid "'Please enter a valid hour!"
+msgstr "'Bitte geben Sie eine gültige Stunde ein!"
+
+msgid "Please enter a valid day!"
+msgstr "Bitte geben Sie einen gültigen Tag ein!"
+
+msgid "Please enter a valid month!"
+msgstr "Bitte geben Sie einen gültigen Monat ein!"
+
+msgid "Please enter a valid weekday!"
+msgstr "Bitte geben Sie einen gültigen Wochentag ein!"
+
+msgid "Please enter a valid PHP script!"
+msgstr "Bitte geben Sie ein gültiges PHP-Skript ein!"
+
+msgid "Please enter a valid URL!"
+msgstr "Bitte geben Sie eine gültige URL ein!"
+
+msgid "Please enter a valid action!"
+msgstr "Bitte geben Sie eine gültige Aktion ein!"
+
+msgid "Please select an Cronjob you want to delete!"
+msgstr "Bitte wählen Sie einen Cronjob aus, den Sie löschen möchten!"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "You have no permissions to delete the Cronjob <strong>%s_%s</strong>!"
+
+msgid "Following Cronjobs was deleted: <strong><br />- %s</strong>"
+msgstr "Folgende Cronjobs wurden gelöscht: <strong><br />- %s</strong>"

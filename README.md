@@ -20,7 +20,6 @@ Be a team-player, all feedbacks of our patrons will have the priority. We will b
 - ❌ filemanager
 - ✔️ [ftp](https://github.com/fruithost/Modules/tree/master/ftp)
 - ❌ live-chat
-- ❌ logfiles
 - ❌ mailserver
 - ❌ parked-domains
 - ✔️ [php](https://github.com/fruithost/Modules/tree/master/php)

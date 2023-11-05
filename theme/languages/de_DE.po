@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: German\n"
+
+msgid "User selectable Themes"
+msgstr "Vom Benutzer wählbare Themen"
+
+msgid "Settings was successfully saved!"
+msgstr "Die Einstellungen wurden erfolgreich gespeichert!"
+
+msgid "Theme"
+msgstr "Theme"
+
+msgid "Default"
+msgstr "Standard"

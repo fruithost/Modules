@@ -1,6 +1,7 @@
 <?php
 	use fruithost\Auth;
 	use fruithost\ModuleInterface;
+	use fruithost\I18N;
 	
 	class Theme extends ModuleInterface {
 		public function init() {
@@ -12,8 +13,8 @@
 				return $name;
 			});
 			
-			$this->addAction('ACCOUNT_SETTINGS_GLOBAL', [ $this, 'html' ]);
-			$this->addAction('SAVE_ACCOUNT_SETTINGS_GLOBAL', [ $this, 'save' ]);
+			$this->addAction('ACCOUNT_SETTINGS_GLOBAL',			[ $this, 'html' ]);
+			$this->addAction('SAVE_ACCOUNT_SETTINGS_GLOBAL',	[ $this, 'save' ]);
 		}
 		
 		public function onSettings($data = []) {
@@ -31,7 +32,7 @@
 				$this->setSettings('THEMES', json_encode([]));
 			}
 			
-			$this->getTemplate()->assign('success', 'Settings was successfully saved!');
+			$this->getTemplate()->assign('success', I18N::get('Settings was successfully saved!'));
 		}
 		
 		public function getPath() {
@@ -40,21 +41,41 @@
 		
 		public function save($data) {
 			if(empty($data['theme']) || $data['theme'] === '-') {
-				Auth::setSettings('THEME', NULL, NULL);
-				Auth::removeSettings('THEME', NULL);
+				if(!isset($data['user']) || $data['user'] == null) {
+					Auth::setSettings('THEME', NULL, NULL);
+					Auth::removeSettings('THEME', NULL);
+				} else {
+					$data['user']->setSettings('THEME', NULL, NULL);
+					$data['user']->removeSettings('THEME', NULL);
+				}
 			} else {
-				Auth::setSettings('THEME', NULL, $data['theme']);
+				if(!isset($data['user']) || $data['user'] == null) {
+					Auth::setSettings('THEME', NULL, $data['theme']);
+				} else {
+					$data['user']->setSettings('THEME', NULL, $data['theme']);
+				}
 			}
 		}
 		
 		public function getThemes($selections = NULL, $raw = false) {
 			$themes = [];
+			$ignore = [
+				'.git'
+			];
 			
 			foreach(new \DirectoryIterator($this->getPath()) AS $info) {
 				if($info->isDot()) {
 					continue;
 				}
-
+				
+				if(!$info->isDir()) {
+					continue;
+				}
+				
+				if(in_array($info->getFilename(), $ignore)) {
+					continue;
+				}
+				
 				$path		= sprintf('%s%s%s', $this->getPath(), DS, $info->getFilename());
 				$selected	= false;
 				
@@ -80,29 +101,38 @@
 			return $themes;
 		}
 		
-		public function html() {
-			$available = json_decode($this->getSettings('THEMES', json_encode([])));
+		public function html($args = null) {
+			if(!isset($args['user']) || $args['user'] == null) {
+				$selected	= Auth::getSettings('THEME', NULL, NULL);	
+			} else {
+				$selected	= $args['user']->getSettings('THEME', NULL, NULL);
+			}
+			
+			$available	= json_decode($this->getSettings('THEMES', json_encode([])));
+			$themes		= $this->getThemes($selected);
 			?>
 			<hr class="mb-4" />
 			<div class="form-group row">
-				<label for="theme" class="col-sm-2 col-form-label">Theme:</label>
+				<label for="theme" class="col-sm-2 col-form-label"><?php I18N::__('Theme'); ?>:</label>
 				<div class="col-sm-10">
 					<select name="theme" id="theme" class="form-control">
-						<option value="-">Default</option>
+						<option value="-"><?php I18N::__('Default'); ?></option>
 						<?php
-							foreach($this->getThemes(Auth::getSettings('THEME', NULL, NULL)) AS $theme) {
-								$show = false;
-								
-								if(!empty($available)) {
-									if(is_array($available)) {
-										$show = in_array($theme['name'], $available);
-									} else {
-										$show = ($available === $theme['name']);
+							if(count($themes) > 0) {
+								foreach($themes AS $theme) {
+									$show = false;
+									
+									if(!empty($available)) {
+										if(is_array($available)) {
+											$show = in_array($theme['name'], $available);
+										} else {
+											$show = ($available === $theme['name']);
+										}
 									}
-								}
-								
-								if($show) {
-									printf('<option value="%1$s"%2$s>%1$s</option>', $theme['name'], ($theme['selected'] ? ' SELECTED' : ''));
+									
+									if($show) {
+										printf('<option value="%1$s"%2$s>%1$s</option>', $theme['name'], ($theme['selected'] ? ' SELECTED' : ''));
+									}
 								}
 							}
 						?>

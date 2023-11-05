@@ -12,25 +12,25 @@ Be a team-player, all feedbacks of our patrons will have the priority. We will b
 
 ## Completely finished Modules
 - ❌ backup
-- ❌ [cronjob](https://github.com/fruithost/Modules/tree/master/cronjob)
+- ❌ cronjob
 - ❌ database
 - ❌ dns
-- ✔️ domains
+- ✔️ [domains](https://github.com/fruithost/Modules/tree/master/domains)
 - ❌ faq
 - ❌ filemanager
-- ❌ [ftp](https://github.com/fruithost/Modules/tree/master/ftp)
+- ❌ ftp
 - ❌ live-chat
 - ❌ logfiles
 - ❌ mailserver
 - ❌ parked-domains
-- ✔️ php
-- ❌ [phpmyadmin](https://github.com/fruithost/Modules/tree/master/phpmyadmin)
-- ❌ [protected-directorys](https://github.com/fruithost/Modules/tree/master/protected-directorys)
+- ✔️ [php](https://github.com/fruithost/Modules/tree/master/php)
+- ❌ phpmyadmin
+- ❌ protected-directorys
 - ❌ ssl
 - ❌ statistics
-- ❌ [status](https://github.com/fruithost/Modules/tree/master/status)
+- ❌ status
 - ❌ subdomains
-- ❌ [theme](https://github.com/fruithost/Modules/tree/master/theme)
+- ✔️ [theme](https://github.com/fruithost/Modules/tree/master/theme)
 - ❌ tickets
 - ❌ Webmail
 - ❌ webserver

@@ -107,6 +107,10 @@
 					}
 					
 					foreach($variables AS $name => $value) {
+						if(empty(trim($value))) {
+							continue;
+						}
+						
 						if(is_bool($value)) {
 							$content .= sprintf('%s = %s', $name, ($value ? 'On' : 'Off'));
 						} else {
@@ -170,6 +174,12 @@
 				</ul>
 				<form>
 					<?php
+						if(isset($_POST['action']) && $_POST['action'] == 'save') {
+							?>
+								<div class="alert alert-success mt-4" role="alert"><?php I18N::__('PHP.ini was successfully saved.'); ?></div>
+							<?php
+						}
+						
 						switch($submodule) {
 							case 'display':
 								require_once(sprintf('views/%s.php', $submodule));

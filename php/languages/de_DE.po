@@ -52,3 +52,6 @@ msgstr "Auf die Domäne \"<strong>%s</strong>\" kann derzeit nicht zugegriffen w
 msgid "Configuration"
 msgstr "Konfiguration"
 
+msgid "PHP.ini was successfully saved."
+msgstr "PHP.ini wurde erfolgreich gespeichert."
+

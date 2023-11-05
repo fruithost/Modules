@@ -1,0 +1,54 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: German\n"
+
+msgid "Extended"
+msgstr "Erweitert"
+
+msgid "Security"
+msgstr "Sicherheit"
+
+msgid "Error Handling"
+msgstr "Fehlerbehandlung"
+
+msgid "Display Configuration"
+msgstr "Konfiguration anzeigen"
+
+msgid "DEPRECATED"
+msgstr "VERALTET"
+
+msgid "This property is deprecated!"
+msgstr "Diese Eigenschaft ist veraltet!"
+
+msgid "default"
+msgstr "Standard"
+
+msgid "On"
+msgstr "An"
+
+msgid "Off"
+msgstr "Aus"
+
+msgid "For Domain"
+msgstr "Für Domain"
+
+msgid "Possible Modifiers"
+msgstr "Mögliche Modifikatoren"
+
+msgid "Possible Operators"
+msgstr "Mögliche Operatoren"
+
+msgid "Possible Flags"
+msgstr "Mögliche Flags"
+
+msgid "Problem!"
+msgstr "Problem!"
+
+msgid "Domain "<strong>%s</strong>" currently not accessible."
+msgstr "Auf die Domäne \"<strong>%s</strong>\" kann derzeit nicht zugegriffen werden."
+
+msgid "Configuration"
+msgstr "Konfiguration"
+

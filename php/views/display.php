@@ -1,6 +1,7 @@
 <?php
 	use fruithost\Auth;
 	use fruithost\PHP;
+	use fruithost\I18N;
 
 	$php = new PHP();
 	
@@ -14,9 +15,11 @@
 	
 	if($php->hasErrors()) {
 		?>
+		
 			<div class="container">
-				<div class="container alert alert-danger" role="alert">
-					Domain "<strong><?php print $this->domain; ?></strong>" currently not accessible.
+				<div class="alert alert-danger mt-4" role="alert">
+					<strong><?php I18N::__('Problem!'); ?></strong>
+					<p class="pb-0 mb-0"><?php printf(I18N::get('Domain "<strong>%s</strong>" currently not accessible.'), $this->domain); ?></p>
 				</div>
 			</div>
 		<?php
@@ -42,7 +45,7 @@
 											}
 											?>
 												<tr>
-													<th class="text-nowrap"><?php print $name; ?></th>
+													<th class="text-nowrap"><?php I18N::__($name); ?></th>
 													<td class="text-muted"><?php print (is_array($value) ? '<small class="text-danger">' . implode('</small><br /><small class="text-danger">', $value) . '</small>' : $value); ?></td>
 												</tr>
 											<?php
@@ -56,7 +59,7 @@
 							<div class="col text-right"><img src="data:image/png;base64,<?php print $info['logo']['Zend']; ?>" /></div>
 						</div>
 						<div class="text-center my-5">
-							<h2>Configuration</h2>
+							<h2><?php I18N::__('Configuration'); ?></h2>
 						</div>
 						<?php
 							foreach($info AS $section => $content) {

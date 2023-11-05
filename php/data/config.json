@@ -1,0 +1,237 @@
+{
+	"extended": {
+		"Session Handling": {
+			"session.use_cookies": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/session.configuration.php#ini.session.use-cookies"
+			},
+			"session.use_only_cookies": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/session.configuration.php#ini.session.use-only-cookies"
+			},
+			"session.auto_start": {
+				"type":			"Boolean",
+				"default":		false,
+				"reference":	"https://www.php.net/manual/en/session.configuration.php#ini.session.auto-start"
+			},
+			"session.name": {
+				"type":			"Text",
+				"default":		"PHPSESSID",
+				"reference":	"https://www.php.net/manual/en/session.configuration.php#ini.session.name"
+			}
+		},
+		"PHP Globals": {
+			"short_open_tag": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/ini.core.php#ini.short-open-tag"
+			},
+			"implicit_flush": {
+				"type":			"Boolean",
+				"default":		false,
+				"reference":	"https://www.php.net/manual/en/outcontrol.configuration.php#ini.implicit-flush"
+			},
+			"register_argc_argv": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/ini.core.php#ini.register-argc-argv"
+			},
+			"user_agent": {
+				"type":			"Text",
+				"default":		null,
+				"reference":	"https://www.php.net/manual/en/filesystem.configuration.php#ini.user-agent"
+			},
+			"default_charset": {
+				"type":			"Text",
+				"default":		"UTF-8",
+				"reference":	"https://www.php.net/manual/en/ini.core.php#ini.default-charset"
+			}
+		},
+		"Mail defaults": {
+			"from": {
+				"type":			"Text",
+				"default":		"john@doe.com",
+				"reference":	"https://www.php.net/manual/en/filesystem.configuration.php#ini.from"
+			}
+		},
+		"Upload & Execution": {
+			"max_execution_time": {
+				"type":			"Integer",
+				"minimum":		-1,
+				"maximum":		10000,
+				"default":		60,
+				"reference":	"https://www.php.net/manual/en/info.configuration.php#ini.max-execution-time"
+			},
+			"default_socket_timeout": {
+				"type":			"Integer",
+				"minimum":		-1,
+				"maximum":		10000,
+				"default":		60,
+				"reference":	"https://www.php.net/manual/en/filesystem.configuration.php#ini.default-socket-timeout"
+			},
+			"max_input_time": {
+				"type":			"Integer",
+				"minimum":		-1,
+				"maximum":		10000,
+				"default":		30,
+				"reference":	"https://www.php.net/manual/en/info.configuration.php#ini.max-input-time"
+			},
+			"max_file_uploads": {
+				"type":			"Integer",
+				"minimum":		-1,
+				"maximum":		100,
+				"default":		20,
+				"reference":	"https://www.php.net/manual/en/ini.core.php#ini.max-file-uploads"
+			},
+			"memory_limit": {
+				"type":			"List",
+				"default":		"50M",
+				"reference":	"https://www.php.net/manual/en/ini.core.php#ini.memory-limit",
+				"data":	[
+					"5M",
+					"10M",
+					"15M",
+					"20M",
+					"25M",
+					"50M",
+					"100M"
+				]
+			},
+			"post_max_size": {
+				"type":			"List",
+				"default":		"50M",
+				"reference":	"https://www.php.net/manual/en/ini.core.php#ini.post-max-size",
+				"data":	[
+					"5M",
+					"10M",
+					"15M",
+					"20M",
+					"25M",
+					"50M",
+					"100M"
+				]
+			},
+			"upload_max_filesize": {
+				"type":			"List",
+				"default":		"2M",
+				"reference":	"https://www.php.net/manual/en/ini.core.php#ini.upload-max-filesize",
+				"data":	[
+					"5M",
+					"10M",
+					"15M",
+					"20M",
+					"25M",
+					"50M",
+					"100M"
+				]
+			}
+		}
+	},
+	"security": {
+		"PHP": {
+			"expose_php": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/ini.core.php#ini.expose-php"
+			}
+		},
+		"Mail": {
+			"mail.add_x_header": {
+				"type":			"Boolean",
+				"default":		false,
+				"reference":	"https://www.php.net/manual/en/mail.configuration.php#ini.mail.add-x-header"
+			}
+		},
+		"Extensions": {
+			"enable_dl": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/info.configuration.php#ini.enable-dl",
+				"deprecated":	true
+			}
+		},
+		"Uploads": {
+			"file_uploads": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/ini.core.php#ini.file-uploads"
+			}
+		},
+		"Connections": {
+			"allow_url_include": {
+				"type":			"Boolean",
+				"default":		false,
+				"reference":	"https://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-include"
+			},
+			"allow_url_fopen": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/filesystem.configuration.php#ini.allow-url-fopen"
+			}
+		}
+	},
+	"error": {
+		"Output": {
+			"display_errors": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/errorfunc.configuration.php#ini.display-errors"
+			},
+			"display_startup_errors": {
+				"type":			"Boolean",
+				"default":		true,
+				"reference":	"https://www.php.net/manual/en/errorfunc.configuration.php#ini.display-startup-errors"
+			}
+		},
+		"Logfiles": {
+			"log_errors": {
+				"type":			"Boolean",
+				"default":		false,
+				"reference":	"https://www.php.net/manual/en/errorfunc.configuration.php#ini.log-errors"
+			},
+			"mail.log": {
+				"type":			"Text",
+				"default":		"logs/php_mail.log",
+				"reference":	"https://www.php.net/manual/en/mail.configuration.php#ini.mail.log"
+			}
+		},
+		"Reporting Level": {
+			"error_reporting": {
+				"type":			"Flags",
+				"reference":	"https://www.php.net/manual/en/errorfunc.configuration.php#ini.error-reporting",
+				"default":		"E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED",
+				"modifiers": [
+					"-",
+					"~",
+					"+"
+				],
+				"types": [
+					"&",
+					"|",
+					"^"
+				],
+				"possible":		[
+					"E_ALL",
+					"E_ERROR",
+					"E_WARNING",
+					"E_PARSE",
+					"E_NOTICE",
+					"E_CORE_ERROR",
+					"E_CORE_WARNING",
+					"E_COMPILE_ERROR",
+					"E_COMPILE_WARNING",
+					"E_USER_ERROR",
+					"E_USER_WARNING",
+					"E_USER_NOTICE",
+					"E_STRICT",
+					"E_RECOVERABLE_ERROR",
+					"E_DEPRECATED",
+					"E_USER_DEPRECATED",
+					"E_ALL"
+				]
+			}
+		}
+	}
+}

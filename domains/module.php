@@ -4,14 +4,15 @@
 	use fruithost\Auth;
 	use fruithost\Button;
 	use fruithost\Modal;
+	use fruithost\I18N;
 	
 	class Domains extends ModuleInterface {
 		private $domains = [];
 		
 		public function init() {
-			$this->addModal((new Modal('create_domain', 'Create Domain', __DIR__ . '/views/create.php'))->addButton([
-				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
-				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
+			$this->addModal((new Modal('create_domain', I18N::get('Create Domain'), sprintf('%s/views/create.php', dirname(__FILE__))))->addButton([
+				(new Button())->setName('cancel')->setLabel(I18N::get('Cancel'))->addClass('btn-outline-danger')->setDismissable(),
+				(new Button())->setName('create')->setLabel(I18N::get('Create'))->addClass('btn-outline-success')
 			])->onSave([ $this, 'onSave' ]));
 			
 			$this->domains = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
@@ -21,11 +22,11 @@
 		
 		public function load() {
 			if(empty($this->domains)) {
-				$this->addButton((new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')->setModal('create_domain'));
+				$this->addButton((new Button())->setName('create')->setLabel(I18N::get('Create'))->addClass('btn-outline-success')->setModal('create_domain'));
 			} else {
 				$this->addButton([
-					(new Button())->setName('create')->setLabel('Create New')->addClass('btn-outline-success')->setModal('create_domain'),
-					(new Button())->setName('delete')->setLabel('Delete selected')->addClass('btn-outline-danger')
+					(new Button())->setName('create')->setLabel(I18N::get('Create New'))->addClass('btn-outline-success')->setModal('create_domain'),
+					(new Button())->setName('delete')->setLabel(I18N::get('Delete selected'))->addClass('btn-outline-danger')
 				]);				
 			}
 		}
@@ -35,7 +36,7 @@
 				switch($data['action']) {
 					case 'delete':
 						if(!isset($data['domain'])) {
-							$this->assign('error', 'Please select the Domains you want to delete!');
+							$this->assign('error', I18N::get('Please select the Domains you want to delete!'));
 						} else {
 							$deletion	= [];
 							$stop		= false;
@@ -54,9 +55,9 @@
 									]);
 									
 									if(empty($unable)) {
-										$this->assign('error', 'An unknown error has occurred. Please retry your action!');
+										$this->assign('error', I18N::get('An unknown error has occurred. Please retry your action!'));
 									} else {
-										$this->assign('error', sprintf('You have no permissions to delete the Domain <strong>%s</strong>!', $unable->name));
+										$this->assign('error', sprintf(I18N::get('You have no permissions to delete the Domain <strong>%s</strong>!'), $unable->name));
 									}
 									break;
 								}
@@ -74,7 +75,7 @@
 									]);
 								}
 								
-								$this->assign('success', sprintf('Following Domains will be deleted: <strong>%s</strong>!', implode(', ', $domains)));
+								$this->assign('success', sprintf(I18N::get('Following Domains will be deleted: <strong>%s</strong>!'), implode(', ', $domains)));
 								$this->domains = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
 									'user'	=> Auth::getID()
 								]);
@@ -87,7 +88,7 @@
 		
 		public function onSave($data = []) {
 			if(!isset($data['domain']) || empty($data['domain'])) {
-				return 'Please enter a domain name!';
+				return I18N::get('Please enter a domain name!');
 			}
 			
 			// @ToDo validate Domain!!!
@@ -97,11 +98,11 @@
 			]);
 			
 			if($domain !== false) {
-				return 'Domain already exists.';
+				return I18N::get('Domain already exists.');
 			}
 			
 			if(!isset($data['type']) || empty($data['type'])) {
-				return 'Please select a valid home directory!';
+				return I18N::get('Please select an valid home directory!');
 			}
 			
 			$directory = '/';
@@ -112,17 +113,17 @@
 				break;
 				case 'existing':
 					if(!isset($data['directory']) || empty($data['directory'])) {
-						return 'Please select an valid home directory!';
+						return I18N::get('Please select an valid home directory!');
 					}
 					
 					if(!file_exists(sprintf('%s%s/%s', HOST_PATH, Auth::getUsername(), $data['directory']))) {
-						return 'Please select an existing home directory!';
+						return I18N::get('Please select an existing home directory!');
 					}
 					
 					$directory = sprintf('%s/', $data['directory']);
 				break;
 				default:
-					return 'Please select an valid home directory!';
+					return I18N::get('Please select an valid home directory!');
 				break;
 			}
 			

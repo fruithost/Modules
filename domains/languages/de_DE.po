@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: German\n"
+
+msgid "No Domains available!"
+msgstr "Keine Domains verfügbar!"
+
+msgid "Please create a new domain to administer it."
+msgstr "Bitte legen Sie eine neue Domain an um diese zu administrieren."
+
+msgid "Create new Domain"
+msgstr "Neue Domain erstellen"
+
+msgid "Create Domain"
+msgstr "Domain erstellen"
+
+msgid "Create New"
+msgstr "Neu erstellen"
+
+msgid "Delete selected"
+msgstr "ausgewählte löschen"
+
+msgid "Domain name"
+msgstr "Name der Domain"
+
+msgid "Home directory"
+msgstr "Hauptverzeichnis"
+
+msgid "Create a new home directory"
+msgstr "Erstelle neues Hauptverzeichnis"
+
+msgid "Use existing home directory"
+msgstr "Benutze bestehendes Hauptverzeichnis"
+
+msgid "The domain must refer to the IP Address <strong>%s</strong> or be managed by our <a href="%s" target="_blank">nameserver</a> (DNS). Adding domains does not replace the domain registration!"
+msgstr "Die Domain muss zu der IP Addresse <strong>%s</strong> verweisen oder bereits von ihrem <a href="%s" target="_blank">Nameserver</a> (DNS) verwaltet werden. Das hinzufügen von Domains ersetzt nicht die Domain-Registrierung bei einer offiziellen Domain-Registry!"
+
+msgid "Please select the Domains you want to delete!"
+msgstr ""
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr ""
+
+msgid "You have no permissions to delete the Domain <strong>%s</strong>!"
+msgstr ""
+
+msgid "Following Domains will be deleted: <strong>%s</strong>!"
+msgstr ""
+
+msgid "Please enter a domain name!"
+msgstr ""
+
+msgid "Domain already exists."
+msgstr ""
+
+msgid "Please select a valid home directory!"
+msgstr ""
+
+msgid "Please select an existing home directory!"
+msgstr ""
+
+msgid "Deleting"
+msgstr "Wird gelöscht"
+
+msgid "Pending"
+msgstr "In Arbeit"
+
+msgid "Error"
+msgstr "Fehler"
+
+msgid "Live"
+msgstr "Live"

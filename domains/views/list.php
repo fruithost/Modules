@@ -1,12 +1,13 @@
 <?php
 	use fruithost\Auth;
+	use fruithost\I18N;
 ?>
 <table class="table table-borderless table-striped table-hover">
 	<thead>
 		<tr>
-			<th scope="col" colspan="2">Domain name</th>
-			<th scope="col">Home directory</th>
-			<th scope="col">Status</th>
+			<th scope="col" colspan="2"><?php I18N::__('Domain name'); ?></th>
+			<th scope="col"><?php I18N::__('Home directory'); ?></th>
+			<th scope="col"><?php I18N::__('Status'); ?></th>
 			<th scope="col" colspan="2"></th>
 		</tr>
 	</thead>
@@ -19,7 +20,10 @@
 							<?php
 								if($domain->time_deleted === null) {
 									?>
-										<input type="checkbox" name="domain[]" value="<?php print $domain->id; ?>" />
+										<div class="custom-control custom-checkbox">
+											<input class="custom-control-input" type="checkbox" id="domain_<?php print $domain->id; ?>" name="domain[]" value="<?php print $domain->id; ?>" />
+											<label class="custom-control-label" for="domain_<?php print $domain->id; ?>"></label>
+										</div>
 									<?php
 								}
 							?>
@@ -29,14 +33,14 @@
 						<td>
 							<?php
 								if($domain->time_deleted !== null) {
-									print '<span class="text-danger">Deleting...</span>';									
+									printf('<span class="text-danger">%s...</span>', I18N::get('Deleting'));
 								} else if($domain->time_created === null) {
-									print '<span class="text-warning">Pending...</span>';
+									printf('<span class="text-warning">%s...</span>', I18N::get('Pending'));
 								} else if($domain->time_created !== null) {
 									if(!file_exists(sprintf('%s%s/%s', HOST_PATH, Auth::getUsername(), $domain->directory))) {
-										print '<span class="text-danger">Error</span>';
+										printf('<span class="text-danger">%s</span>', I18N::get('Error'));
 									} else {
-										print '<span class="text-success">Live</span>';
+										printf('<span class="text-success">%s</span>', I18N::get('Live'));
 									}
 								}
 							?>
@@ -51,7 +55,7 @@
 								
 								if($domain->time_deleted === null) {
 									?>
-										<button class="delete btn btn-sm btn-danger" type="submit" name="action" value="delete" id="delete_<?php print $domain->id; ?>" value="<?php print $domain->id; ?>">Delete</button>
+										<button class="delete btn btn-sm btn-danger" type="submit" name="action" value="delete" id="delete_<?php print $domain->id; ?>" value="<?php print $domain->id; ?>"><?php I18N::__('Delete'); ?></button>
 									<?php
 								}
 							?>

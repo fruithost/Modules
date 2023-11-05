@@ -15,7 +15,7 @@ Be a team-player, all feedbacks of our patrons will have the priority. We will b
 - ❌ [cronjob](https://github.com/fruithost/Modules/tree/master/cronjob)
 - ❌ database
 - ❌ dns
-- ❌ domains
+- ✔️ domains
 - ❌ faq
 - ❌ filemanager
 - ❌ [ftp](https://github.com/fruithost/Modules/tree/master/ftp)

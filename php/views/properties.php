@@ -27,7 +27,7 @@
 									}
 								?>
 							</div>
-							<label for="session.use_cookies" class="col-4 col-form-label col-form-label-sm">
+							<label for="<?php print $name; ?>" class="col-4 col-form-label col-form-label-sm">
 								<?php
 									print $name;
 									
@@ -47,37 +47,62 @@
 								<?php
 									switch($entry->type) {
 										case 'Boolean':
+											$selected = $entry->default;
+											
+											if(isset($this->ini[$name])) {
+												$selected = $this->ini[$name];
+											}
 											?>
 												<select name="php[<?php print $name; ?>]" class="form-control">
-													<option value="1"<?php print ($entry->default ? ' SELECTED' : ''); ?>><?php I18N::__('On'); ?><?php print ($entry->default ? sprintf(' (%s)', I18N::get('default')) : ''); ?></option>
-													<option value="0"<?php print (!$entry->default ? ' SELECTED' : ''); ?>><?php I18N::__('Off'); ?><?php print (!$entry->default ? sprintf(' (%s)', I18N::get('default')) : ''); ?></option>
+													<option value="1"<?php print ($selected ? ' SELECTED' : ''); ?>><?php I18N::__('On'); ?><?php print ($entry->default ? sprintf(' (%s)', I18N::get('default')) : ''); ?></option>
+													<option value="0"<?php print (!$selected ? ' SELECTED' : ''); ?>><?php I18N::__('Off'); ?><?php print (!$entry->default ? sprintf(' (%s)', I18N::get('default')) : ''); ?></option>
 												</select>
 											<?php
 										break;
 										case 'Text':
+											$value = $entry->default;
+											
+											if(isset($this->ini[$name])) {
+												$value = $this->ini[$name];
+											}
 											?>
-												<input type="text" class="form-control" name="php[<?php print $name; ?>]" id="<?php print $name; ?>" value="" placeholder="<?php print $entry->default; ?>" />
+												<input type="text" class="form-control" name="php[<?php print $name; ?>]" id="<?php print $name; ?>" value="<?php print $value; ?>" placeholder="<?php print (isset($entry->placeholder) ? $entry->placeholder : $entry->default); ?>" />
 											<?php
 										break;
 										case 'Integer':
+											$value = $entry->default;
+											
+											if(isset($this->ini[$name])) {
+												$value = $this->ini[$name];
+											}
 											?>
-												<input type="number" min="<?php print $entry->minimum; ?>" max="<?php print $entry->maximum; ?>" class="form-control" name="php[extended][<?php print $name; ?>]" id="<?php print $name; ?>" value="<?php print $entry->default; ?>" placeholder="<?php print $entry->default; ?>" />
+												<input type="number" min="<?php print $entry->minimum; ?>" max="<?php print $entry->maximum; ?>" class="form-control" name="php[<?php print $name; ?>]" id="<?php print $name; ?>" value="<?php print $value; ?>" placeholder="<?php print (isset($entry->placeholder) ? $entry->placeholder : $entry->default); ?>" />
 											<?php
 										break;
 										case 'List':
+											$selected = $entry->default;
+											
+											if(isset($this->ini[$name])) {
+												$selected = $this->ini[$name];
+											}
 											?>
 												<select name="php[<?php print $name; ?>]" class="form-control">
 													<?php
 														foreach($entry->data AS $value) {
-															printf('<option value="%1$s">%1$s</option>', $value);
+															printf('<option value="%1$s"%2$s>%1$s</option>', $value, ($value == $selected ? ' SELECTED' : ''));
 														}
 													?>
 												</select>
 											<?php
 										break;
 										case 'Flags':
+											$value = $entry->default;
+											
+											if(isset($this->ini[$name])) {
+												$value = $this->ini[$name];
+											}
 											?>
-												<input type="text" class="form-control" name="php[<?php print $name; ?>]" id="<?php print $name; ?>" value="<?php print $entry->default; ?>" placeholder="<?php print $entry->default; ?>" />
+												<input type="text" class="form-control" name="php[<?php print $name; ?>]" id="<?php print $name; ?>" value="<?php print $value; ?>" placeholder="<?php print $entry->default; ?>" />
 												
 												<div class="row m-2">
 													<a href="https://www.php.net/manual/de/language.operators.bitwise.php" class="text-info col-1 text-decoration-none" target="_blank">

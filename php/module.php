@@ -9,6 +9,7 @@
 	class PHP extends ModuleInterface {
 		private $domains	= NULL;
 		private $domain		= NULL;
+		private $ini		= [];
 		private $defaults	= [];
 		private $tabs		= [
 			'extended'	=> 'Extended',
@@ -24,10 +25,20 @@
 				]);
 			}
 			
+			$file			= sprintf('%s%s/php.ini', HOST_PATH, Auth::getUsername());
 			$this->defaults = json_decode(file_get_contents(sprintf('%s/data/config.json', dirname(__FILE__))));
 			
 			if(!empty($this->domains) && count($this->domains) > 0 && Request::has('domain')) {
-				$this->domain = Request::get('domain');
+				$this->domain	= Request::get('domain');
+				$file			= sprintf('%s%s/%s/php.ini', HOST_PATH, Auth::getUsername(), $this->domain);
+			}
+			
+			if(file_exists($file)) {
+				$this->ini = parse_ini_file($file);
+				
+				if($this->ini === false) {
+					$this->ini = [];
+				}
 			}
 		}
 		
@@ -45,6 +56,70 @@
 				
 				return $text;
 			});
+		}
+		
+		public function onPOST($data = null) {
+			if(isset($data['action']) && $data['action'] == 'save') {
+				$variables	= [];
+				$file		= sprintf('%s%s/php.ini', HOST_PATH, Auth::getUsername());
+				
+				if(!empty($this->domain)) {
+					$file = sprintf('%s%s/%s/php.ini', HOST_PATH, Auth::getUsername(), $this->domain);
+				}
+				
+				foreach($this->defaults AS $tabs => $sections) {
+					foreach($sections AS $section => $entrys) {
+						foreach($entrys AS $name => $entry) {
+							if(isset($data['php'][$name])) {
+									$value = $data['php'][$name];
+									
+									switch($entry->type) {
+										case 'Boolean':
+											$value = ($value == '1');
+										break;
+										case 'Text':
+										case 'Integer':
+										case 'List':
+										case 'Flags':
+											/* Do Nothing */
+										break;
+									}
+									
+								#if(!empty($data['php'][$name]) && $entry->default != $data['php'][$name]) {
+									$variables[$name] = $value;
+								#}
+							}
+						}
+					}
+				}
+				
+				// Change only php.ini when changed variables set
+				if(count($variables) > 0) {
+					$content	= '';
+					
+					// Get the Old php.ini
+					if(file_exists($file)) {
+						$this->ini	= parse_ini_file($file);
+						
+						if($this->ini !== false) {
+							$variables = array_merge($this->ini, $variables);
+						}
+					}
+					
+					foreach($variables AS $name => $value) {
+						if(is_bool($value)) {
+							$content .= sprintf('%s = %s', $name, ($value ? 'On' : 'Off'));
+						} else {
+							$content .= sprintf('%s = %s', $name, $value);
+						}
+						
+						$content .= PHP_EOL;
+					}
+					
+					file_put_contents($file, $content);
+					$this->ini	= $variables;
+				}
+			}
 		}
 		
 		public function content($submodule = null) {

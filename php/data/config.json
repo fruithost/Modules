@@ -52,7 +52,8 @@
 		"Mail defaults": {
 			"from": {
 				"type":			"Text",
-				"default":		"john@doe.com",
+				"default":		null,
+				"placeholder":	"john@doe.com",
 				"reference":	"https://www.php.net/manual/en/filesystem.configuration.php#ini.from"
 			}
 		},

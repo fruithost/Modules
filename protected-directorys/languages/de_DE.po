@@ -1,0 +1,83 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: German\n"
+
+msgid "Create protected Directory"
+msgstr "Geschütztes Verzeichnis erstellen"
+
+msgid "Change protected Directory"
+msgstr "Geschütztes Verzeichnis ändern"
+
+msgid "Create User"
+msgstr "Benutzer erstellen"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "Ein unbekannter Fehler ist aufgetreten. "
+
+msgid "You have no permissions to delete the User <strong>%s</strong>!"
+msgstr "Sie haben keine Berechtigung zum Löschen des Benutzers <strong>%s</strong>!"
+
+msgid "Following Users was deleted: <strong><br />- %s</strong>"
+msgstr "Folgende Benutzer wurden gelöscht: <strong><br />- %s</strong>"
+
+msgid "Please select an protected Directory you want to delete!"
+msgstr "Bitte wählen Sie ein geschütztes Verzeichnis aus, das Sie löschen möchten!"
+
+msgid "You have no permissions to delete the directory <strong>%s_%s</strong>!"
+msgstr "Sie haben keine Berechtigung zum Löschen des Verzeichnisses <strong>%s_%s</strong>!"
+
+msgid "Following protected directorys was deleted: <strong><br />- %s</strong>"
+msgstr "Folgende geschützte Verzeichnisse wurden gelöscht: <strong><br />- %s</strong>"
+
+msgid "Please enter a message as login information!"
+msgstr "Bitte geben Sie eine Nachricht als Anmeldeinformationen ein!"
+
+msgid "Please select an valid path!"
+msgstr "Bitte wählen Sie einen gültigen Pfad!"
+
+msgid "The selected path doesn't exists!"
+msgstr "Der ausgewählte Pfad existiert nicht!"
+
+msgid "You have no permission to this entry!"
+msgstr "Sie haben keine Berechtigung für diesen Eintrag!"
+
+msgid "You have no access to this protected Directory!"
+msgstr "Sie haben keinen Zugriff auf dieses geschützte Verzeichnis!"
+
+msgid "Please enter a username!"
+msgstr "Bitte geben Sie einen Benutzernamen ein!"
+
+msgid "Please enter a password!"
+msgstr "Bitte geben Sie ein Passwort ein!"
+
+msgid "Please select"
+msgstr "Bitte auswählen"
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "No protected Directorys available!"
+msgstr "Keine geschützten Verzeichnisse verfügbar!"
+
+msgid "Please create a new protected Directory to administer it."
+msgstr "Bitte erstellen Sie ein neues geschütztes Verzeichnis, um es zu verwalten."
+
+msgid "No Users available!"
+msgstr "Keine Benutzer verfügbar!"
+
+msgid "Please add an new User to the protected Directory to administer it."
+msgstr "Bitte fügen Sie dem geschützten Verzeichnis einen neuen Benutzer hinzu, um ihn zu verwalten."
+
+msgid "Pending"
+msgstr "Ausstehend"
+
+msgid "Error"
+msgstr "Fehler"
+
+msgid "Live"
+msgstr "Live"
+
+msgid "Users"
+msgstr "Benutzer"

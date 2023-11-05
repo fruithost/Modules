@@ -1,11 +1,12 @@
 <?php
 	use fruithost\Auth;
+	use fruithost\I18N;
 ?>
 <table class="table table-borderless table-striped table-hover">
 	<thead>
 		<tr>
-			<th scope="col" colspan="2">Path</th>
-			<th scope="col">Status</th>
+			<th scope="col" colspan="2"><?php I18N::__('Path'); ?></th>
+			<th scope="col"><?php I18N::__('Status'); ?></th>
 			<th scope="col"></th>
 		</tr>
 	</thead>
@@ -15,7 +16,10 @@
 				?>
 					<tr>
 						<td scope="row" width="1px">
-							<input type="checkbox" name="protected_directory[]" value="<?php print $directory->id; ?>" />
+							<div class="custom-control custom-checkbox">
+								<input class="custom-control-input" type="checkbox" id="protected_directory_<?php print $directory->id; ?>" name="protected_directory[]" value="<?php print $directory->id; ?>" />
+								<label class="custom-control-label" for="protected_directory_<?php print $directory->id; ?>"></label>
+							</div>
 						</td>
 						<td>
 							<?php print $directory->path; ?>
@@ -23,12 +27,12 @@
 						<td>
 							<?php
 								if($directory->time_created === null) {
-									print '<span class="text-warning">Pending...</span>';
+									printf('<span class="text-warning">%s...</span>', I18N::get('Pending'));
 								} else if($directory->time_created !== null) {
 									if(!file_exists(sprintf('%s%s/%s', HOST_PATH, Auth::getUsername(), $directory->path))) {
-										print '<span class="text-danger">Error</span>';
+										printf('<span class="text-danger">%s</span>', I18N::get('Error'));
 									} else {
-										print '<span class="text-success">Live</span>';
+										printf('<span class="text-success">%s</span>', I18N::get('Live'));
 									}
 								}
 							?>
@@ -41,12 +45,12 @@
 											'id'		=> $directory->id,
 											'message'	=> $directory->message,
 											'path'		=> $directory->path
-										]); ?>'>Edit</button>
-										<a href="<?php print $this->url('/module/protected-directorys?users=' . $directory->id); ?>" class="users btn btn-sm btn-info" name="users" id="users_<?php print $directory->id; ?>">Users</a>
+										]); ?>'><?php I18N::__('Edit'); ?></button>
+										<a href="<?php print $this->url('/module/protected-directorys?users=' . $directory->id); ?>" class="users btn btn-sm btn-info" name="users" id="users_<?php print $directory->id; ?>"><?php I18N::__('Users'); ?></a>
 									<?php
 								}
 							?>
-							<button class="delete btn btn-sm btn-danger" type="submit" name="action" value="delete" id="delete_<?php print $directory->id; ?>">Delete</button>
+							<button class="delete btn btn-sm btn-danger" type="submit" name="action" value="delete" id="delete_<?php print $directory->id; ?>"><?php I18N::__('Delete'); ?></button>
 						</td>
 					</tr>
 				<?php

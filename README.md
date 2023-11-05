@@ -25,7 +25,7 @@ Be a team-player, all feedbacks of our patrons will have the priority. We will b
 - ❌ parked-domains
 - ✔️ [php](https://github.com/fruithost/Modules/tree/master/php)
 - ❌ phpmyadmin
-- ❌ protected-directorys
+- ✔️ [protected-directorys](https://github.com/fruithost/Modules/tree/master/protected-directorys)
 - ❌ ssl
 - ❌ statistics
 - ❌ status

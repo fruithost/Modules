@@ -38,28 +38,28 @@ msgid "The domain must refer to the IP Address <strong>%s</strong> or be managed
 msgstr "Die Domain muss zu der IP Addresse <strong>%s</strong> verweisen oder bereits von ihrem <a href="%s" target="_blank">Nameserver</a> (DNS) verwaltet werden. Das hinzufügen von Domains ersetzt nicht die Domain-Registrierung bei einer offiziellen Domain-Registry!"
 
 msgid "Please select the Domains you want to delete!"
-msgstr ""
+msgstr "Bitte wählen Sie eine Domain aus, die Sie löschen möchten!"
 
 msgid "An unknown error has occurred. Please retry your action!"
-msgstr ""
+msgstr "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie die Aktion erneut!"
 
 msgid "You have no permissions to delete the Domain <strong>%s</strong>!"
-msgstr ""
+msgstr "Sie haben keine Berechtigung um die Domain <strong>%s</strong> zu löschen!"
 
 msgid "Following Domains will be deleted: <strong>%s</strong>!"
-msgstr ""
+msgstr "Folgende Domains werden gelöscht: <strong>%s</strong>!"
 
 msgid "Please enter a domain name!"
-msgstr ""
+msgstr "Bitte geben Sie einen Domain-Namen an!"
 
 msgid "Domain already exists."
-msgstr ""
+msgstr "Domain existiert bereits."
 
 msgid "Please select a valid home directory!"
-msgstr ""
+msgstr "Bitte wählen Sie ein valides Hauptverzeichnis aus!"
 
 msgid "Please select an existing home directory!"
-msgstr ""
+msgstr "Bitte wählen Sie ein existierendes Hauptverzeichnis aus!"
 
 msgid "Deleting"
 msgstr "Wird gelöscht"

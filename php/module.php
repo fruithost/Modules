@@ -14,10 +14,12 @@
 			'display'	=> 'Display Configuration'
 		];
 		
-		public function init() {
-			$this->domains	= Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
-				'user'	=> Auth::getID()
-			]);
+		public function init() {			
+			if(Database::tableExists(DATABASE_PREFIX . 'domains')){
+				$this->domains	= Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
+					'user'	=> Auth::getID()
+				]);
+			}
 			
 			if(Request::has('domain')) {
 				$this->domain = Request::get('domain');
@@ -25,6 +27,11 @@
 		}
 		
 		public function content($submodule = null) {
+			if(!$this->getModules()->hasModule('domains')) {
+				print "NO DOMAINS";
+				return;
+			}
+			
 			if(empty($submodule)) {
 				$submodule = array_keys($this->tabs)[0];
 			} else if(!file_exists(sprintf('%s/views/%s.php', dirname(__FILE__), $submodule))) {

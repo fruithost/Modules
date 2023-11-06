@@ -4,71 +4,88 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: German\n"
 
+
 msgid "No Domains available!"
 msgstr "Keine Domains verfügbar!"
 
 msgid "Please create a new domain to administer it."
-msgstr "Bitte legen Sie eine neue Domain an um diese zu administrieren."
+msgstr "Bitte erstellen Sie eine neue Domain, um diese zu verwalten."
 
 msgid "Create new Domain"
-msgstr "Neue Domain erstellen"
-
-msgid "Create Domain"
-msgstr "Domain erstellen"
-
-msgid "Create New"
-msgstr "Neu erstellen"
-
-msgid "Delete selected"
-msgstr "ausgewählte löschen"
+msgstr "Neue Domäne erstellen"
 
 msgid "Domain name"
-msgstr "Name der Domain"
+msgstr "Domainname"
 
 msgid "Home directory"
-msgstr "Hauptverzeichnis"
+msgstr "Home-Verzeichnis"
 
-msgid "Create a new home directory"
-msgstr "Erstelle neues Hauptverzeichnis"
+msgid "Status"
+msgstr ""
 
-msgid "Use existing home directory"
-msgstr "Benutze bestehendes Hauptverzeichnis"
-
-msgid "The domain must refer to the IP Address <strong>%s</strong> or be managed by our <a href="%s" target="_blank">nameserver</a> (DNS). Adding domains does not replace the domain registration!"
-msgstr "Die Domain muss zu der IP Addresse <strong>%s</strong> verweisen oder bereits von ihrem <a href="%s" target="_blank">Nameserver</a> (DNS) verwaltet werden. Das hinzufügen von Domains ersetzt nicht die Domain-Registrierung bei einer offiziellen Domain-Registry!"
-
-msgid "Please select the Domains you want to delete!"
-msgstr "Bitte wählen Sie eine Domain aus, die Sie löschen möchten!"
-
-msgid "An unknown error has occurred. Please retry your action!"
-msgstr "Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie die Aktion erneut!"
-
-msgid "You have no permissions to delete the Domain <strong>%s</strong>!"
-msgstr "Sie haben keine Berechtigung um die Domain <strong>%s</strong> zu löschen!"
-
-msgid "Following Domains will be deleted: <strong>%s</strong>!"
-msgstr "Folgende Domains werden gelöscht: <strong>%s</strong>!"
-
-msgid "Please enter a domain name!"
-msgstr "Bitte geben Sie einen Domain-Namen an!"
-
-msgid "Domain already exists."
-msgstr "Domain existiert bereits."
-
-msgid "Please select a valid home directory!"
-msgstr "Bitte wählen Sie ein valides Hauptverzeichnis aus!"
-
-msgid "Please select an existing home directory!"
-msgstr "Bitte wählen Sie ein existierendes Hauptverzeichnis aus!"
+msgid "Unknown Error"
+msgstr "Unbekannter Fehler"
 
 msgid "Deleting"
-msgstr "Wird gelöscht"
+msgstr "Löschen"
 
 msgid "Pending"
-msgstr "In Arbeit"
+msgstr "Ausstehend"
 
 msgid "Error"
 msgstr "Fehler"
 
 msgid "Live"
-msgstr "Live"
+msgstr "Leben"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "Create a new home directory"
+msgstr "Erstellen Sie ein neues Home-Verzeichnis"
+
+msgid "Use existing home directory"
+msgstr "Vorhandenes Home-Verzeichnis verwenden"
+
+msgid "The domain must refer to the IP Address <strong>%s<\/strong> or be managed by our <a href=\"%s\" target=\"_blank\">nameserver<\/a> (DNS). Adding domains does not replace the domain registration!"
+msgstr "Die Domain muss auf die IP-Adresse <strong>%s<\/strong> verweisen oder von unserem <a href=\"%s\" target=\"_blank\">Nameserver<\/a> verwaltet werden (DNS). Das Hinzufügen von Domains ersetzt nicht die Domainregistrierung!"
+
+msgid "Create Domain"
+msgstr "Domain erstellen"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Create"
+msgstr "Erstellen"
+
+msgid "Create New"
+msgstr "Neu erstellen"
+
+msgid "Delete selected"
+msgstr "Ausgewählte löschen"
+
+msgid "Please select the Domains you want to delete!"
+msgstr "Bitte wählen Sie die Domains aus, die Sie löschen möchten!"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "Ein unbekannter Fehler ist aufgetreten. "
+
+msgid "You have no permissions to delete the Domain <strong>%s<\/strong>!"
+msgstr "Sie haben keine Berechtigung zum Löschen der Domain <strong>%s<\/strong>!"
+
+msgid "Following Domains will be deleted: <strong>%s<\/strong>!"
+msgstr "Folgende Domains werden gelöscht: <strong>%s<\/strong>!"
+
+msgid "Please enter a domain name!"
+msgstr "Bitte geben Sie einen Domainnamen ein!"
+
+msgid "Domain already exists."
+msgstr "Domäne existiert bereits."
+
+msgid "Please select an valid home directory!"
+msgstr "Bitte wählen Sie ein gültiges Home-Verzeichnis!"
+
+msgid "Please select an existing home directory!"
+msgstr "Bitte wählen Sie ein bestehendes Home-Verzeichnis aus!"
+

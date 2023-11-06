@@ -1,0 +1,90 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: $name\n"
+
+
+msgid "No Domains available!"
+msgstr ""
+
+msgid "Please create a new domain to administer it."
+msgstr ""
+
+msgid "Create new Domain"
+msgstr ""
+
+msgid "Domain name"
+msgstr ""
+
+msgid "Home directory"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Unknown Error"
+msgstr ""
+
+msgid "Deleting"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Live"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Create a new home directory"
+msgstr ""
+
+msgid "Use existing home directory"
+msgstr ""
+
+msgid "The domain must refer to the IP Address <strong>%s<\/strong> or be managed by our <a href=\"%s\" target=\"_blank\">nameserver<\/a> (DNS). Adding domains does not replace the domain registration!"
+msgstr ""
+
+msgid "Create Domain"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Create New"
+msgstr ""
+
+msgid "Delete selected"
+msgstr ""
+
+msgid "Please select the Domains you want to delete!"
+msgstr ""
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr ""
+
+msgid "You have no permissions to delete the Domain <strong>%s<\/strong>!"
+msgstr ""
+
+msgid "Following Domains will be deleted: <strong>%s<\/strong>!"
+msgstr ""
+
+msgid "Please enter a domain name!"
+msgstr ""
+
+msgid "Domain already exists."
+msgstr ""
+
+msgid "Please select an valid home directory!"
+msgstr ""
+
+msgid "Please select an existing home directory!"
+msgstr ""

@@ -1,11 +1,14 @@
 <?php
 	use fruithost\Auth;
 	use fruithost\I18N;
+	use fruithost\HookParameters;
+	
+	$size	= count($this->applyFilter('MODULE_DOMAIN_LIST_TABLE_NAME', new HookParameters([], null)));
 ?>
 <table class="table table-borderless table-striped table-hover">
 	<thead>
 		<tr>
-			<th scope="col" colspan="2"><?php I18N::__('Domain name'); ?></th>
+			<th scope="col" colspan="<?php print (2 + $size); ?>"><?php I18N::__('Domain name'); ?></th>
 			<th scope="col"><?php I18N::__('Home directory'); ?></th>
 			<th scope="col"><?php I18N::__('Status'); ?></th>
 			<th scope="col" colspan="2"></th>
@@ -14,6 +17,7 @@
 	<tbody>
 		<?php
 			foreach($this->domains AS $domain) {
+				$table = $this->applyFilter('MODULE_DOMAIN_LIST_TABLE_NAME', new HookParameters([], $domain));
 				?>
 					<tr>
 						<td scope="row" width="1px">
@@ -28,21 +32,59 @@
 								}
 							?>
 						</td>
-						<td><a href="http://<?php print $domain->name; ?>/" target="_blank"><?php print $domain->name; ?></a></td>
-						<td><?php print $domain->directory; ?></td>
+						<?php
+							if(count($table) > 0) {
+								foreach($table AS $html) {
+									print $html;
+								}
+							}
+						?>
 						<td>
 							<?php
+								$name = $this->applyFilter('MODULE_DOMAIN_LIST_NAME', new HookParameters([
+									'name'	=> $domain->name,
+									'link'	=> '<a href="http://%1$s/" target="_blank">%1$s</a></td>'
+								], $domain));
+								
+								printf($name['link'], $name['name']);
+							?>
+						</div>						
+						<td><?php print $this->applyFilter('MODULE_DOMAIN_LIST_DIRECTORY', $domain->directory); ?></td>
+						<td>
+							<?php
+								$parameters = new HookParameters([
+									'text'	=> I18N::get('Unknown Error'),
+									'html'	=> '<span class="text-danger">%s</span>'
+								], $domain);
+								
 								if($domain->time_deleted !== null) {
-									printf('<span class="text-danger">%s...</span>', I18N::get('Deleting'));
+									$parameters = new HookParameters([
+										'text'	=> I18N::get('Deleting'),
+										'html'	=> '<span class="text-danger">%s...</span>'
+									], $domain);
 								} else if($domain->time_created === null) {
-									printf('<span class="text-warning">%s...</span>', I18N::get('Pending'));
+									$parameters = new HookParameters([
+										'text'	=> I18N::get('Pending'),
+										'html'	=> '<span class="text-warning">%s...</span>'
+									], $domain);
 								} else if($domain->time_created !== null) {
 									if(!file_exists(sprintf('%s%s/%s', HOST_PATH, Auth::getUsername(), $domain->directory))) {
-										printf('<span class="text-danger">%s</span>', I18N::get('Error'));
+										$parameters = new HookParameters([
+											'text'	=> I18N::get('Error'),
+											'html'	=> '<span class="text-danger">%s</span>'
+										], $domain);
 									} else {
-										printf('<span class="text-success">%s</span>', I18N::get('Live'));
+										$parameters = new HookParameters([
+											'text'	=> I18N::get('Live'),
+											'html'	=> '<span class="text-success">%s</span>'
+										], $domain);
 									}
 								}
+								
+								
+								$status = $this->applyFilter('MODULE_DOMAIN_LIST_STATUS', $parameters);
+								
+								printf($status['html'], $status['text']);
 							?>
 						</td>
 						<td class="text-right">

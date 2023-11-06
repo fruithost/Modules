@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: $name\n"
+
+
+msgid "Username"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Show"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "No protected Directorys available!"
+msgstr ""
+
+msgid "Please create a new protected Directory to administer it."
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Directory"
+msgstr ""
+
+msgid "Path"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Live"
+msgstr ""
+
+msgid "Users"
+msgstr ""
+
+msgid "No Users available!"
+msgstr ""
+
+msgid "Please add an new User to the protected Directory to administer it."
+msgstr ""
+
+msgid "Create User"
+msgstr ""
+
+msgid "Please select"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Create protected Directory"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Change protected Directory"
+msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "Change User"
+msgstr ""
+
+msgid "Create New"
+msgstr ""
+
+msgid "Delete selected"
+msgstr ""
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr ""
+
+msgid "You have no permissions to delete the User <strong>%s<\/strong>!"
+msgstr ""
+
+msgid "Following Users was deleted: <strong><br \/>- %s<\/strong>"
+msgstr ""
+
+msgid "Please select an protected Directory you want to delete!"
+msgstr ""
+
+msgid "You have no permissions to delete the directory <strong>%s_%s<\/strong>!"
+msgstr ""
+
+msgid "Following protected directorys was deleted: <strong><br \/>- %s<\/strong>"
+msgstr ""
+
+msgid "Please enter a message as login information!"
+msgstr ""
+
+msgid "Please select an valid path!"
+msgstr ""
+
+msgid "The selected path doesn't exists!"
+msgstr ""
+
+msgid "An error has occurred. Please reload the page and try again!"
+msgstr ""
+
+msgid "You have no permission to this entry!"
+msgstr ""
+
+msgid "You have no access to this protected Directory!"
+msgstr ""
+
+msgid "Please enter a username!"
+msgstr ""
+
+msgid "Please enter a password!"
+msgstr ""

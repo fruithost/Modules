@@ -1,0 +1,258 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: $name\n"
+
+
+msgid "No Cronjobs available!"
+msgstr ""
+
+msgid "Please create a new cronjob to administer it."
+msgstr ""
+
+msgid "Create new Cronjob"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "Configuration"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Not named"
+msgstr ""
+
+msgid "Never running"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Name of your Job"
+msgstr ""
+
+msgid "Template"
+msgstr ""
+
+msgid "Common Settings"
+msgstr ""
+
+msgid "Each Minute"
+msgstr ""
+
+msgid "All 5 Minutes"
+msgstr ""
+
+msgid "Each 30 Minutes"
+msgstr ""
+
+msgid "Each Hour"
+msgstr ""
+
+msgid "Each 12 Hours"
+msgstr ""
+
+msgid "Each Day"
+msgstr ""
+
+msgid "Each Week"
+msgstr ""
+
+msgid "On the 1st and 15th of the Month"
+msgstr ""
+
+msgid "Each Month"
+msgstr ""
+
+msgid "Each Year"
+msgstr ""
+
+msgid "Minute"
+msgstr ""
+
+msgid "Each two Minutes"
+msgstr ""
+
+msgid "Each Five Minutes"
+msgstr ""
+
+msgid "Each Ten Minutes"
+msgstr ""
+
+msgid "Each Fifteen Minutes"
+msgstr ""
+
+msgid "Each Thirty Minutes"
+msgstr ""
+
+msgid "Minutes"
+msgstr ""
+
+msgid "At the beginning of the hour"
+msgstr ""
+
+msgid "At one quarter past the hour"
+msgstr ""
+
+msgid "At half past the hour"
+msgstr ""
+
+msgid "At one quarter until the hour"
+msgstr ""
+
+msgid "Hour"
+msgstr ""
+
+msgid "Every Hour"
+msgstr ""
+
+msgid "Every Other Hour"
+msgstr ""
+
+msgid "Every Third Hour"
+msgstr ""
+
+msgid "Every Fourth Hour"
+msgstr ""
+
+msgid "Every Sixth Hour"
+msgstr ""
+
+msgid "Every Twelve Hours"
+msgstr ""
+
+msgid "Hours"
+msgstr ""
+
+msgid "Day"
+msgstr ""
+
+msgid "Every Day"
+msgstr ""
+
+msgid "Every Other Day"
+msgstr ""
+
+msgid "Days"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+msgid "Every Month"
+msgstr ""
+
+msgid "Every Other Month"
+msgstr ""
+
+msgid "Every Third Month"
+msgstr ""
+
+msgid "Every Six Months"
+msgstr ""
+
+msgid "Months"
+msgstr ""
+
+msgid "Weekday"
+msgstr ""
+
+msgid "Every Weekday"
+msgstr ""
+
+msgid "Every Weekend Day"
+msgstr ""
+
+msgid "Every Monday, Wednesday, and Friday"
+msgstr ""
+
+msgid "Every Tuesday and Thursday"
+msgstr ""
+
+msgid "Weekdays"
+msgstr ""
+
+msgid "Execute PHP Script"
+msgstr ""
+
+msgid "Please Select"
+msgstr ""
+
+msgid "Arguments"
+msgstr ""
+
+msgid "Call URL"
+msgstr ""
+
+msgid "Create Cronjob"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Change Cronjob"
+msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "Create New"
+msgstr ""
+
+msgid "Delete selected"
+msgstr ""
+
+msgid "Unknown error occurs!"
+msgstr ""
+
+msgid "Please enter a valid minute!"
+msgstr ""
+
+msgid "Please enter a valid hour!"
+msgstr ""
+
+msgid "Please enter a valid day!"
+msgstr ""
+
+msgid "Please enter a valid month!"
+msgstr ""
+
+msgid "Please enter a valid weekday!"
+msgstr ""
+
+msgid "Please enter a valid PHP script!"
+msgstr ""
+
+msgid "Please enter a valid URL!"
+msgstr ""
+
+msgid "Please enter a valid action!"
+msgstr ""
+
+msgid "Please select an Cronjob you want to delete!"
+msgstr ""
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr ""
+
+msgid "You have no permissions to delete the Cronjob <strong>%s_%s<\/strong>!"
+msgstr ""
+
+msgid "Following Cronjobs was deleted: <strong><br \/>- %s<\/strong>"
+msgstr ""

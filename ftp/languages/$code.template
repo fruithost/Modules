@@ -1,0 +1,105 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: $name\n"
+
+
+msgid "No FTP accounts available!"
+msgstr ""
+
+msgid "Please create a new account to administer it."
+msgstr ""
+
+msgid "Create new Account"
+msgstr ""
+
+msgid "Username"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Directory"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Show"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "New Password"
+msgstr ""
+
+msgid "Path"
+msgstr ""
+
+msgid "Please select"
+msgstr ""
+
+msgid "User-ID"
+msgstr ""
+
+msgid "Create FTP Account"
+msgstr ""
+
+msgid "Change FTP Account"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Create New"
+msgstr ""
+
+msgid "Delete selected"
+msgstr ""
+
+msgid "Please select the FTP account you want to delete!"
+msgstr ""
+
+msgid "You can't delete your main account!"
+msgstr ""
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr ""
+
+msgid "You have no permissions to delete the account <strong>%s_%s<\/strong>!"
+msgstr ""
+
+msgid "Following users was deleted: <strong>%s<\/strong>!"
+msgstr ""
+
+msgid "An error has occurred. Please reload the page and try again!"
+msgstr ""
+
+msgid "You have no permission to this FTP account!"
+msgstr ""
+
+msgid "Please enter a password for the selected ftp account!"
+msgstr ""
+
+msgid "Please select an valid path for the account!"
+msgstr ""
+
+msgid "The selected path doesn't exists!"
+msgstr ""
+
+msgid "Please enter a username for your ftp account!"
+msgstr ""
+
+msgid "Please enter a password for your ftp account!"
+msgstr ""

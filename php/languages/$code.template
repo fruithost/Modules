@@ -1,0 +1,60 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: $name\n"
+
+
+msgid "Access denied!"
+msgstr ""
+
+msgid "You have no permissions for this page."
+msgstr ""
+
+msgid "This property is deprecated!"
+msgstr ""
+
+msgid "DEPRECATED"
+msgstr ""
+
+msgid "On"
+msgstr ""
+
+msgid "default"
+msgstr ""
+
+msgid "Off"
+msgstr ""
+
+msgid "Possible Modifiers"
+msgstr ""
+
+msgid "Possible Operators"
+msgstr ""
+
+msgid "Possible Flags"
+msgstr ""
+
+msgid "Problem!"
+msgstr ""
+
+msgid "Domain \"<strong>%s<\/strong>\" currently not accessible."
+msgstr ""
+
+msgid "Configuration"
+msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "For Domain"
+msgstr ""
+
+msgid "Global"
+msgstr ""
+
+msgid "PHP.ini was successfully saved."
+msgstr ""

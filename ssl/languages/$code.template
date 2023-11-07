@@ -1,0 +1,147 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: $name\n"
+
+
+msgid "Problem!"
+msgstr ""
+
+msgid "You have no permissions to edit the given Domain."
+msgstr ""
+
+msgid "Add a certificate to your domain to protect information passed between your website and its visitors, providing more trust for your customers and potentially boosting your search engine rankings."
+msgstr ""
+
+msgid "Domain"
+msgstr ""
+
+msgid "Certificate"
+msgstr ""
+
+msgid "Expires"
+msgstr ""
+
+msgid "Let's Encrypt"
+msgstr ""
+
+msgid "Self-signed"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Live"
+msgstr ""
+
+msgid "Manage"
+msgstr ""
+
+msgid "Secure Certificates"
+msgstr ""
+
+msgid "Free"
+msgstr ""
+
+msgid "Higher costs may be incurred"
+msgstr ""
+
+msgid "You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br \/><br \/>Using the certificate is of course completely free of charge, you only have to procure it yourself."
+msgstr ""
+
+msgid "Select this Option"
+msgstr ""
+
+msgid "An unknown error has occurred."
+msgstr ""
+
+msgid "This certificate is valid and currently in-use with %s."
+msgstr ""
+
+msgid "Valid thru <strong>%s<\/strong>"
+msgstr ""
+
+msgid "Certificate will <strong>automatically renew %d days before expiration<\/strong>. We will notify you via email when this happens."
+msgstr ""
+
+msgid "No unique IP"
+msgstr ""
+
+msgid "This domain is currently <strong>not using a Unique IP<\/strong>."
+msgstr ""
+
+msgid "Automatic HTTPS"
+msgstr ""
+
+msgid "Redirect all site content over a secure HTTPS connection."
+msgstr ""
+
+msgid "Warning"
+msgstr ""
+
+msgid "Disabling this setting will slow the loading of your site and will default to insecure connections. You should only disable this setting if your site requires special redirect settings in your <strong>.htaccess<\/strong> file or you want to allow mixed content on your site."
+msgstr ""
+
+msgid "Remove Certificate"
+msgstr ""
+
+msgid "Stop using this certificate with your domain. Note the certificate will still remain valid until its expiration and will be available for use anytime under <strong>Other Certificates<\/strong>."
+msgstr ""
+
+msgid "Certificate Configuration"
+msgstr ""
+
+msgid "Private Key"
+msgstr ""
+
+msgid "Intermediate Certificate"
+msgstr ""
+
+msgid "Your website is not secure"
+msgstr ""
+
+msgid "Data transferred between your visitors and website is unencrypted and may be intercepted."
+msgstr ""
+
+msgid "Connection is secure"
+msgstr ""
+
+msgid "Data transferred between your visitors and website is encrypted."
+msgstr ""
+
+msgid "Website will be set up"
+msgstr ""
+
+msgid "Your website is still being set up for encryption."
+msgstr ""
+
+msgid "Create for %s"
+msgstr ""
+
+msgid "View Domain: %s"
+msgstr ""
+
+msgid "Access denied!"
+msgstr ""
+
+msgid "You have no permissions for this page."
+msgstr ""
+
+msgid "Self-Signed Certificate"
+msgstr ""
+
+msgid "Secure your site with a self-signed certificate: <ul><li>No trust from browsers<\/li><li>Own SSL informations<\/li><li>Connection is encrypted<\/li><\/ul>"
+msgstr ""
+
+msgid "Secure your site with an certificate from an authority: <ul><li>Displays the 'lock' icon in browser address bars<\/li><li>Mostly 99.9% web and mobile browser compatibility<\/li><li>Often a guarantee for fraudulent transactions with insurance companies<\/li><\/ul>"
+msgstr ""
+
+msgid "Let's Encrypt Certificate"
+msgstr ""
+
+msgid "Secure your site and improve SEO with a free certificate from Let's Encrypt: <ul><li>Displays the 'lock' icon in browser address bars<\/li><li>Free automatic renewals<\/li><li>New non-profit certificate authority<\/li><\/ul>"
+msgstr ""

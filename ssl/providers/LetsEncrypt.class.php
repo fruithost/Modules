@@ -1,13 +1,15 @@
 <?php
 	namespace fruithost\Module\SSL\Providers;
 	
+	use \fruithost\I18N;
+	
 	class LetsEncrypt implements Provider  {
 		public $name		= null;
 		public $description	= null;
 		
 		public function __construct() {
-			$this->name			= \fruithost\I18N::get('Let\'s Encrypt Certificate');
-			$this->description	= \fruithost\I18N::get('Secure your site and improve SEO with a free certificate from Let\'s Encrypt: <ul><li>Displays the \'lock\' icon in browser address bars</li><li>Free automatic renewals</li><li>New non-profit certificate authority</li></ul>');
+			$this->name			= sprintf('Let\'s Encrypt %s', I18N::get('Certificate'));
+			$this->description	= I18N::get('Secure your site and improve SEO with a free certificate from Let\'s Encrypt: <ul><li>Displays the \'lock\' icon in browser address bars</li><li>Free automatic renewals</li><li>New non-profit certificate authority</li></ul>');
 		}
 		
 		public function getName() : string {

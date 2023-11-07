@@ -28,6 +28,10 @@
 			return null;
 		}
 		
+		public function renewUntil() : int | null {
+			return null;
+		}
+		
 		public function getIcon() : string | null {
 			return '<i class="material-icons text-danger" style="font-size: 42px">gesture</i>';
 		}

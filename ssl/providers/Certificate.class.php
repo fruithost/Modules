@@ -28,6 +28,10 @@
 			return null;
 		}
 		
+		public function renewUntil() : int | null {
+			return null;
+		}
+		
 		public function getIcon() : string | null {
 			return '<i class="material-icons text-warning" style="font-size: 42px">card_membership</i>';
 		}

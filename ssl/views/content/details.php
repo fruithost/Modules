@@ -67,9 +67,9 @@
 				<div class="col">
 					<h6 class="text-success"><i class="material-icons align-top">beenhere</i> <?php printf(I18N::get('Valid thru <strong>%s</strong>'), date(Auth::getSettings('TIME_FORMAT', NULL, $this->getSettings('TIME_FORMAT', 'd.m.Y - H:i:s')), time())); ?></h6>
 					<?php
-						if($provider->renewPeriod() !== null) {
+						if($provider->renewUntil() !== null) {
 							?>
-								<p><?php printf(I18N::get('Certificate will <strong>automatically renew %d days before expiration</strong>. We will notify you via email when this happens.'), $provider->renewPeriod()); ?></p>
+								<p><?php printf(I18N::get('Certificate will <strong>automatically renew %d days before expiration</strong>. We will notify you via email when this happens.'), $provider->renewUntil()); ?></p>
 							<?php
 						}
 					?>

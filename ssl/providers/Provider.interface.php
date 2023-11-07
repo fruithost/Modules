@@ -7,5 +7,6 @@
 		public function isFree() : bool;
 		public function getIcon() : string | null;
 		public function renewPeriod() : int | null;
+		public function renewUntil() : int | null;
 	}
 ?>

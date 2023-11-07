@@ -23,9 +23,6 @@ msgstr ""
 msgid "Expires"
 msgstr ""
 
-msgid "Let's Encrypt"
-msgstr ""
-
 msgid "Self-signed"
 msgstr ""
 
@@ -138,9 +135,6 @@ msgid "Secure your site with a self-signed certificate: <ul><li>No trust from br
 msgstr ""
 
 msgid "Secure your site with an certificate from an authority: <ul><li>Displays the 'lock' icon in browser address bars<\/li><li>Mostly 99.9% web and mobile browser compatibility<\/li><li>Often a guarantee for fraudulent transactions with insurance companies<\/li><\/ul>"
-msgstr ""
-
-msgid "Let's Encrypt Certificate"
 msgstr ""
 
 msgid "Secure your site and improve SEO with a free certificate from Let's Encrypt: <ul><li>Displays the 'lock' icon in browser address bars<\/li><li>Free automatic renewals<\/li><li>New non-profit certificate authority<\/li><\/ul>"

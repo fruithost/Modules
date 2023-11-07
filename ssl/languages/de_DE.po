@@ -1,0 +1,141 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: German\n"
+
+msgid "Problem!"
+msgstr "Problem!"
+
+msgid "You have no permissions to edit the given Domain."
+msgstr "Sie haben keine Berechtigung zum Bearbeiten der angegebenen Domain."
+
+msgid "Add a certificate to your domain to protect information passed between your website and its visitors, providing more trust for your customers and potentially boosting your search engine rankings."
+msgstr "Fügen Sie Ihrer Domain ein Zertifikat hinzu, um die zwischen Ihrer Website und ihren Besuchern ausgetauschten Informationen zu schützen, um mehr Vertrauen bei Ihren Kunden zu schaffen und möglicherweise Ihr Suchmaschinenranking zu verbessern."
+
+msgid "Domain"
+msgstr "Domain"
+
+msgid "Certificate"
+msgstr "Zertifikat"
+
+msgid "Expires"
+msgstr "Läuft ab"
+
+msgid "Self-signed"
+msgstr "Selbstsigniert"
+
+msgid "Pending"
+msgstr "Ausstehend"
+
+msgid "Error"
+msgstr "Fehler"
+
+msgid "Live"
+msgstr "Leben"
+
+msgid "Manage"
+msgstr "Verwalten"
+
+msgid "Secure Certificates"
+msgstr "Sichere Zertifikate"
+
+msgid "Free"
+msgstr "Frei"
+
+msgid "Higher costs may be incurred"
+msgstr "Es können höhere Kosten anfallen"
+
+msgid "You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br /><br />Using the certificate is of course completely free of charge, you only have to procure it yourself."
+msgstr "Diese Option können Sie nur wählen, wenn Sie bereits ein gültiges SSL-Zertifikat von einer zugelassenen Zertifizierungsstelle erworben haben.<br /><br />Die Nutzung des Zertifikats ist selbstverständlich völlig kostenlos, Sie müssen es nur beschaffen "
+
+msgid "Select this Option"
+msgstr "Diese Option wählen"
+
+msgid "An unknown error has occurred."
+msgstr "Ein unbekannter Fehler ist aufgetreten."
+
+msgid "This certificate is valid and currently in-use with %s."
+msgstr "Dieses Zertifikat ist gültig und wird derzeit von %s verwendet."
+
+msgid "Valid thru <strong>%s</strong>"
+msgstr "Gültig bis <strong>%s</strong>"
+
+msgid "Certificate will <strong>automatically renew %d days before expiration</strong>. We will notify you via email when this happens."
+msgstr "Das Zertifikat wird <strong>%d Tage vor Ablauf automatisch erneuert</strong>. "
+
+msgid "No unique IP"
+msgstr "Keine eindeutige IP"
+
+msgid "This domain is currently <strong>not using a Unique IP</strong>."
+msgstr "Diese Domain verwendet derzeit <strong>keine eindeutige IP</strong>."
+
+msgid "Automatic HTTPS"
+msgstr "Automatisches HTTPS"
+
+msgid "Redirect all site content over a secure HTTPS connection."
+msgstr "Leiten Sie den gesamten Inhalt der Website über eine sichere HTTPS-Verbindung um."
+
+msgid "Warning"
+msgstr "Warnung"
+
+msgid "Disabling this setting will slow the loading of your site and will default to insecure connections. You should only disable this setting if your site requires special redirect settings in your <strong>.htaccess</strong> file or you want to allow mixed content on your site."
+msgstr "Das Deaktivieren dieser Einstellung verlangsamt das Laden Ihrer Website und führt standardmäßig zu unsicheren Verbindungen. "
+
+msgid "Remove Certificate"
+msgstr "Zertifikat entfernen"
+
+msgid "Stop using this certificate with your domain. Note the certificate will still remain valid until its expiration and will be available for use anytime under <strong>Other Certificates</strong>."
+msgstr "Verwenden Sie dieses Zertifikat nicht mehr mit Ihrer Domain. "
+
+msgid "Certificate Configuration"
+msgstr "Zertifikatkonfiguration"
+
+msgid "Private Key"
+msgstr "Privater Schlüssel"
+
+msgid "Intermediate Certificate"
+msgstr "Zwischenzertifikat"
+
+msgid "Your website is not secure"
+msgstr "Ihre Website ist nicht sicher"
+
+msgid "Data transferred between your visitors and website is unencrypted and may be intercepted."
+msgstr "Die zwischen Ihren Besuchern und der Website übertragenen Daten sind unverschlüsselt und können abgefangen werden."
+
+msgid "Connection is secure"
+msgstr "Verbindung ist sicher"
+
+msgid "Data transferred between your visitors and website is encrypted."
+msgstr "Die zwischen Ihren Besuchern und der Website übertragenen Daten werden verschlüsselt."
+
+msgid "Website will be set up"
+msgstr "Website wird eingerichtet"
+
+msgid "Your website is still being set up for encryption."
+msgstr "Ihre Website wird noch für die Verschlüsselung eingerichtet."
+
+msgid "Create for %s"
+msgstr "Erstellen für %s"
+
+msgid "View Domain: %s"
+msgstr "Domain anzeigen: %s"
+
+msgid "Access denied!"
+msgstr "Zugriff verweigert!"
+
+msgid "You have no permissions for this page."
+msgstr "Sie haben keine Berechtigungen für diese Seite."
+
+msgid "Self-Signed Certificate"
+msgstr "Selbstsigniertes Zertifikat"
+
+msgid "Secure your site with a self-signed certificate: <ul><li>No trust from browsers</li><li>Own SSL informations</li><li>Connection is encrypted</li></ul>"
+msgstr "Sichern Sie Ihre Website mit einem selbstsignierten Zertifikat: <ul><li>Kein Vertrauen von Browsern</li><li>Eigene SSL-Informationen</li><li>Verbindung ist verschlüsselt</li></ul>"
+
+msgid "Secure your site with an certificate from an authority: <ul><li>Displays the 'lock' icon in browser address bars</li><li>Mostly 99.9% web and mobile browser compatibility</li><li>Often a guarantee for fraudulent transactions with insurance companies</li></ul>"
+msgstr "Sichern Sie Ihre Website mit einem Zertifikat einer Behörde: <ul><li>Zeigt das Schloss-Symbol in den Adressleisten des Browsers an</li><li>Überwiegend 99,9 % Web- und Mobilbrowser-Kompatibilität</li><li>Oft eine Garantie für betrügerische Transaktionen mit Versicherungsgesellschaften</li></ul>"
+
+msgid "Secure your site and improve SEO with a free certificate from Let's Encrypt: <ul><li>Displays the 'lock' icon in browser address bars</li><li>Free automatic renewals</li><li>New non-profit certificate authority</li></ul>"
+msgstr "Sichern Sie Ihre Website und verbessern Sie SEO mit einem kostenlosen Zertifikat von Let's Encrypt: <ul><li>Zeigt das Schloss-Symbol in den Adressleisten des Browsers an</li><li>Kostenlose automatische Verlängerungen</li><li>Neue Non-Profit-Zertifizierungsstelle</li></ul>"
+

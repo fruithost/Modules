@@ -60,7 +60,7 @@
 							?>
 						</td>
 						<td class="text-right">
-							<a class="delete btn btn-sm btn-primary" href="<?php print sprintf('%s/%s', $this->url('/module/ssl'), $certificate->id); ?>"><?php I18N::__('Manage'); ?></a>
+							<a class="delete btn btn-sm btn-primary" href="<?php print sprintf('%s/view/%s', $this->url('/module/ssl'), $certificate->id); ?>"><?php I18N::__('Manage'); ?></a>
 						</td>
 					</tr>
 				<?php

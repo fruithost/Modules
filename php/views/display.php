@@ -15,7 +15,6 @@
 	
 	if($php->hasErrors()) {
 		?>
-		
 			<div class="container">
 				<div class="alert alert-danger mt-4" role="alert">
 					<strong><?php I18N::__('Problem!'); ?></strong>

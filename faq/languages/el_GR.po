@@ -1,0 +1,15 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Greek\n"
+
+
+msgid "What can we help you with?"
+msgstr "Τι μπορούμε να σας βοηθήσουμε;"
+
+msgid "Enter a question or key word..."
+msgstr "Εισαγάγετε μια ερώτηση ή μια λέξη-κλειδί..."
+
+msgid "Search"
+msgstr "Αναζήτηση"

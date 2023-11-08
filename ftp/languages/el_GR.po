@@ -1,0 +1,105 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: $name\n"
+
+
+msgid "No FTP accounts available!"
+msgstr "Δεν υπάρχουν διαθέσιμοι λογαριασμοί FTP!"
+
+msgid "Please create a new account to administer it."
+msgstr "Παρακαλώ δημιουργήστε έναν νέο λογαριασμό για να τον διαχειριστείτε."
+
+msgid "Create new Account"
+msgstr "Δημιουργία νέου λογαριασμού"
+
+msgid "Username"
+msgstr "Όνομα χρήστη"
+
+msgid "Password"
+msgstr "Κωδικός πρόσβασης"
+
+msgid "Directory"
+msgstr "Κατάλογος"
+
+msgid "Pending"
+msgstr "Εκκρεμείς"
+
+msgid "Show"
+msgstr "Εμφάνιση"
+
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+msgid "New Password"
+msgstr "Νέος κωδικός πρόσβασης"
+
+msgid "Path"
+msgstr "Μονοπάτι"
+
+msgid "Please select"
+msgstr "Παρακαλώ επιλέξτε"
+
+msgid "User-ID"
+msgstr "Αναγνωριστικό χρήστη"
+
+msgid "Create FTP Account"
+msgstr "Δημιουργία λογαριασμού FTP"
+
+msgid "Change FTP Account"
+msgstr "Αλλαγή λογαριασμού FTP"
+
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+msgid "Update"
+msgstr "Ενημέρωση"
+
+msgid "Create"
+msgstr "Δημιουργία"
+
+msgid "Create New"
+msgstr "Δημιουργία νέου"
+
+msgid "Delete selected"
+msgstr "Διαγραφή επιλεγμένων"
+
+msgid "Please select the FTP account you want to delete!"
+msgstr "Παρακαλώ επιλέξτε τον λογαριασμό FTP που θέλετε να διαγράψετε!"
+
+msgid "You can't delete your main account!"
+msgstr "Δεν μπορείτε να διαγράψετε τον κύριο λογαριασμό σας!"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "Παρουσιάστηκε ένα άγνωστο σφάλμα. Δοκιμάστε ξανά τη δράση σας!"
+
+msgid "You have no permissions to delete the account <strong>%s_%s</strong>!"
+msgstr "Δεν έχετε δικαιώματα για να διαγράψετε τον λογαριασμό <strong>%s_%s</strong>!"
+
+msgid "Following users was deleted: <strong>%s</strong>!"
+msgstr "Οι ακόλουθοι χρήστες διαγράφηκαν: <strong>%s</strong>!"
+
+msgid "An error has occurred. Please reload the page and try again!"
+msgstr "Παρουσιάστηκε ένα σφάλμα. Παρακαλώ ανανεώστε τη σελίδα και προσπαθήστε ξανά!"
+
+msgid "You have no permission to this FTP account!"
+msgstr "Δεν έχετε πρόσβαση σε αυτόν τον λογαριασμό FTP!"
+
+msgid "Please enter a password for the selected ftp account!"
+msgstr "Παρακαλώ εισαγάγετε έναν κωδικό πρόσβασης για τον επιλεγμένο λογαριασμό ftp!"
+
+msgid "Please select an valid path for the account!"
+msgstr "Παρακαλώ επιλέξτε μια έγκυρη διαδρομή για τον λογαριασμό!"
+
+msgid "The selected path doesn't exists!"
+msgstr "Η επιλεγμένη διαδρομή δεν υπάρχει!"
+
+msgid "Please enter a username for your ftp account!"
+msgstr "Παρακαλώ εισαγάγετε ένα όνομα χρήστη για τον λογαριασμό ftp!"
+
+msgid "Please enter a password for your ftp account!"
+msgstr "Παρακαλώ εισαγάγετε έναν κωδικό πρόσβασης για τον λογαριασμό ftp!"

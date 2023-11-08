@@ -284,15 +284,22 @@
 				return;
 			}
 			
+			if(Database::count('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `type`=\'DOMAIN\' AND `time_deleted` IS NULL ORDER BY `name` ASC', [
+				'user'	=> Auth::getID()
+			]) == 0) {
+				require_once('views/no_domains.php');
+				return;
+			}
+			
 			switch($submodule) {
 				case 'view':
-					require_once('views/view.php');
+					require_once(sprintf('%s/views/view.php', dirname(__FILE__)));
 				break;
 				case 'create':
-					require_once('views/create.php');
+					require_once(sprintf('%s/views/create.php', dirname(__FILE__)));
 				break;
 				default:
-					require_once('views/list.php');
+					require_once(sprintf('%s/views/list.php', dirname(__FILE__)));
 				break;
 			}
 		}

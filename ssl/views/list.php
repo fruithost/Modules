@@ -13,6 +13,11 @@
 			<div class="alert alert-success mt-4" role="alert"><?php (is_array($success) ? var_dump($success) : print $success); ?></div>
 		<?php
 	}
+	
+	if(count($this->certificates) == 0) {
+		require_once(sprintf('%s/empty.php', dirname(__FILE__)));
+		return;
+	}
 ?>
 <table class="table table-borderless table-striped table-hover">
 	<thead>

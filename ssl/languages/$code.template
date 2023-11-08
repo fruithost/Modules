@@ -11,6 +11,15 @@ msgstr ""
 msgid "You have no permissions to edit the given Domain."
 msgstr ""
 
+msgid "No Certificates available!"
+msgstr ""
+
+msgid "Please navigate to the domain overview and click on the %s <strong>lock-symbol<\/strong> to add a certificate."
+msgstr ""
+
+msgid "Go to my Domains"
+msgstr ""
+
 msgid "Add a certificate to your domain to protect information passed between your website and its visitors, providing more trust for your customers and potentially boosting your search engine rankings."
 msgstr ""
 
@@ -26,10 +35,10 @@ msgstr ""
 msgid "Self-signed"
 msgstr ""
 
-msgid "Pending"
+msgid "Error"
 msgstr ""
 
-msgid "Error"
+msgid "Pending"
 msgstr ""
 
 msgid "Live"
@@ -56,10 +65,19 @@ msgstr ""
 msgid "An unknown error has occurred."
 msgstr ""
 
-msgid "This certificate is valid and currently in-use with %s."
+msgid "Certificate is invalid"
 msgstr ""
 
 msgid "Valid thru <strong>%s<\/strong>"
+msgstr ""
+
+msgid "not valid"
+msgstr ""
+
+msgid "valid"
+msgstr ""
+
+msgid "This certificate is <strong>%s<\/strong> and currently in-use with %s."
 msgstr ""
 
 msgid "Certificate will <strong>automatically renew %d days before expiration<\/strong>. We will notify you via email when this happens."
@@ -69,6 +87,15 @@ msgid "No unique IP"
 msgstr ""
 
 msgid "This domain is currently <strong>not using a Unique IP<\/strong>."
+msgstr ""
+
+msgid "Remove Certificate"
+msgstr ""
+
+msgid "Stop using this certificate with your domain. Note the certificate will still remain valid until its expiration and will be available for use anytime under <strong>Other Certificates<\/strong>."
+msgstr ""
+
+msgid "Do you really wan't to delete the Certificate?"
 msgstr ""
 
 msgid "Automatic HTTPS"
@@ -83,19 +110,64 @@ msgstr ""
 msgid "Disabling this setting will slow the loading of your site and will default to insecure connections. You should only disable this setting if your site requires special redirect settings in your <strong>.htaccess<\/strong> file or you want to allow mixed content on your site."
 msgstr ""
 
-msgid "Remove Certificate"
+msgid "Strict Transport Security (HSTS)"
 msgstr ""
 
-msgid "Stop using this certificate with your domain. Note the certificate will still remain valid until its expiration and will be available for use anytime under <strong>Other Certificates<\/strong>."
+msgid "Enables HSTS"
+msgstr ""
+
+msgid "This web security policy guarantees that clients only access the HTTPS version of a website and not the HTTP version. It serves as protection against man-in-the-middle attacks such as SSL stripping, downgrade attacks and more."
 msgstr ""
 
 msgid "Certificate Configuration"
+msgstr ""
+
+msgid "Not available"
+msgstr ""
+
+msgid "The certificate configuration is currently not available. Please wait until the certificate has been created."
 msgstr ""
 
 msgid "Private Key"
 msgstr ""
 
 msgid "Intermediate Certificate"
+msgstr ""
+
+msgid "Details"
+msgstr ""
+
+msgid "Common Name"
+msgstr ""
+
+msgid "Organization Name"
+msgstr ""
+
+msgid "E-Mail Address"
+msgstr ""
+
+msgid "Valid from"
+msgstr ""
+
+msgid "Valid to"
+msgstr ""
+
+msgid "Version"
+msgstr ""
+
+msgid "Hash"
+msgstr ""
+
+msgid "Serial Number"
+msgstr ""
+
+msgid "No Domains available!"
+msgstr ""
+
+msgid "Please create a new domain to administer it."
+msgstr ""
+
+msgid "Create new Domain"
 msgstr ""
 
 msgid "Your website is not secure"
@@ -120,6 +192,24 @@ msgid "Create for %s"
 msgstr ""
 
 msgid "View Domain: %s"
+msgstr ""
+
+msgid "You have no access to this domain!"
+msgstr ""
+
+msgid "A certificate will be currently created for the domain <strong>%s<\/strong>!"
+msgstr ""
+
+msgid "The <strong>Let's Encrypt<\/strong> certificate for the domain <strong>%s<\/strong> will be created soon."
+msgstr ""
+
+msgid "The <strong>Self-Signed<\/strong> certificate for the domain <strong>%s<\/strong> will be created soon."
+msgstr ""
+
+msgid "You cant delete the certificate!"
+msgstr ""
+
+msgid "The certificate for the domain <strong>%s<\/strong> was successfully deleted."
 msgstr ""
 
 msgid "Access denied!"

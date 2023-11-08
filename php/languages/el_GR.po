@@ -1,0 +1,59 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Greek\n"
+
+msgid "Access denied!"
+msgstr "Δεν επιτρέπεται η πρόσβαση!"
+
+msgid "You have no permissions for this page."
+msgstr "Δεν διαθέτετε δικαιώματα για αυτήν τη σελίδα."
+
+msgid "This property is deprecated!"
+msgstr "Αυτή η ιδιότητα έχει καταργηθεί!"
+
+msgid "DEPRECATED"
+msgstr "ΚΑΤΑΡΓΗΜΈΝΟ"
+
+msgid "On"
+msgstr "Ενεργοποιημένο"
+
+msgid "default"
+msgstr "προεπιλεγμένο"
+
+msgid "Off"
+msgstr "Απενεργοποιημένο"
+
+msgid "Possible Modifiers"
+msgstr "Πιθανοί τροποποιητές"
+
+msgid "Possible Operators"
+msgstr "Πιθανοί χειριστές"
+
+msgid "Possible Flags"
+msgstr "Πιθανές σημαίες"
+
+msgid "Problem!"
+msgstr "Πρόβλημα!"
+
+msgid 'Domain "<strong>%s</strong>" currently not accessible.'
+msgstr 'Ο τομέας "<strong>%s</strong>" δεν είναι προσβάσιμος αυτήν τη στιγμή.'
+
+msgid "Configuration"
+msgstr "Διαμόρφωση"
+
+msgid "Update"
+msgstr "Ενημέρωση"
+
+msgid "Save"
+msgstr "Αποθήκευση"
+
+msgid "For Domain"
+msgstr "Για τομέα"
+
+msgid "Global"
+msgstr "Παγκόσμιος"
+
+msgid "PHP.ini was successfully saved."
+msgstr "Το PHP.ini αποθηκεύτηκε με επιτυχία."

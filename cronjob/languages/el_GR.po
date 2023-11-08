@@ -1,0 +1,258 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Greek\n"
+
+
+msgid "No Cronjobs available!"
+msgstr "Δεν υπάρχουν διαθέσιμα Cronjobs!"
+
+msgid "Please create a new cronjob to administer it."
+msgstr "Παρακαλώ δημιουργήστε ένα νέο cronjob για να το διαχειριστείτε."
+
+msgid "Create new Cronjob"
+msgstr "Δημιουργία νέου Cronjob"
+
+msgid "Name"
+msgstr "Όνομα"
+
+msgid "Type"
+msgstr "Τύπος"
+
+msgid "Action"
+msgstr "Ενέργεια"
+
+msgid "Configuration"
+msgstr "Διαμόρφωση"
+
+msgid "Status"
+msgstr "Κατάσταση"
+
+msgid "Not named"
+msgstr "Χωρίς όνομα"
+
+msgid "Never running"
+msgstr "Ποτέ δεν τρέχει"
+
+msgid "Edit"
+msgstr "Επεξεργασία"
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+msgid "Name of your Job"
+msgstr "Όνομα της εργασίας σας"
+
+msgid "Template"
+msgstr "Πρότυπο"
+
+msgid "Common Settings"
+msgstr "Κοινές ρυθμίσεις"
+
+msgid "Each Minute"
+msgstr "Κάθε λεπτό"
+
+msgid "All 5 Minutes"
+msgstr "Όλα τα 5 λεπτά"
+
+msgid "Each 30 Minutes"
+msgstr "Κάθε 30 λεπτά"
+
+msgid "Each Hour"
+msgstr "Κάθε ώρα"
+
+msgid "Each 12 Hours"
+msgstr "Κάθε 12 ώρες"
+
+msgid "Each Day"
+msgstr "Κάθε μέρα"
+
+msgid "Each Week"
+msgstr "Κάθε εβδομάδα"
+
+msgid "On the 1st and 15th of the Month"
+msgstr "Την 1η και την 15η του μήνα"
+
+msgid "Each Month"
+msgstr "Κάθε μήνα"
+
+msgid "Each Year"
+msgstr "Κάθε χρόνο"
+
+msgid "Minute"
+msgstr "Λεπτό"
+
+msgid "Each two Minutes"
+msgstr "Κάθε δύο λεπτά"
+
+msgid "Each Five Minutes"
+msgstr "Κάθε πέντε λεπτά"
+
+msgid "Each Ten Minutes"
+msgstr "Κάθε δέκα λεπτά"
+
+msgid "Each Fifteen Minutes"
+msgstr "Κάθε δεκαπέντε λεπτά"
+
+msgid "Each Thirty Minutes"
+msgstr "Κάθε τριάντα λεπτά"
+
+msgid "Minutes"
+msgstr "Λεπτά"
+
+msgid "At the beginning of the hour"
+msgstr "Στην αρχή της ώρας"
+
+msgid "At one quarter past the hour"
+msgstr "Ένα τέταρτο μετά την ώρα"
+
+msgid "At half past the hour"
+msgstr "Μία ώρα μετά"
+
+msgid "At one quarter until the hour"
+msgstr "Ένα τέταρτο πριν την ώρα"
+
+msgid "Hour"
+msgstr "Ώρα"
+
+msgid "Every Hour"
+msgstr "Κάθε ώρα"
+
+msgid "Every Other Hour"
+msgstr "Κάθε δεύτερη ώρα"
+
+msgid "Every Third Hour"
+msgstr "Κάθε τρίτη ώρα"
+
+msgid "Every Fourth Hour"
+msgstr "Κάθε τέταρτη ώρα"
+
+msgid "Every Sixth Hour"
+msgstr "Κάθε έκτη ώρα"
+
+msgid "Every Twelve Hours"
+msgstr "Κάθε δώδεκα ώρες"
+
+msgid "Hours"
+msgstr "Ώρες"
+
+msgid "Day"
+msgstr "Ημέρα"
+
+msgid "Every Day"
+msgstr "Κάθε μέρα"
+
+msgid "Every Other Day"
+msgstr "Κάθε δεύτερη μέρα"
+
+msgid "Days"
+msgstr "Ημέρες"
+
+msgid "Month"
+msgstr "Μήνας"
+
+msgid "Every Month"
+msgstr "Κάθε μήνα"
+
+msgid "Every Other Month"
+msgstr "Κάθε δεύτερο μήνα"
+
+msgid "Every Third Month"
+msgstr "Κάθε τρίτο μήνα"
+
+msgid "Every Six Months"
+msgstr "Κάθε έξι μήνες"
+
+msgid "Months"
+msgstr "Μήνες"
+
+msgid "Weekday"
+msgstr "Εργάσιμη μέρα"
+
+msgid "Every Weekday"
+msgstr "Κάθε εργάσιμη μέρα"
+
+msgid "Every Weekend Day"
+msgstr "Κάθε Σαββατοκύριακο"
+
+msgid "Every Monday, Wednesday, and Friday"
+msgstr "Κάθε Δευτέρα, Τετάρτη και Παρασκευή"
+
+msgid "Every Tuesday and Thursday"
+msgstr "Κάθε Τρίτη και Πέμπτη"
+
+msgid "Weekdays"
+msgstr "Hμέρες εβδομάδας"
+
+msgid "Execute PHP Script"
+msgstr "Εκτέλεση PHP Script"
+
+msgid "Please Select"
+msgstr "Παρακαλώ επιλέξτε"
+
+msgid "Arguments"
+msgstr "Ορισμοί"
+
+msgid "Call URL"
+msgstr "Κλήση διεύθυνσης URL"
+
+msgid "Create Cronjob"
+msgstr "Δημιουργία Cronjob"
+
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+msgid "Create"
+msgstr "Δημιουργία"
+
+msgid "Change Cronjob"
+msgstr "Αλλαγή Cronjob"
+
+msgid "Update"
+msgstr "Ενημέρωση"
+
+msgid "Create New"
+msgstr "Δημιουργία νέου"
+
+msgid "Delete selected"
+msgstr "Διαγραφή επιλεγμένων"
+
+msgid "Unknown error occurs!"
+msgstr "Προέκυψε άγνωστο σφάλμα!"
+
+msgid "Please enter a valid minute!"
+msgstr "Εισαγάγετε ένα έγκυρο λεπτό!"
+
+msgid "Please enter a valid hour!"
+msgstr "Εισαγάγετε μια έγκυρη ώρα!"
+
+msgid "Please enter a valid day!"
+msgstr "Εισαγάγετε μια έγκυρη ημέρα!"
+
+msgid "Please enter a valid month!"
+msgstr "Εισαγάγετε ένα έγκυρο μήνα!"
+
+msgid "Please enter a valid weekday!"
+msgstr "Εισαγάγετε μια έγκυρη ημέρα της εβδομάδας!"
+
+msgid "Please enter a valid PHP script!"
+msgstr "Εισαγάγετε ένα έγκυρο σενάριο PHP!"
+
+msgid "Please enter a valid URL!"
+msgstr "Εισαγάγετε μια έγκυρη διεύθυνση URL!"
+
+msgid "Please enter a valid action!"
+msgstr "Εισαγάγετε μια έγκυρη ενέργεια!"
+
+msgid "Please select an Cronjob you want to delete!"
+msgstr "Επιλέξτε το Cronjob που θέλετε να διαγράψετε!"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "Προέκυψε άγνωστο σφάλμα. Δοκιμάστε ξανά τη δράση σας!"
+
+msgid "You have no permissions to delete the Cronjob <strong>%s_%s</strong>!"
+msgstr "Δεν έχετε δικαιώματα για να διαγράψετε το Cronjob <strong>%s_%s</strong>!"
+
+msgid "Following Cronjobs was deleted: <strong><br />- %s</strong>"
+msgstr "Τα ακόλουθα Cronjobs διαγράφηκαν: <strong><br />- %s</strong>"

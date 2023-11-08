@@ -1,0 +1,90 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Greek\n"
+
+
+msgid "No Domains available!"
+msgstr "Δεν υπάρχουν διαθέσιμοι τομείς!"
+
+msgid "Please create a new domain to administer it."
+msgstr "Παρακαλώ δημιουργήστε έναν νέο τομέα για να τον διαχειριστείτε."
+
+msgid "Create new Domain"
+msgstr "Δημιουργία νέου τομέα"
+
+msgid "Domain name"
+msgstr "Όνομα τομέα"
+
+msgid "Home directory"
+msgstr "Κατάλογος αρχικής σελίδας"
+
+msgid "Status"
+msgstr "Κατάσταση"
+
+msgid "Unknown Error"
+msgstr "Άγνωστο σφάλμα"
+
+msgid "Deleting"
+msgstr "Διαγραφή"
+
+msgid "Pending"
+msgstr "Σε εκκρεμότητα"
+
+msgid "Error"
+msgstr "Σφάλμα"
+
+msgid "Live"
+msgstr "Ζωντανός"
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+msgid "Create a new home directory"
+msgstr "Δημιουργήστε έναν νέο κατάλογο αρχικής σελίδας"
+
+msgid "Use existing home directory"
+msgstr "Χρησιμοποιήστε υπάρχοντα κατάλογο αρχικής σελίδας"
+
+msgid 'The domain must refer to the IP Address <strong>%s</strong> or be managed by our <a href="%s" target="_blank">nameserver</a> (DNS). Adding domains does not replace the domain registration!'
+msgstr 'Ο τομέας πρέπει να αναφέρεται στη διεύθυνση IP <strong>%s</strong> ή να διαχειρίζεται από τον κεντρικό διακομιστή ονομάτων (DNS) μας <a href="%s" target="_blank">nameserver</a>. Η προσθήκη τομέων δεν αντικαθιστά την καταχώρηση τομέα!'
+
+msgid "Create Domain"
+msgstr "Δημιουργία τομέα"
+
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+msgid "Create"
+msgstr "Δημιουργία"
+
+msgid "Create New"
+msgstr "Δημιουργία νέου"
+
+msgid "Delete selected"
+msgstr "Διαγραφή επιλεγμένων"
+
+msgid "Please select the Domains you want to delete!"
+msgstr "Παρακαλώ επιλέξτε τους τομείς που θέλετε να διαγράψετε!"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "Παρουσιάστηκε ένα άγνωστο σφάλμα. Δοκιμάστε ξανά τη δράση σας!"
+
+msgid "You have no permissions to delete the Domain <strong>%s</strong>!"
+msgstr "Δεν διαθέτετε δικαιώματα για τη διαγραφή του τομέα <strong>%s</strong>!"
+
+msgid "Following Domains will be deleted: <strong>%s</strong>!"
+msgstr "Οι ακόλουθοι τομείς θα διαγραφούν: <strong>%s</strong>!"
+
+msgid "Please enter a domain name!"
+msgstr "Παρακαλώ εισαγάγετε ένα όνομα τομέα!"
+
+msgid "Domain already exists."
+msgstr "Ο τομέας υπάρχει ήδη."
+
+msgid "Please select an valid home directory!"
+msgstr "Παρακαλώ επιλέξτε έναν έγκυρο κατάλογο αρχικής σελίδας!"
+
+msgid "Please select an existing home directory!"
+msgstr "Παρακαλώ επιλέξτε έναν υπάρχοντα κατάλογο αρχικής σελίδας!"

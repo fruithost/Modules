@@ -45,7 +45,7 @@
 						<?php print $provider->getDescription(); ?>
 					</div>
 					<div class="card-footer text-center">
-						<a href="#" class="btn btn-outline-success"><?php I18N::__('Select this Option'); ?></a>
+						<a href="<?php print $this->url(sprintf('/module/ssl/create/%s?domain=%d', $provider->getKey(), $this->domain->id)); ?>" class="btn btn-outline-success"><?php I18N::__('Select this Option'); ?></a>
 					</div>
 				</div>
 			</div>

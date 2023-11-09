@@ -5,49 +5,79 @@ msgstr ""
 "Language: $name\n"
 
 
-msgid "Problem!"
+msgid "Your website is not secure"
 msgstr ""
 
-msgid "You have no permissions to edit the given Domain."
+msgid "Data transferred between your visitors and website is unencrypted and may be intercepted."
 msgstr ""
 
-msgid "No Certificates available!"
+msgid "Connection is secure"
 msgstr ""
 
-msgid "Please navigate to the domain overview and click on the %s <strong>lock-symbol<\/strong> to add a certificate."
+msgid "Data transferred between your visitors and website is encrypted."
 msgstr ""
 
-msgid "Go to my Domains"
+msgid "Website will be set up"
 msgstr ""
 
-msgid "Add a certificate to your domain to protect information passed between your website and its visitors, providing more trust for your customers and potentially boosting your search engine rankings."
-msgstr ""
-
-msgid "Domain"
-msgstr ""
-
-msgid "Certificate"
-msgstr ""
-
-msgid "Expires"
-msgstr ""
-
-msgid "Self-signed"
-msgstr ""
-
-msgid "Error"
+msgid "Your website is still being set up for encryption."
 msgstr ""
 
 msgid "Pending"
 msgstr ""
 
-msgid "Live"
+msgid "Error"
 msgstr ""
 
-msgid "Manage"
+msgid "Create for %s"
 msgstr ""
 
-msgid "Secure Certificates"
+msgid "View Domain: %s"
+msgstr ""
+
+msgid "You have no access to this domain!"
+msgstr ""
+
+msgid "A certificate will be currently created for the domain <strong>%s<\/strong>!"
+msgstr ""
+
+msgid "We are installing your new <strong>Let's Encrypt<\/strong> certificate for <strong>%s<\/strong> and automatically redirecting traffic to your site over a secure HTTPS connection. You should see this reflected on your website <strong>within 15 minutes<\/strong>."
+msgstr ""
+
+msgid "We are installing your new <strong>Self-Signed<\/strong> certificate for <strong>%s<\/strong> and automatically redirecting traffic to your site over a secure HTTPS connection. You should see this reflected on your website <strong>within 15 minutes<\/strong>."
+msgstr ""
+
+msgid "You cant delete the certificate!"
+msgstr ""
+
+msgid "The certificate for the domain <strong>%s<\/strong> was successfully deleted."
+msgstr ""
+
+msgid "An error has occurred. Please repeat the action!"
+msgstr ""
+
+msgid "The secure certificate for <strong>%s<\/strong> has been reconfigured! Note that these changes can take <strong>up to 15 minutes<\/strong> to be pushed out to the server."
+msgstr ""
+
+msgid "Please insert a certificate, the entry must not be empty!"
+msgstr ""
+
+msgid "Please insert a private key, the entry must not be empty!"
+msgstr ""
+
+msgid "The specified certificate is not valid:<br\/>' . openssl_error_string()));\r\n\t\t\t\t\t\t\t\t\t} else {\r\n\t\t\t\t\t\t\t\t\t\tSession::set('import', [\r\n\t\t\t\t\t\t\t\t\t\t\t'key'\t\t=> $key,\r\n\t\t\t\t\t\t\t\t\t\t\t'cert'\t\t=> $cert,\r\n\t\t\t\t\t\t\t\t\t\t\t'root'\t\t=> $root,\r\n\t\t\t\t\t\t\t\t\t\t\t'expiring'\t=> $to->diff($from)->format('%r%a"
+msgstr ""
+
+msgid "Access denied!"
+msgstr ""
+
+msgid "You have no permissions for this page."
+msgstr ""
+
+msgid "Problem!"
+msgstr ""
+
+msgid "An unknown error has occurred."
 msgstr ""
 
 msgid "Free"
@@ -57,12 +87,6 @@ msgid "Higher costs may be incurred"
 msgstr ""
 
 msgid "You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br \/><br \/>Using the certificate is of course completely free of charge, you only have to procure it yourself."
-msgstr ""
-
-msgid "Select this Option"
-msgstr ""
-
-msgid "An unknown error has occurred."
 msgstr ""
 
 msgid "Certificate is invalid"
@@ -128,6 +152,9 @@ msgstr ""
 msgid "The certificate configuration is currently not available. Please wait until the certificate has been created."
 msgstr ""
 
+msgid "Certificate"
+msgstr ""
+
 msgid "Private Key"
 msgstr ""
 
@@ -161,6 +188,54 @@ msgstr ""
 msgid "Serial Number"
 msgstr ""
 
+msgid "Secure Certificates"
+msgstr ""
+
+msgid "Add a certificate to your domain to protect information passed between your website and its visitors, providing more trust for your customers and potentially boosting your search engine rankings."
+msgstr ""
+
+msgid "Select this Option"
+msgstr ""
+
+msgid "Please check the certificate and confirm that you want to import this certificate for the domain <strong>%s<\/strong>!"
+msgstr ""
+
+msgid "Private Key Code"
+msgstr ""
+
+msgid "Certificate Code"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Proceed"
+msgstr ""
+
+msgid "No Certificates available!"
+msgstr ""
+
+msgid "Please navigate to the domain overview and click on the %s <strong>lock-symbol<\/strong> to add a certificate."
+msgstr ""
+
+msgid "Go to my Domains"
+msgstr ""
+
+msgid "Domain"
+msgstr ""
+
+msgid "Expires"
+msgstr ""
+
+msgid "Self-signed"
+msgstr ""
+
+msgid "Live"
+msgstr ""
+
+msgid "Manage"
+msgstr ""
+
 msgid "No Domains available!"
 msgstr ""
 
@@ -170,62 +245,17 @@ msgstr ""
 msgid "Create new Domain"
 msgstr ""
 
-msgid "Your website is not secure"
-msgstr ""
-
-msgid "Data transferred between your visitors and website is unencrypted and may be intercepted."
-msgstr ""
-
-msgid "Connection is secure"
-msgstr ""
-
-msgid "Data transferred between your visitors and website is encrypted."
-msgstr ""
-
-msgid "Website will be set up"
-msgstr ""
-
-msgid "Your website is still being set up for encryption."
-msgstr ""
-
-msgid "Create for %s"
-msgstr ""
-
-msgid "View Domain: %s"
-msgstr ""
-
-msgid "You have no access to this domain!"
-msgstr ""
-
-msgid "A certificate will be currently created for the domain <strong>%s<\/strong>!"
-msgstr ""
-
-msgid "The <strong>Let's Encrypt<\/strong> certificate for the domain <strong>%s<\/strong> will be created soon."
-msgstr ""
-
-msgid "The <strong>Self-Signed<\/strong> certificate for the domain <strong>%s<\/strong> will be created soon."
-msgstr ""
-
-msgid "You cant delete the certificate!"
-msgstr ""
-
-msgid "The certificate for the domain <strong>%s<\/strong> was successfully deleted."
-msgstr ""
-
-msgid "Access denied!"
-msgstr ""
-
-msgid "You have no permissions for this page."
-msgstr ""
-
-msgid "Self-Signed Certificate"
-msgstr ""
-
-msgid "Secure your site with a self-signed certificate: <ul><li>No trust from browsers<\/li><li>Own SSL informations<\/li><li>Connection is encrypted<\/li><\/ul>"
+msgid "You have no permissions to edit the given Domain."
 msgstr ""
 
 msgid "Secure your site with an certificate from an authority: <ul><li>Displays the 'lock' icon in browser address bars<\/li><li>Mostly 99.9% web and mobile browser compatibility<\/li><li>Often a guarantee for fraudulent transactions with insurance companies<\/li><\/ul>"
 msgstr ""
 
 msgid "Secure your site and improve SEO with a free certificate from Let's Encrypt: <ul><li>Displays the 'lock' icon in browser address bars<\/li><li>Free automatic renewals<\/li><li>New non-profit certificate authority<\/li><\/ul>"
+msgstr ""
+
+msgid "Self-Signed Certificate"
+msgstr ""
+
+msgid "Secure your site with a self-signed certificate: <ul><li>No trust from browsers<\/li><li>Own SSL informations<\/li><li>Connection is encrypted<\/li><\/ul>"
 msgstr ""

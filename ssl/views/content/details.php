@@ -50,7 +50,7 @@
 	<div class="col">
 		<div class="card">
 			<div class="card-header">
-			<div class=" d-flex flex-row">
+			<div class="d-flex flex-row">
 				<span class="align-self-start flex-shrink-1 p-1">
 					<?php
 						$icon = $provider->getIcon();

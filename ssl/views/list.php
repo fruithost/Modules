@@ -4,7 +4,7 @@
 ?>
 <p><?php I18N::__('Add a certificate to your domain to protect information passed between your website and its visitors, providing more trust for your customers and potentially boosting your search engine rankings.'); ?></p>
 <?php
-	if(isset($error)) {
+	/*if(isset($error)) {
 		?>
 			<div class="alert alert-danger mt-4" role="alert"><?php (is_array($error) ? var_dump($error) : print $error); ?></div>
 		<?php
@@ -12,7 +12,7 @@
 		?>
 			<div class="alert alert-success mt-4" role="alert"><?php (is_array($success) ? var_dump($success) : print $success); ?></div>
 		<?php
-	}
+	}*/
 	
 	if(count($this->certificates) == 0) {
 		require_once(sprintf('%s/empty.php', dirname(__FILE__)));

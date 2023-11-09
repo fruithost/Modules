@@ -166,7 +166,6 @@
 						'domain_id' => $_GET['domain']
 					]);
 					
-					
 					if(empty($this->domain)) {
 						Session::set('error', sprintf(I18N::get('You have no access to this domain!'), $this->domain->name));
 						Response::redirect('/module/ssl/');
@@ -191,8 +190,8 @@
 								'days_expiring'	=> NULL,
 								'force_https'	=> 'YES'
 							]);
-							
-							Session::set('success', sprintf(I18N::get('The <strong>Let\'s Encrypt</strong> certificate for the domain <strong>%s</strong> will be created soon.'), $this->domain->name));
+
+							Session::set('success', sprintf(I18N::get('We are installing your new <strong>Let\'s Encrypt</strong> certificate for <strong>%s</strong> and automatically redirecting traffic to your site over a secure HTTPS connection. You should see this reflected on your website <strong>within 15 minutes</strong>.'), $this->domain->name));
 							Response::redirect('/module/ssl/');
 							exit();
 						break;
@@ -209,7 +208,7 @@
 								'force_https'	=> 'YES'
 							]);
 							
-							Session::set('success', sprintf(I18N::get('The <strong>Self-Signed</strong> certificate for the domain <strong>%s</strong> will be created soon.'), $this->domain->name));
+							Session::set('success', sprintf(I18N::get('We are installing your new <strong>Self-Signed</strong> certificate for <strong>%s</strong> and automatically redirecting traffic to your site over a secure HTTPS connection. You should see this reflected on your website <strong>within 15 minutes</strong>.'), $this->domain->name));
 							Response::redirect('/module/ssl/');
 							exit();
 						break;
@@ -269,6 +268,92 @@
 							exit();
 						}
 					break;
+					case 'create':
+						// @ToDo Check domain permissions
+						if($data == 1) {
+							$template->assign('error', I18N::get('You cant delete the certificate!'));
+						} else if(isset($_POST['import'])) {
+							if(!Session::has('import')) {
+								$this->assign('errors', I18N::get('An error has occurred. Please repeat the action!'));
+							} else {
+								$import = Session::get('import');
+								
+								if(!empty($import['cert']) && !empty($import['key'])) {
+									file_put_contents(sprintf('/etc/fruithost/config/apache2/ssl/%s.cert', $this->domain->name), $import['cert']);
+									file_put_contents(sprintf('/etc/fruithost/config/apache2/ssl/%s.key', $this->domain->name), $import['key']);
+									
+									if(!empty($import['root'])) {
+										file_put_contents(sprintf('/etc/fruithost/config/apache2/ssl/%s.root', $this->domain->name), $import['root']);
+									}
+									
+									$id = Database::insert(DATABASE_PREFIX . 'certificates', [
+										'id'			=> null,
+										'user_id'		=> Auth::getID(),
+										'domain'		=> $this->domain->id,
+										'type'			=> 'CERTIFICATE',
+										'time_created'	=> NULL,
+										'time_updated'	=> NULL,
+										'days_expiring'	=> $import['expiring'],
+										'force_https'	=> 'YES'
+									]);
+									
+									Session::remove('import');
+									Session::set('success', sprintf(I18N::get('The secure certificate for <strong>%s</strong> has been reconfigured! Note that these changes can take <strong>up to 15 minutes</strong> to be pushed out to the server.'), $this->domain->name));
+									Response::redirect('/module/ssl/');
+									exit();
+								} else {
+									$this->assign('errors', I18N::get('An error has occurred. Please repeat the action!'));
+								}
+							}
+						} else {
+							$key	= isset($_POST['key']) ? $_POST['key'] : null;
+							$cert	= isset($_POST['cert']) ? $_POST['cert'] : null;
+							$root	= isset($_POST['root']) ? $_POST['root'] : null;
+							
+							if(empty($cert)) {
+								$this->assign('errors', I18N::get('Please insert a certificate, the entry must not be empty!'));
+							} else if(empty($key)) {
+								$this->assign('errors', I18N::get('Please insert a private key, the entry must not be empty!'));
+							} else {
+								try {
+									$cert_details	= openssl_x509_parse($cert, false);
+									
+									if(!empty($root)) {
+										$root_details	= openssl_x509_parse($root, false);
+									}
+									
+									/* @ToDo intensive check (domain name and other) */
+									$from	= new \DateTime(date_create_from_format('ymdHise', $cert_details['validTo'])->format('c'));
+									$to		= new \DateTime(date_create_from_format('ymdHise', $cert_details['validFrom'])->format('c'));
+
+									if($cert_details == false) {
+										$this->assign('errors', I18N::get('The specified certificate is not valid:<br/>' . openssl_error_string()));
+									} else {
+										Session::set('import', [
+											'key'		=> $key,
+											'cert'		=> $cert,
+											'root'		=> $root,
+											'expiring'	=> $to->diff($from)->format('%r%a')
+										]);
+										
+										$this->assign('cert_details', $cert_details);
+										
+										if(!empty($root_details)) {
+											$this->assign('root_details', $root_details);
+										}
+										
+										$this->assign('confirmate', true);
+									}
+								} catch(\Exception $e) {
+									$this->assign('errors', $e->getMessage());
+								}
+							}
+							
+							$this->assign('key',		$key);
+							$this->assign('cert',		$cert);
+							$this->assign('root',		$root);
+						}
+					break;
 				}
 			}
 		}
@@ -289,6 +374,10 @@
 			]) == 0) {
 				require_once('views/no_domains.php');
 				return;
+			}
+			
+			foreach($this->getTemplate()->getAssigns() AS $name => $value) {
+				${$name} = $value;
 			}
 			
 			switch($submodule) {

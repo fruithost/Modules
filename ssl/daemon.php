@@ -20,6 +20,8 @@
 				mkdir('/etc/fruithost/config/apache2/ssl/');
 			}
 			
+			@chmod('/etc/fruithost/config/apache2/ssl', 0777);
+			
 			foreach([
 				'LetsEncrypt',
 				'SelfSigned',

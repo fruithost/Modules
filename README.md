@@ -1,5 +1,5 @@
 # Modules
-This is the official repository for **fruithost** Modules!
+This is the official repository for ![](https://raw.githubusercontent.com/fruithost/Documentation/main/Images/LOGO_TEXT.png) **fruithost** Modules!
 
 **Running a server has never been so easy!**
 

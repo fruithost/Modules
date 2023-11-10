@@ -1,5 +1,5 @@
 <?php
-	use fruithost\Database;
+	use fruithost\Storage\Database;
 	
 	try {
 		$sql = file_get_contents(dirname(__FILE__) . '/sql/account.sql');

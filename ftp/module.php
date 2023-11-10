@@ -1,10 +1,10 @@
 <?php
-	use fruithost\ModuleInterface;
-	use fruithost\Database;
-	use fruithost\Auth;
-	use fruithost\Button;
-	use fruithost\Modal;
-	use fruithost\I18N;
+	use fruithost\Modules\ModuleInterface;
+	use fruithost\Storage\Database;
+	use fruithost\Accounting\Auth;
+	use fruithost\UI\Button;
+	use fruithost\UI\Modal;
+	use fruithost\Localization\I18N;
 	
 	class FTP extends ModuleInterface {
 		private $accounts = [];
@@ -124,7 +124,7 @@
 				return I18N::get('The selected path doesn\'t exists!');
 			}
 			
-			fruithost\Database::update(DATABASE_PREFIX . 'ftp_user', [ 'id', 'user_id' ], [
+			Database::update(DATABASE_PREFIX . 'ftp_user', [ 'id', 'user_id' ], [
 				'id'			=> $data['user_id'],
 				'user_id'		=> Auth::getID(),
 				'password'		=> $data['password'],
@@ -154,7 +154,7 @@
 				return I18N::get('The selected path doesn\'t exists!');
 			}
 			
-			$id = fruithost\Database::insert(DATABASE_PREFIX . 'ftp_user', [
+			$id = Database::insert(DATABASE_PREFIX . 'ftp_user', [
 				'id'			=> null,
 				'user_id'		=> Auth::getID(),
 				'username'		=> $data['username'],

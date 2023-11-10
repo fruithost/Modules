@@ -1,0 +1,95 @@
+<div class="screen LoginLayout" style="display: none;" data-bind="css: {'with_bottom_text': sBottomInfoHtmlText !== ''}">
+	<div class="login_panel login">
+		<div class="login_panel_content" style="backface-visibility: inherit;">
+			<div class="header" data-bind="css: {'custom_logo': sCustomLogoUrl}">
+				<!-- ko if: sCustomLogoUrl === '' --><span class="icon"></span><!-- /ko -->
+				<!-- ko if: sCustomLogoUrl !== '' --><img data-bind="attr: {'src': sCustomLogoUrl}"/><!-- /ko -->
+				<span class="text" data-bind="i18n: {'key': 'COREWEBCLIENT/HEADING_LOGIN'}"></span>
+			</div>
+			
+			<div class="content login clearfix">
+				<form class="form fields" action="#" autocomplete="on" onsubmit="return false;" data-bind="command: loginCommand">
+					<div class="fieldset">
+						<div class="row login" data-bind="css: {'focused': loginFocus(), 'filled': login().length > 0, shake: shake()}">
+							<label for="login_login" class="placeholder"></label>
+							<span class="value">
+								<input id="login_login" tabindex="1" class="input" name="login" type="text" spellcheck="false"
+									   data-bind="value: login, hasfocus: loginFocus, valueUpdate: 'afterkeydown', 
+										i18n: {'key': 'COREWEBCLIENT/LABEL_LOGIN', 'type': 'placeholder'}, initDom: loginDom" />
+							</span>
+						</div>
+						<div class="row password" data-bind="css: {'focused': passwordFocus(), 'filled': password().length > 0, shake: shake()}">
+							<label for="login_password" class="placeholder"></label>
+							<span class="value">
+								<input id="login_password" tabindex="3" class="input" name="password" type="password" spellcheck="false"
+									   data-bind="value: password, hasfocus: passwordFocus, valueUpdate: 'afterkeydown', 
+										i18n: {'key': 'COREWEBCLIENT/LABEL_PASSWORD', 'type': 'placeholder'}, initDom: passwordDom" />
+							</span>
+						</div>
+					</div>
+					{%INCLUDE-START/Login-Before-Submit-Button/INCLUDE-END%}
+					<!-- ko foreach: beforeButtonsControllers -->
+						<!-- ko template: { name: $data.ViewTemplate, data: $data} --><!-- /ko -->
+					<!-- /ko -->
+					<div class="row buttons">
+						<button type="submit" tabindex="5" class="button login" data-bind="text: signInButtonText, command: loginCommand"></button>
+					</div>
+					<div class="row signme" data-bind="visible: bUseSignMe">
+						<span>
+							<label class="custom_checkbox" data-bind="css: {'checked': signMe, 'focus': signMeFocused}">
+								<span class="icon"></span>
+								<input id="signme" tabindex="4" type="checkbox" data-bind="checked: signMe, hasfocus: signMeFocused" />
+							</label>
+							<label class="signme_label" for="signme" data-bind="i18n: {'key': '%MODULENAME%/LABEL_REMEMBER_ME'}"></label>
+						</span>
+					</div>
+					{%INCLUDE-START/Login-After/INCLUDE-END%}
+				</form>
+				<div class="clear"></div>
+			</div>
+			
+			<!--{%INCLUDE-START/Login-Before-Description/INCLUDE-END%}-->
+			<div class="description" data-bind="visible: sInfoText !== '', html: sInfoText"></div>
+			<!--{%INCLUDE-START/Login-After-Description/INCLUDE-END%}-->
+			<div class="clear"></div>
+			
+			<div class="languages demo" data-bind="visible: bAllowChangeLanguage && !bUseDropdownLanguagesView">
+				<div class="langs_heading" data-bind="text: headingSelectLanguage"></div>
+				<div data-bind="foreach: aLanguages">
+					<span class="item" data-bind="css: value + ($parent.currentLanguage() === value ? ' selected' : ''), click: function () { $parent.changeLanguage(value); }">
+						<span class="item_content">
+							<span class="icon"></span>
+							<span class="text" data-bind="text: name"></span>
+						</span>
+					</span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="languages" data-bind="visible: bAllowChangeLanguage && bUseDropdownLanguagesView">
+			<span class="custom_selector right" data-bind="dropdown: {'control': false}">
+				<span class="name" data-bind="css: currentLanguage">
+					<span class="icon"></span>
+					<span class="text" data-bind="text: currentLanguage"></span>
+				</span>
+				<span class="control">
+					<span class="icon"></span>
+				</span>
+				<span class="dropdown">
+					<span class="dropdown_helper">
+						<span class="dropdown_arrow"><span></span></span>
+						<span class="dropdown_content" data-bind="foreach: aLanguages">
+							<span class="item" data-bind="css: value + ($parent.currentLanguage() === value ? ' selected' : ''), click: function () { $parent.changeLanguage(value); }">
+								<span class="icon"></span>
+								<span class="text" data-bind="text: name"></span>
+							</span>
+						</span>
+					</span>
+				</span>
+			</span>
+		</div>
+	</div>
+	<div class="vhelper"></div>
+	<div class="bottom_description" data-bind="visible: sBottomInfoHtmlText !== '', html: sBottomInfoHtmlText"></div>
+	<!--{%INCLUDE-START/Login-Footer/INCLUDE-END%}-->
+</div>

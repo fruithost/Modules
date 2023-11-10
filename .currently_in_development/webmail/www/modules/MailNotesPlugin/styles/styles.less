@@ -1,0 +1,52 @@
+.MailNotesPlugin {
+	.message_viewer .notes_container {
+		&.panel_center {
+			font-size: 16px;
+		}
+
+		&.panel_bottom {
+			padding: 20px;
+
+			.buttons {
+				margin: 0px;
+				text-align: left;
+
+				html.rtl & {
+					text-align: right;
+				}
+				
+				.button {
+					margin-right: 6px;
+				}
+				
+				.hint {
+					color: #929292;
+				}
+			}
+		}
+
+		.note_edit {
+			width: 100%;
+			height: 100%;
+			border: none;
+			outline: none;
+			resize: none;
+			padding: 20px;
+			box-sizing: border-box;
+
+			&::-webkit-input-placeholder { color: #bbbbbb; }
+			&::-moz-placeholder          { color: #bbbbbb; }/* Firefox 19+ */
+			&:-moz-placeholder           { color: #bbbbbb; }/* Firefox 18- */
+			&:-ms-input-placeholder      { color: #bbbbbb; }
+		}
+	}
+
+	/* Notes icon should be changed only for level 1 */
+	.folders .item .icon.type10.Notes:before {
+		content: "\e909" !important;
+	}
+	.folders .children .item .icon.type10.Notes:before {
+		content: "\e66c" !important;
+	}
+}
+	

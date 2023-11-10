@@ -1,0 +1,59 @@
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_NAME'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="visible: id() === 0, value: name" />
+		<span data-bind="visible: id() !== 0, text: name"></span>
+	</span>
+</div>
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_DESCRIPTION'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: description" />
+	</span>
+</div>
+<!-- ko if: bAllowEditWebDomain -->
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_WEB_DOMAIN'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: webDomain" />
+	</span>
+</div>
+<!-- /ko -->
+<!-- ko if: !bAllowEditWebDomain && webDomain() !== '' -->
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_WEB_DOMAIN'}"></span>
+	<span class="value" data-bind="text: webDomain"></span>
+</div>
+<!-- /ko -->
+<div class="row">
+	<span class="label" data-bind="i18n: {'key': 'COREWEBCLIENT/LABEL_SITENAME'}"></span>
+	<span class="value">
+		<input class="input" type="text" data-bind="value: siteName" />
+	</span>
+</div>
+<!-- ko foreach: aAdditionalFields -->
+	<!-- ko if: FieldType === 'bool' -->
+		<div class="row" style="margin-bottom: 6px;">
+			<span class="label"></span>
+			<span class="value" data-bind="css: {'disabled': ($parent.id() === 0 && !EnableOnCreate || $parent.id() !== 0 && !EnableOnEdit)}">
+				<label class="custom_checkbox checked" data-bind="css: {'checked': value}">
+					<span class="icon"></span>
+					<input type="checkbox" data-bind="checked: value, attr: {'id': FieldName}, 
+							disable: ($parent.id() === 0 && !EnableOnCreate || $parent.id() !== 0 && !EnableOnEdit)">
+				</label>
+				<label data-bind="text: DisplayName, attr: {'for': FieldName}"></label>
+			</span>
+		</div>
+	<!-- /ko -->
+	<!-- ko if: FieldType !== 'bool' -->
+		<div class="row" style="margin-bottom: 6px;">
+			<span class="label" data-bind="text: DisplayName"></span>
+			<span class="value">
+				<input class="input" type="text" data-bind="value: value" />
+			</span>
+		</div>
+	<!-- /ko -->
+	<div class="row hint" data-bind="visible: Hint.length > 0">
+		<span class="value" style="margin-left: 150px; display: block;" data-bind="html: Hint"></span>
+	</div>
+<!-- /ko -->

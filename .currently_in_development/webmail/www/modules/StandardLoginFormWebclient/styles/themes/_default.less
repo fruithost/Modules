@@ -1,0 +1,34 @@
+.theme-login-panel() {
+	@focused-background: #fff3ce;
+	
+	.description {
+		color: #fff !important;
+	}
+	.welcome {
+		color: #68483d !important;
+	}
+}
+	
+.theme-login-header() {
+	.icon {
+		height: 95px;
+		width: 130px;
+
+		.init-icon-font();
+
+		&:before {
+			color: #25AEB8;
+			text-shadow: 0 1px 0 lighten(#25AEB8, 100%), 0 -1px 0 darken(#25AEB8, 10%), -1px -1px darken(#25AEB8, 5%);
+			//color: fade(#000, 30%);
+			//color: #fff;
+			//text-shadow: none;
+			content: "\e63c";
+			display: inline-block;
+			font-size: 140px;
+			height: 100%;
+			margin-top: -20px;
+			vertical-align: middle;
+			width: 100%;
+		}
+	}
+}

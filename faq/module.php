@@ -1,6 +1,6 @@
 <?php
-	use fruithost\Modules\ModuleInterface;
-	use fruithost\Storage\Database;
+	use fruithost\ModuleInterface;
+	use fruithost\Database;
 	
 	class FAQ extends ModuleInterface {
 		private $categories = [];

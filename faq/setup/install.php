@@ -1,5 +1,5 @@
 <?php
-	use fruithost\Storage\Database;
+	use fruithost\Database;
 	
 	Database::file(dirname(__FILE__) . '/sql/faq_categories.sql', function($error) {
 		print_r($error);

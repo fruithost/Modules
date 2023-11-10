@@ -1,7 +1,7 @@
 <?php
-	use fruithost\Auth;
-	use fruithost\PHP;
-	use fruithost\I18N;
+	use fruithost\Accounting\Auth;
+	use fruithost\Services\PHP;
+	use fruithost\Localization\I18N;
 
 	$php = new PHP();
 	

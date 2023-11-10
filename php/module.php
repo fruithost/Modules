@@ -1,10 +1,10 @@
 <?php
-	use fruithost\ModuleInterface;
-	use fruithost\Database;
-	use fruithost\Auth;
-	use fruithost\Request;
-	use fruithost\Button;
-	use fruithost\I18N;
+	use fruithost\Modules\ModuleInterface;
+	use fruithost\Storage\Database;
+	use fruithost\Accounting\Auth;
+	use fruithost\Network\Request;
+	use fruithost\UI\Button;
+	use fruithost\Localization\I18N;
 	
 	class PHP extends ModuleInterface {
 		private $domains	= NULL;

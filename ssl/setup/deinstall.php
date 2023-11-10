@@ -1,5 +1,5 @@
 <?php
-	use fruithost\Database;
+	use fruithost\Storage\Database;
 	
 	Database::query('DROP TABLE IF EXISTS `' . DATABASE_PREFIX . 'certificates`;');
 ?>

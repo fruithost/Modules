@@ -1,7 +1,7 @@
 <?php
-	use fruithost\Auth;
-	use fruithost\I18N;
-	use fruithost\HookParameters;
+	use fruithost\Accounting\Auth;
+	use fruithost\Localization\I18N;
+	use fruithost\System\HookParameters;
 	
 	$size	= count($this->applyFilter('MODULE_DOMAIN_LIST_TABLE_NAME', new HookParameters([], null)));
 ?>

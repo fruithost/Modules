@@ -1,5 +1,5 @@
 <?php
-	use fruithost\Database;
+	use fruithost\Storage\Database;
 	
 	class DomainsDaemon {
 		public function __construct() {

@@ -1,10 +1,10 @@
 <?php
-	use fruithost\ModuleInterface;
-	use fruithost\Database;
-	use fruithost\Auth;
-	use fruithost\Button;
-	use fruithost\Modal;
-	use fruithost\I18N;
+	use fruithost\Modules\ModuleInterface;
+	use fruithost\Storage\Database;
+	use fruithost\Accounting\Auth;
+	use fruithost\UI\Button;
+	use fruithost\UI\Modal;
+	use fruithost\Localization\I18N;
 	
 	class Domains extends ModuleInterface {
 		private $domains = [];
@@ -68,7 +68,7 @@
 								
 								foreach($deletion AS $id => $domain) {
 									$domains[] = $domain;
-									fruithost\Database::update(DATABASE_PREFIX . 'domains', [ 'id', 'user_id' ], [
+									Database::update(DATABASE_PREFIX . 'domains', [ 'id', 'user_id' ], [
 										'id'			=> $id,
 										'user_id'		=> Auth::getID(),
 										'time_deleted'	=> date('Y-m-d H:i:s', time())

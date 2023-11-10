@@ -1,6 +1,6 @@
 {
 	"name":			"Domains",
-	"version":		"1.0.5",
+	"version":		"1.1.0",
 	"category":		"DOMAIN_MANAGEMENT",
 	"icon":			"public",
 	"order":		1,

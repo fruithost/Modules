@@ -1,6 +1,6 @@
 {
 	"name":			"FAQ",
-	"version":		"1.0.0",
+	"version":		"1.0.1",
 	"category":		"SUPPORT_MANAGEMENT",
 	"icon":			"help",
 	"order":		3,

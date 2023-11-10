@@ -1,5 +1,5 @@
 <?php
-	use fruithost\I18N;
+	use fruithost\Localization\I18N;
 	
 	if(empty($this->domain)) {
 		?>

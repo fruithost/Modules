@@ -1,6 +1,6 @@
 <?php
-	use fruithost\Auth;
-	use fruithost\I18N;
+	use fruithost\Accounting\Auth;
+	use fruithost\Localization\I18N;
 ?>
 <form method="post" action="<?php print $this->url(sprintf('/module/ssl/create/certificate?domain=%d', $this->domain->id)); ?>">	
 	<div class="container-fluid">

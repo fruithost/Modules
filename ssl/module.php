@@ -1,14 +1,14 @@
 <?php
 	namespace Module\SSL;
 	
-	use fruithost\ModuleInterface;
-	use fruithost\Database;
-	use fruithost\Auth;
-	use fruithost\Button;
-	use fruithost\I18N;
-	use fruithost\HookParameters;
-	use fruithost\Session;
-	use fruithost\Response;
+	use fruithost\Modules\ModuleInterface;
+	use fruithost\Storage\Database;
+	use fruithost\Accounting\Auth;
+	use fruithost\UI\Button;
+	use fruithost\Localization\I18N;
+	use fruithost\System\HookParameters;
+	use fruithost\Accounting\Session;
+	use fruithost\Network\Response;
 	
 	require_once(sprintf('%s/providers/Provider.interface.php', dirname(__FILE__)));
 	

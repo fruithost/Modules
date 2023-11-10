@@ -1,6 +1,6 @@
 <?php
-	use fruithost\Auth;
-	use fruithost\I18N;
+	use fruithost\Accounting\Auth;
+	use fruithost\Localization\I18N;
 ?>
 <p><?php I18N::__('Add a certificate to your domain to protect information passed between your website and its visitors, providing more trust for your customers and potentially boosting your search engine rankings.'); ?></p>
 <?php

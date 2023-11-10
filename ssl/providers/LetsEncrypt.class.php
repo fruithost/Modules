@@ -1,8 +1,8 @@
 <?php
 	namespace fruithost\Module\SSL\Providers;
 	
-	use \fruithost\I18N;
-	use \skoerfgen\ACMECert\ACMECert;
+	use fruithost\Localization\I18N;
+	use skoerfgen\ACMECert\ACMECert;
 	
 	class LetsEncrypt implements Provider  {
 		public $name			= null;

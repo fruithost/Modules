@@ -1,6 +1,6 @@
 <?php
-	use fruithost\Database;
-	use fruithost\I18N;
+	use fruithost\Storage\Database;
+	use fruithost\Localization\I18N;
 	
 	require_once(sprintf('%s/providers/Provider.interface.php', dirname(__FILE__)));
 	

@@ -1,5 +1,5 @@
 <?php
-	use fruithost\I18N;
+	use fruithost\Localization\I18N;
 ?>
 <div class="row">
 	<div class="col">

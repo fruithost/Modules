@@ -1,7 +1,7 @@
 <?php
 	namespace fruithost\Module\SSL\Providers;
 	
-	use \fruithost\I18N;
+	use fruithost\Localization\I18N;
 	
 	class Certificate implements Provider {
 		public $name		= null;

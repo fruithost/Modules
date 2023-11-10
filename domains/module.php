@@ -18,6 +18,38 @@
 			$this->domains = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
 				'user'	=> Auth::getID()
 			]);
+			
+			/* Registrierng Filters */
+			$this->addFilter('MODULE_DOMAIN_LIST_TABLE_NAME', function($data = [], $domain = null) {
+				if(empty($data)) {
+					$html[] = '';
+					return $html;
+				}
+				
+				return $html;
+			});
+			
+			$this->addFilter('MODULE_DOMAIN_LIST_NAME', function($data = [], $domain = null) {
+				if(empty($data)) {
+					$data = [
+						'name'	=> $domain->name,
+						'link'	=> '<a href="http://%1$s/" target="_blank">%1$s</a></td>'
+					];
+				}
+				
+				return $data;
+			});
+			
+			$this->addFilter('MODULE_DOMAIN_LIST_STATUS', function($data = [], $domain = null) {
+				if(empty($data)) {
+					$data = [
+						'text'	=> I18N::get('Pending'),
+						'html'	=> '<span class="text-warning">%s...</span>'
+					];
+				}
+				
+				return $data;
+			});
 		}
 		
 		public function load() {

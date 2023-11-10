@@ -1,7 +1,7 @@
 <?php
-	use fruithost\Auth;
-	use fruithost\ModuleInterface;
-	use fruithost\I18N;
+	use fruithost\Accounting\Auth;
+	use fruithost\Modules\ModuleInterface;
+	use fruithost\Localization\I18N;
 	
 	class Theme extends ModuleInterface {
 		public function init() {

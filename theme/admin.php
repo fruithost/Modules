@@ -1,6 +1,6 @@
 <?php
-	use fruithost\Auth;
-	use fruithost\I18N;
+	use fruithost\Accounting\Auth;
+	use fruithost\Localization\I18N;
 	
 	$themes = $module->getInstance()->getThemes(json_decode($module->getSettings('THEMES', json_encode([]))));
 ?>

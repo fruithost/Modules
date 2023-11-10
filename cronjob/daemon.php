@@ -1,5 +1,5 @@
 <?php
-	use fruithost\Database;
+	use fruithost\Storage\Database;
 	
 	class CronjobDaemon {
 		public function __construct() {
@@ -47,7 +47,7 @@
 			
 			switch($cronjob->command_type) {
 				case 'URL':
-					$result = file_get_contents($cronjob->command_value);
+					$result = @file_get_contents($cronjob->command_value);
 				break;
 				case 'PHP':
 					$data	= json_decode($cronjob->command_value);

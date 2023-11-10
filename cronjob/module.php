@@ -1,10 +1,10 @@
 <?php
-	use fruithost\ModuleInterface;
-	use fruithost\Database;
-	use fruithost\Auth;
-	use fruithost\Button;
-	use fruithost\Modal;
-	use fruithost\I18N;
+	use fruithost\Modules\ModuleInterface;
+	use fruithost\Storage\Database;
+	use fruithost\Accounting\Auth;
+	use fruithost\UI\Button;
+	use fruithost\UI\Modal;
+	use fruithost\Localization\I18N;
 	
 	class Cronjob extends ModuleInterface {
 		private $cronjobs = [];

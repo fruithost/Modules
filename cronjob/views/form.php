@@ -1,7 +1,7 @@
 <?php
-	use fruithost\Auth;
-	use fruithost\Utils;
-	use fruithost\I18N;
+	use fruithost\Accounting\Auth;
+	use fruithost\System\Utils;
+	use fruithost\Localization\I18N;
 ?>
 <div class="container">
 	<div class="form-group row">

@@ -1,5 +1,5 @@
 <?php
-	use fruithost\I18N;
+	use fruithost\Localization\I18N;
 ?>
 <form class="col-6 offset-3 text-center mt-4 mb-4" method="post" action="<?php print $this->url('/module/faq'); ?>">
 	<h1 class="mt-4 mb-4"><?php I18N::__('What can we help you with?'); ?></h1>

@@ -1,11 +1,11 @@
 <?php
-	use fruithost\ModuleInterface;
-	use fruithost\Database;
-	use fruithost\Auth;
-	use fruithost\Button;
-	use fruithost\Modal;
-	use fruithost\Encryption;
-	use fruithost\I18N;
+	use fruithost\Modules\ModuleInterface;
+	use fruithost\Storage\Database;
+	use fruithost\Accounting\Auth;
+	use fruithost\UI\Button;
+	use fruithost\UI\Modal;
+	use fruithost\Security\Encryption;
+	use fruithost\Localization\I18N;
 	
 	class ProtectedDirectorys extends ModuleInterface {
 		private $directorys	= [];
@@ -198,7 +198,7 @@
 				return I18N::get('The selected path doesn\'t exists!');
 			}
 			
-			$id = fruithost\Database::insert(DATABASE_PREFIX . 'protected_directorys', [
+			$id = Database::insert(DATABASE_PREFIX . 'protected_directorys', [
 				'id'			=> null,
 				'user_id'		=> Auth::getID(),
 				'path'			=> $data['protected_directory_path'],
@@ -236,7 +236,7 @@
 				return I18N::get('The selected path doesn\'t exists!');
 			}
 			
-			fruithost\Database::update(DATABASE_PREFIX . 'protected_directorys', [ 'id', 'user_id' ], [
+			Database::update(DATABASE_PREFIX . 'protected_directorys', [ 'id', 'user_id' ], [
 				'id'			=> $data['protected_directory_id'],
 				'user_id'		=> Auth::getID(),
 				'path'			=> $data['protected_directory_path'],
@@ -267,7 +267,7 @@
 				return I18N::get('Please enter a password!');
 			}
 			
-			$id = fruithost\Database::insert(DATABASE_PREFIX . 'protected_users', [
+			$id = Database::insert(DATABASE_PREFIX . 'protected_users', [
 				'id'			=> null,
 				'directory'		=> $data['protected_directory_id'],
 				'username'		=> $data['protected_directory_username'],
@@ -305,7 +305,7 @@
 				return I18N::get('Please enter a password!');
 			}
 			
-			fruithost\Database::update(DATABASE_PREFIX . 'protected_users', [ 'id', 'directory' ], [
+			Database::update(DATABASE_PREFIX . 'protected_users', [ 'id', 'directory' ], [
 				'id'			=> $data['protected_directory_user_id'],
 				'directory'		=> $data['protected_directory_id'],
 				'password'		=> Encryption::encrypt($data['protected_directory_password'], ENCRYPTION_SALT)

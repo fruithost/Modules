@@ -1,6 +1,6 @@
 <?php
-	use fruithost\Auth;
-	use fruithost\I18N;
+	use fruithost\Accounting\Auth;
+	use fruithost\Localization\I18N;
 
 	$root = sprintf('%s%s', HOST_PATH, Auth::getUsername());
 ?>

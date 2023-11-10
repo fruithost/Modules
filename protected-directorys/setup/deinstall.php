@@ -1,5 +1,6 @@
+#!fruithost:permission:root
 <?php
-	use fruithost\Database;
+	use fruithost\Storage\Database;
 	
 	foreach(new \DirectoryIterator('/etc/fruithost/config/apache2/vhosts/') AS $info) {
 		if($info->isDot()) {

@@ -1,5 +1,5 @@
 <?php
-	use fruithost\Database;
+	use fruithost\Storage\Database;
 	
 	class ProtectedDirectorysDaemon {
 		public function __construct() {

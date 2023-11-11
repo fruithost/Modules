@@ -2,7 +2,7 @@
 	"name":			"Cronjob",
 	"version":		"1.5.1",
 	"category":		"HOSTING_MANAGEMENT",
-	"icon":			"schedule",
+	"icon":			"stopwatch",
 	"order":		4,
 	"description":	"Creates time-based tasks and controls web addresses or PHP scripts.",
 	"author":		{

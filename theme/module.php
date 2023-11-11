@@ -4,7 +4,7 @@
 	use fruithost\Localization\I18N;
 	
 	class Theme extends ModuleInterface {
-		public function init() {
+		public function init() : void {
 			$this->addFilter('theme_name', function($name) {
 				if(Auth::isLoggedIn()) {
 					return Auth::getSettings('THEME', NULL, $name);
@@ -17,7 +17,7 @@
 			$this->addAction('SAVE_ACCOUNT_SETTINGS_GLOBAL',	[ $this, 'save' ]);
 		}
 		
-		public function onSettings($data = []) {
+		public function onSettings($data = []) : void {
 			if(isset($data['themes'])) {
 				$selected = [];
 				
@@ -39,7 +39,7 @@
 			return sprintf('%s%s%s', dirname(PATH), DS, 'themes');
 		}
 		
-		public function save($data) {
+		public function save($data) : void {
 			if(empty($data['theme']) || $data['theme'] === '-') {
 				if(!isset($data['user']) || $data['user'] == null) {
 					Auth::setSettings('THEME', NULL, NULL);
@@ -57,7 +57,7 @@
 			}
 		}
 		
-		public function getThemes($selections = NULL, $raw = false) {
+		public function getThemes($selections = NULL, $raw = false) : array {
 			$themes = [];
 			$ignore = [
 				'.git'
@@ -101,7 +101,7 @@
 			return $themes;
 		}
 		
-		public function html($args = null) {
+		public function html($args = null) : void {
 			if(!isset($args['user']) || $args['user'] == null) {
 				$selected	= Auth::getSettings('THEME', NULL, NULL);	
 			} else {

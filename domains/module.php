@@ -9,7 +9,7 @@
 	class Domains extends ModuleInterface {
 		private $domains = [];
 		
-		public function init() {
+		public function init() : void {
 			$this->addModal((new Modal('create_domain', I18N::get('Create Domain'), sprintf('%s/views/create.php', dirname(__FILE__))))->addButton([
 				(new Button())->setName('cancel')->setLabel(I18N::get('Cancel'))->addClass('btn-outline-danger')->setDismissable(),
 				(new Button())->setName('create')->setLabel(I18N::get('Create'))->addClass('btn-outline-success')
@@ -52,7 +52,7 @@
 			});
 		}
 		
-		public function load() {
+		public function load() : void {
 			if(empty($this->domains)) {
 				$this->addButton((new Button())->setName('create')->setLabel(I18N::get('Create'))->addClass('btn-outline-success')->setModal('create_domain'));
 			} else {
@@ -63,7 +63,7 @@
 			}
 		}
 		
-		public function onPOST($data = []) {
+		public function onPOST($data = []) : void {
 			if(isset($data['action'])) {
 				switch($data['action']) {
 					case 'delete':
@@ -118,7 +118,7 @@
 			}
 		}
 		
-		public function onSave($data = []) {
+		public function onSave($data = []) : ?string {
 			if(!isset($data['domain']) || empty($data['domain'])) {
 				return I18N::get('Please enter a domain name!');
 			}

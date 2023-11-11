@@ -18,7 +18,7 @@
 			'display'	=> 'Display Configuration'
 		];
 		
-		public function init() {
+		public function init() : void {
 			if(Database::tableExists(DATABASE_PREFIX . 'domains')){
 				$this->domains	= Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
 					'user'	=> Auth::getID()
@@ -42,7 +42,7 @@
 			}
 		}
 		
-		public function load($submodule = null) {			
+		public function load($submodule = null) : void {			
 			if($submodule == 'display') {
 				$this->addButton((new Button())->setName('reload')->setLabel(I18N::get('Update'))->addClass('btn-outline-primary'), true);	
 			} else {
@@ -58,7 +58,7 @@
 			});
 		}
 		
-		public function onPOST($data = null) {
+		public function onPOST($data = null) : void {
 			if(isset($data['action']) && $data['action'] == 'save') {
 				$variables	= [];
 				$file		= sprintf('%s%s/php.ini', HOST_PATH, Auth::getUsername());
@@ -126,7 +126,7 @@
 			}
 		}
 		
-		public function content($submodule = null) {
+		public function content($submodule = null) : void {
 			if(!$this->getModules()->hasModule('domains')) {
 				?>
 					<div class="alert alert-danger mt-4" role="alert">

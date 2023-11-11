@@ -12,9 +12,7 @@
 		private $directory	= [];
 		private $users		= [];
 		
-		public function init() {}
-		
-		public function load() {
+		public function load() : void {
 			if(isset($_GET['users'])) {
 				$this->directory = Database::single('SELECT * FROM `' . DATABASE_PREFIX . 'protected_directorys` WHERE `user_id`=:user AND `id`=:id AND `time_deleted` IS NULL LIMIT 1', [
 					'user'	=> Auth::getID(),
@@ -77,7 +75,7 @@
 			}
 		}
 		
-		public function onPOST($data = []) {
+		public function onPOST($data = []) : void {
 			if(isset($data['action'])) {
 				switch($data['action']) {
 					case 'delete':
@@ -183,7 +181,7 @@
 			}
 		}
 		
-		public function onCreate($data = []) {			
+		public function onCreate($data = []) : ?string {			
 			if(!isset($data['protected_directory_message']) || mb_strlen($data['protected_directory_message']) <= 0) {
 				return I18N::get('Please enter a message as login information!');
 			}

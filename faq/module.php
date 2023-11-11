@@ -5,7 +5,7 @@
 	class FAQ extends ModuleInterface {
 		private $categories = [];
 		
-		public function init() {
+		public function init() : void {
 			$this->categories = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'faq_categories`');
 			
 			foreach($this->categories AS $index => $category) {
@@ -26,7 +26,7 @@
 			}
 		}
 		
-		public function content() {
+		public function content() : void {
 			require_once('views/header.php');
 			require_once('views/results.php');
 		}

@@ -9,13 +9,13 @@
 	class FTP extends ModuleInterface {
 		private $accounts = [];
 		
-		public function init() {
+		public function init() : void {
 			$this->accounts = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'ftp_user` WHERE `user_id`=:user ORDER BY `username` ASC', [
 				'user'	=> Auth::getID()
 			]);
 		}
 		
-		public function load() {
+		public function load() : void {
 			$this->addModal((new Modal('create_account', I18N::get('Create FTP Account'), __DIR__ . '/views/create.php'))->addButton([
 				(new Button())->setName('cancel')->setLabel('Cancel')->addClass('btn-outline-danger')->setDismissable(),
 				(new Button())->setName('create')->setLabel('Create')->addClass('btn-outline-success')
@@ -36,7 +36,7 @@
 			}
 		}
 		
-		public function onPOST($data = []) {
+		public function onPOST($data = []) : void {
 			if(isset($data['action'])) {
 				switch($data['action']) {
 					case 'delete':
@@ -98,7 +98,7 @@
 			}
 		}
 		
-		public function onChange($data = []) {
+		public function onChange($data = []) : string {
 			if(empty($data['user_id']) || mb_strlen($data['user_id']) <= 0) {
 				return I18N::get('An error has occurred. Please reload the page and try again!');
 			}

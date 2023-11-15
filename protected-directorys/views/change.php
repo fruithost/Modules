@@ -8,7 +8,7 @@
 	<div class="form-group row">
 		<label for="protected_directory_path" class="col-4 col-form-label col-form-label-sm"><?php I18N::__('Path'); ?>:</label>
 		<div class="col-8">
-			<select name="protected_directory_path" id="protected_directory_path" class="form-control">
+			<select name="protected_directory_path" id="protected_directory_path" class="form-select">
 				<option value=""> - <?php I18N::__('Please select'); ?> - </option>
 				<option value="/">/ (root)</option>
 				<?php

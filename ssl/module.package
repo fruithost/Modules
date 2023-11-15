@@ -1,8 +1,8 @@
 {
 	"name":			"SSL",
-	"version":		"1.0.5",
+	"version":		"1.0.6",
 	"category":		"DOMAIN_MANAGEMENT",
-	"icon":			"https",
+	"icon":			"file-lock2",
 	"order":		2,
 	"description":	"Adds SSL support for your customers. In addition to Let's Encrypt, external or self-signed certificates can also be used.",
 	"author":		{
@@ -12,6 +12,6 @@
 	},
 	"repository":	"https://github.com/fruithost/Modules",
 	"depencies": {
-		"domains": "1.1.0"
+		"domains": "1.1.2"
 	}
 }

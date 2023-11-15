@@ -18,7 +18,7 @@
 			'display'	=> 'Display Configuration'
 		];
 		
-		public function init() {
+		public function init() : void {
 			if(Database::tableExists(DATABASE_PREFIX . 'domains')){
 				$this->domains	= Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'domains` WHERE `user_id`=:user AND `time_deleted` IS NULL AND `type`=\'DOMAIN\' ORDER BY `name` ASC', [
 					'user'	=> Auth::getID()
@@ -42,7 +42,7 @@
 			}
 		}
 		
-		public function load($submodule = null) {			
+		public function load($submodule = null) : void {			
 			if($submodule == 'display') {
 				$this->addButton((new Button())->setName('reload')->setLabel(I18N::get('Update'))->addClass('btn-outline-primary'), true);	
 			} else {
@@ -58,7 +58,7 @@
 			});
 		}
 		
-		public function onPOST($data = null) {
+		public function onPOST($data = null) : void {
 			if(isset($data['action']) && $data['action'] == 'save') {
 				$variables	= [];
 				$file		= sprintf('%s%s/php.ini', HOST_PATH, Auth::getUsername());
@@ -126,7 +126,7 @@
 			}
 		}
 		
-		public function content($submodule = null) {
+		public function content($submodule = null) : void {
 			if(!$this->getModules()->hasModule('domains')) {
 				?>
 					<div class="alert alert-danger mt-4" role="alert">
@@ -153,12 +153,11 @@
 						
 						if(!empty($this->domains) && count($this->domains) > 0) { 
 							?>
-								<li class="nav-item ml-auto">
+								<li class="nav-item m-auto"></li>
+								<li class="nav-item">
 									<div class="input-group input-group-sm">
-										<div class="input-group-prepend">
-											<span class="input-group-text" id="label"><?php I18N::__('For Domain'); ?>:</span>
-										</div>
-										<select name="domain" class="col form-control form-control-sm" aria-label="Domain" aria-describedby="label">
+										<span class="input-group-text" id="label"><?php I18N::__('For Domain'); ?>:</span>
+										<select name="domain" class="col form-select form-control-sm" aria-label="Domain" aria-describedby="label">
 											<option value="ALL"><?php I18N::__('Global'); ?></option>
 											<?php
 												foreach($this->domains AS $domain) {

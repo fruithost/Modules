@@ -14,7 +14,7 @@
 	<div class="form-group row">
 		<label for="template" class="col-4 col-form-label col-form-label-sm"><?php I18N::__('Template'); ?>:</label>
 		<div class="col-8">
-			<select name="template" id="template" class="form-control">
+			<select name="template" id="template" class="form-select">
 				<option value="--">-- <?php I18N::__('Common Settings'); ?> --</option>
 				<option value="* * * * *"><?php I18N::__('Each Minute'); ?> (* * * * *)</option>
 				<option value="*/5 * * * *"><?php I18N::__('All 5 Minutes'); ?> (*/5 * * * *)</option>
@@ -35,7 +35,7 @@
 			<input type="text" class="form-control" name="minute" id="minute" value="*" />
 		</div>
 		<div class="col-6 pl-0">
-			<select name="template_minute" id="template_minute" class="form-control">
+			<select name="template_minute" id="template_minute" class="form-select">
 				<option value="--">-- <?php I18N::__('Common Settings'); ?> --</option>
 				<option value="*"><?php I18N::__('Each Minute'); ?> (*)</option>
 				<option value="*/2"><?php I18N::__('Each two Minutes'); ?> (*/2)</option>
@@ -68,7 +68,7 @@
 			<input type="text" class="form-control" name="hour" id="hour" value="*" />
 		</div>
 		<div class="col-6 pl-0">
-			<select name="template_hour" id="template_hour" class="form-control">
+			<select name="template_hour" id="template_hour" class="form-select">
 				<option value="--">-- <?php I18N::__('Common Settings'); ?> --</option>
 				<option value="*"><?php I18N::__('Every Hour'); ?> (*)</option>
 				<option value="*/2"><?php I18N::__('Every Other Hour'); ?> (*/2)</option>
@@ -91,7 +91,7 @@
 			<input type="text" class="form-control" name="day" id="day" value="*" />
 		</div>
 		<div class="col-6 pl-0">
-			<select name="template_day" id="template_day" class="form-control">
+			<select name="template_day" id="template_day" class="form-select">
 				<option value="--">-- <?php I18N::__('Common Settings'); ?> --</option>
 				<option value="*"><?php I18N::__('Every Day'); ?> (*)</option>
 				<option value="*/2"><?php I18N::__('Every Other Day'); ?> (*/2)</option>
@@ -111,7 +111,7 @@
 			<input type="text" class="form-control" name="month" id="month" value="*" />
 		</div>
 		<div class="col-6 pl-0">
-			<select name="template_month" id="template_month" class="form-control">
+			<select name="template_month" id="template_month" class="form-select">
 				<option value="--">-- <?php I18N::__('Common Settings'); ?> --</option>
 				<option value="*"><?php I18N::__('Every Month'); ?> (*)</option>
 				<option value="*/2"><?php I18N::__('Every Other Month'); ?> (*/2)</option>
@@ -145,7 +145,7 @@
 			<input type="text" class="form-control" name="weekday" id="weekday" value="*" />
 		</div>
 		<div class="col-6 pl-0">
-			<select name="template_weekday" id="template_weekday" class="form-control">
+			<select name="template_weekday" id="template_weekday" class="form-select">
 				<option value="--">-- <?php I18N::__('Common Settings'); ?> --</option>
 				<option value="*"><?php I18N::__('Every Day'); ?> (*)</option>
 				<option value="1-5"><?php I18N::__('Every Weekday'); ?> (1-5)</option>
@@ -179,7 +179,7 @@
 	</div>
 	<div class="form-group row php">
 		<div class="col-8 offset-4">
-			<select name="php" class="form-control">
+			<select name="php" class="form-select">
 				<option value="">-- <?php I18N::__('Please Select'); ?> --</option>
 				<?php
 					$root		= sprintf('%s%s', HOST_PATH, Auth::getUsername());
@@ -214,73 +214,64 @@
 	<input type="hidden" name="cron_id" value="" />
 </div>
 <script type="text/javascript">
-	_watcher_cron = setInterval(function() {
-		if(typeof(jQuery) !== 'undefined') {
-			clearInterval(_watcher_cron);
-			(function($) {
-				$('select[name="template"]').on('change', function(event) {
-					var option = $(this).val();
+	(() => {
+		window.addEventListener('DOMContentLoaded', () => {
+			[].map.call(document.querySelectorAll('#create_cron,#change_cron'), function(target) {
+				[].map.call(target.querySelectorAll('select[name="template"]'), function(template) {
+					template.addEventListener('change', function(event) {
+						var option = this.value;
+						
+						if(option !== '--') {
+							var option_array = option.split(' ');
+							
+							target.querySelector('input[name="minute"]').value				= option_array[0];
+							target.querySelector('input[name="hour"]').value				= option_array[1];
+							target.querySelector('input[name="day"]').value					= option_array[2];
+							target.querySelector('input[name="month"]').value				= option_array[3];
+							target.querySelector('input[name="weekday"]').value				= option_array[4];
+							target.querySelector('select[name="template_minute"]').value	= option_array[0];
+							target.querySelector('select[name="template_hour"]').value		= option_array[1];
+							target.querySelector('select[name="template_day"]').value		= option_array[2];
+							target.querySelector('select[name="template_month"]').value		= option_array[3];
+							target.querySelector('select[name="template_weekday"]').value	= option_array[4];
+						}
+					});
+				});
 					
-					if(option !== '--') {
-						var option_array = option.split(' ');
+				[].map.call([
+					'minute',
+					'hour',
+					'day',
+					'month',
+					'weekday'
+				], function(type) {
+					[].map.call(target.querySelectorAll('select[name="template_' + type + '"]'), function(select) {
+						select.addEventListener('change', function(event) {
+							if(this.value !== '--') {
+								target.querySelector('input[name="' + type + '"]').value = this.value;
+							}
+						});
+					});
+				});
+
+				[].map.call(target.querySelectorAll('input[type="radio"][name="type"]'), function(radio) {
+					radio.addEventListener('change', function(event) {
+						let php = target.querySelector('div.php');
+						let url = target.querySelector('div.url');
 						
-						$('input[name="minute"]').val(option_array[0]);
-						$('input[name="hour"]').val(option_array[1]);
-						$('input[name="day"]').val(option_array[2]);
-						$('input[name="month"]').val(option_array[3]);
-						$('input[name="weekday"]').val(option_array[4]);
-						
-						$('select[name="template_minute"]').val(option_array[0]);
-						$('select[name="template_hour"]').val(option_array[1]);
-						$('select[name="template_day"]').val(option_array[2]);
-						$('select[name="template_month"]').val(option_array[3]);
-						$('select[name="template_weekday"]').val(option_array[4]);
-					}
+						switch(this.value) {
+							case 'php':
+								php.classList.remove('d-none');
+								url.classList.add('d-none');
+							break;
+							case 'url':
+								php.classList.add('d-none');
+								url.classList.remove('d-none');						
+							break;
+						}
+					});
 				});
-				
-				$('select[name="template_minute"]').on('change', function(event) {
-					if($(this).val() !== '--') {
-						$('input[name="minute"]').val($(this).val());
-					}
-				});
-				
-				$('select[name="template_hour"]').on('change', function(event) {
-					if($(this).val() !== '--') {
-						$('input[name="hour"]').val($(this).val());
-					}
-				});
-				
-				$('select[name="template_day"]').on('change', function(event) {
-					if($(this).val() !== '--') {
-						$('input[name="day"]').val($(this).val());
-					}
-				});
-				
-				$('select[name="template_month"]').on('change', function(event) {
-					if($(this).val() !== '--') {
-						$('input[name="month"]').val($(this).val());
-					}
-				});
-				
-				$('select[name="template_weekday"]').on('change', function(event) {
-					if($(this).val() !== '--') {
-						$('input[name="weekday"]').val($(this).val());
-					}
-				});
-				
-				$('input[type="radio"][name="type"]').on('change', function(event) {
-					switch($(this).val()) {
-						case 'php':
-							$('div.php').removeClass('d-none');
-							$('div.url').addClass('d-none');
-						break;
-						case 'url':
-							$('div.php').addClass('d-none');
-							$('div.url').removeClass('d-none');						
-						break;
-					}
-				});
-			}(jQuery));
-		}
-	}, 500);
+			});
+		});
+	})();
 </script>

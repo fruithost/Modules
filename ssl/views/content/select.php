@@ -1,5 +1,6 @@
 <?php
 	use fruithost\Localization\I18N;
+    use fruithost\UI\Icon;
 ?>
 <div class="row">
 	<div class="col">
@@ -34,9 +35,14 @@
 								if($provider->isFree()) {
 									I18N::__('Free');
 								} else {
-									?>
-										<span class="d-inline-block material-icons text-info" data-toggle="hover" title="<?php I18N::__('Higher costs may be incurred'); ?>" data-content="<?php I18N::__('You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br /><br />Using the certificate is of course completely free of charge, you only have to procure it yourself.'); ?>">info</span>
-									<?php
+									Icon::show('info', [
+										'classes'		=> [ 'd-inline-block', 'text-info' ],
+										'attributes'	=> [
+											'data-bs-toggle'	=> 'hover',
+											'data-bs-title'		=> I18N::get('Higher costs may be incurred'),
+											'data-bs-content'	=> I18N::get('You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br /><br />Using the certificate is of course completely free of charge, you only have to procure it yourself.'),
+										]
+									]);
 								}
 							?>
 						</small>

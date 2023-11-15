@@ -9,7 +9,7 @@
 	class Cronjob extends ModuleInterface {
 		private $cronjobs = [];
 		
-		public function init() {
+		public function init() : void {
 			$this->addModal((new Modal('create_cron', I18N::get('Create Cronjob'), __DIR__ . '/views/form.php'))->addButton([
 				(new Button())->setName('cancel')->setLabel(I18N::get('Cancel'))->addClass('btn-outline-danger')->setDismissable(),
 				(new Button())->setName('create')->setLabel(I18N::get('Create'))->addClass('btn-outline-success')
@@ -25,18 +25,18 @@
 			]);
 		}
 		
-		public function load() {
+		public function load() : void {
 			if(empty($this->cronjobs)) {
 				$this->addButton((new Button())->setName('create')->setLabel(I18N::get('Create'))->addClass('btn-outline-success')->setModal('create_cron'));
 			} else {
 				$this->addButton([
 					(new Button())->setName('create')->setLabel(I18N::get('Create New'))->addClass('btn-outline-success')->setModal('create_cron'),
 					(new Button())->setName('delete')->setLabel(I18N::get('Delete selected'))->addClass('btn-outline-danger')
-				]);				
+				]);
 			}
 		}
 		
-		public function onUpdate($data = []) {
+		public function onUpdate($data = []) : ?string {
 			if(!isset($data['cron_id']) || empty($data['cron_id'])) {
 				return I18N::get('Unknown error occurs!');
 			}
@@ -111,7 +111,7 @@
 			}
 		}
 		
-		public function onPOST($data = []) {
+		public function onPOST($data = []) : void {
 			if(isset($data['action'])) {
 				switch($data['action']) {
 					case 'delete':
@@ -167,7 +167,7 @@
 			}
 		}
 		
-		public function onSave($data = []) {
+		public function onSave($data = []) : ?string {
 			if(!isset($data['minute']) || !($data['minute'] == '*' || ($data['minute'] >= 0 && $data['minute'] <= 59))) {
 				return I18N::get('Please enter a valid minute!');
 			}
@@ -242,7 +242,7 @@
 			}
 		}
 		
-		public function content() {
+		public function content() : void {
 			if(empty($this->cronjobs)) {
 				require_once('views/empty.php');
 			} else {

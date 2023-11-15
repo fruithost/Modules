@@ -1,8 +1,8 @@
 {
 	"name":			"FAQ",
-	"version":		"1.0.1",
+	"version":		"1.0.2",
 	"category":		"SUPPORT_MANAGEMENT",
-	"icon":			"help",
+	"icon":			"question-diamond-fill",
 	"order":		3,
 	"description":	"Administer frequently asked questions to provide the user with a support platform.",
 	"author":		{

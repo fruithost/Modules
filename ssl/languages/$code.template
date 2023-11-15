@@ -182,7 +182,13 @@ msgstr ""
 msgid "Version"
 msgstr ""
 
+msgid "Unknown"
+msgstr ""
+
 msgid "Hash"
+msgstr ""
+
+msgid "Algorithm"
 msgstr ""
 
 msgid "Serial Number"
@@ -197,7 +203,16 @@ msgstr ""
 msgid "Select this Option"
 msgstr ""
 
+msgid "Import Certificate"
+msgstr ""
+
 msgid "Please check the certificate and confirm that you want to import this certificate for the domain <strong>%s<\/strong>!"
+msgstr ""
+
+msgid "Please enter the information for the certificate you'd like to import below.<br\/>Note that all information must be entered with leading BEGIN and trailing END markers to be accepted."
+msgstr ""
+
+msgid "General"
 msgstr ""
 
 msgid "Private Key Code"
@@ -222,6 +237,9 @@ msgid "Go to my Domains"
 msgstr ""
 
 msgid "Domain"
+msgstr ""
+
+msgid "Type"
 msgstr ""
 
 msgid "Expires"

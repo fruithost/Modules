@@ -6,7 +6,7 @@
 	<div class="form-group row">
 		<label for="username" class="col-4 col-form-label col-form-label-sm"><?php I18N::__('Username'); ?>:</label>
 		<div class="col-8">
-			<input type="text" class="form-control-plaintext" readonly name="username" id="username" aria-label="<?php I18N::__('Username'); ?>" aria-describedby="prefix" />
+			<input type="text" class="form-control-plaintext" name="username" id="username" aria-label="<?php I18N::__('Username'); ?>" aria-describedby="prefix" readonly />
 		</div>
 	</div>
 	<div class="form-group row">
@@ -19,7 +19,7 @@
 	<div class="form-group row">
 		<label for="path" class="col-4 col-form-label col-form-label-sm"><?php I18N::__('Path'); ?>:</label>
 		<div class="col-8">
-			<select name="path" id="path" class="form-control">
+			<select name="path" id="path" class="form-select">
 				<option value=""> - <?php I18N::__('Please select'); ?> - </option>
 				<option value="/">/ (root)</option>
 				<?php
@@ -35,6 +35,5 @@
 			</select>
 		</div>
 	</div>
-	
-	<input type="hidden"  readonly name="user_id" id="user_id" aria-label="<?php I18N::__('User-ID'); ?>" />
+	<input type="hidden" name="user_id" id="user_id" aria-label="<?php I18N::__('User-ID'); ?>" readonly />
 </div>

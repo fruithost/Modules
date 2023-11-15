@@ -9,6 +9,7 @@
 	use fruithost\System\HookParameters;
 	use fruithost\Accounting\Session;
 	use fruithost\Network\Response;
+	use fruithost\UI\Icon;
 	
 	require_once(sprintf('%s/providers/Provider.interface.php', dirname(__FILE__)));
 	
@@ -18,7 +19,7 @@
 		private $certificate	= null;
 		private $providers		= [];
 		
-		public function init() {
+		public function init() : void {
 			foreach([
 				'LetsEncrypt',
 				'SelfSigned',
@@ -38,7 +39,7 @@
 			}
 		}
 		
-		public function preLoad() {
+		public function preLoad() : void {
 			$this->certificates = Database::fetch('SELECT `' . DATABASE_PREFIX . 'certificates`.*, `' . DATABASE_PREFIX . 'domains`.`name` AS `name`, `' . DATABASE_PREFIX . 'domains`.`directory` AS `directory` FROM `' . DATABASE_PREFIX . 'certificates` INNER JOIN `' . DATABASE_PREFIX . 'domains` ON `' . DATABASE_PREFIX . 'certificates`.`domain`=`' . DATABASE_PREFIX . 'domains`.`id` AND `' . DATABASE_PREFIX . 'certificates`.`user_id`=`' . DATABASE_PREFIX . 'domains`.`user_id` AND `' . DATABASE_PREFIX . 'certificates`.`user_id`=:user_id', [
 				'user_id'	=> Auth::getID()
 			]);
@@ -47,33 +48,40 @@
 				$crt			= $this->getCertByDomain($domain);
 				$color			= 'danger';
 				$title			= I18N::get('Your website is not secure');
-				$icon			= 'lock_open';
+				$icon			= 'insecure';
 				$description 	= I18N::get('Data transferred between your visitors and website is unencrypted and may be intercepted.');
 				
 				/* Is already HTTPS set */
 				if(isset($crt)) {
 					if($crt->time_created !== NULL) {
 						$color			= 'success';
-						$icon			= 'lock';
+						$icon			= 'secure';
 						$title			= I18N::get('Connection is secure');
 						$description 	= I18N::get('Data transferred between your visitors and website is encrypted.');
 					} else {
 						$color			= 'warning';
-						$icon			= 'lock';
+						$icon			= 'secure';
 						$title			= I18N::get('Website will be set up');
 						$description 	= I18N::get('Your website is still being set up for encryption.');
 					}
 					
 					if($domain !== null && !file_exists(sprintf('/etc/fruithost/config/apache2/vhosts/20_%s.ssl.conf', $domain->name))) {
 						$color			= 'warning';
-						$icon			= 'lock';
+						$icon			= 'secure';
 						$title			= I18N::get('Website will be set up');
 						$description 	= I18N::get('Your website is still being set up for encryption.');
 					}
 				}
 				
-				$popover	= sprintf(' data-content="%2$s" title="<small class=\'text-%3$s\'>%1$s</small>"', $title, $description, $color);
-				$html[]		= sprintf('<td width="1px"><a href="%2$s" data-toggle="hover" class="text-%3$s small" %1$s><i class="material-icons">%4$s</span></a></td>', $popover, $this->url('/module/ssl/view/' . ($domain == null ? '' : $domain->id)), $color, $icon);
+				$popover	= sprintf(' data-bs-content="%2$s" data-bs-title="<small class=\'text-%3$s\'>%1$s</small>"', $title, $description, $color);
+				$html[]		= sprintf('<td width="1px">
+											<a href="%2$s" data-bs-toggle="hover" class="text-%3$s small" %1$s>
+												%4$s
+											</a>
+									</td>', $popover, $this->url('/module/ssl/view/' . ($domain == null ? '' : $domain->id)), $color, Icon::render($icon, [
+										'classes' => [ 'align-middle' ],
+										'attributes' => [ 'style' => 'font-size: 20px' ]
+									]));
 
 				return $html;
 			});
@@ -86,7 +94,7 @@
 				if(isset($crt)) {
 					if($crt->time_created !== NULL && $domain !== null && file_exists(sprintf('/etc/fruithost/config/apache2/vhosts/20_%s.ssl.conf', $domain->name))) {
 						if($crt->enable_hsts == 'YES') {
-							$data['link'] = '<a href="https://%1$s/" target="_blank">%1$s</a> <i class="badge badge-success align-text-bottom text-light">HSTS</i>';
+							$data['link'] = '<a href="https://%1$s/" target="_blank">%1$s</a> <span class="badge text-bg-warning align-bottom">HSTS</span>';
 						} else {
 							$data['link'] = '<a href="https://%1$s/" target="_blank">%1$s</a>';
 						}
@@ -105,7 +113,7 @@
 					if($crt->time_created === NULL) {
 						$data = [
 							'text'	=> I18N::get('Pending'),
-							'html'	=> '<span class="text-warning">%s...</span>'
+							'html'	=> '<span class="badge text-bg-warning" data-bs-toggle="hover" data-bs-title="%s">&nbsp;</span>'
 						];
 					}
 				}
@@ -114,7 +122,7 @@
 			});
 		}
 		
-		public function getCertByDomain($domain) {
+		public function getCertByDomain($domain) : ?object {
 			if(empty($domain)) {
 				return null;
 			}
@@ -131,7 +139,7 @@
 			return $entry;
 		}
 		
-		public function load($submodule = null, $id = null) {
+		public function load($submodule = null, $id = null) : void {
 			$this->certificate = Database::single('SELECT `' . DATABASE_PREFIX . 'certificates`.*, `' . DATABASE_PREFIX . 'domains`.`name` AS `name`, `' . DATABASE_PREFIX . 'domains`.`directory` AS `directory` FROM `' . DATABASE_PREFIX . 'certificates` INNER JOIN `' . DATABASE_PREFIX . 'domains` ON `' . DATABASE_PREFIX . 'certificates`.`domain`=`' . DATABASE_PREFIX . 'domains`.`id` AND `' . DATABASE_PREFIX . 'certificates`.`user_id`=`' . DATABASE_PREFIX . 'domains`.`user_id` AND `' . DATABASE_PREFIX . 'certificates`.`user_id`=:user_id AND `' . DATABASE_PREFIX . 'certificates`.`domain`=:domain_id LIMIT 1', [
 				'user_id'	=> Auth::getID(),
 				'domain_id' => $id
@@ -217,7 +225,7 @@
 			}
 		}
 		
-		public function onPOST($data = []) {
+		public function onPOST($data = []) : void {
 			if(isset($_POST['action'])) {
 				switch($_POST['action']) {
 					case 'force_https':
@@ -358,7 +366,7 @@
 			}
 		}
 		
-		public function content($submodule = null) {
+		public function content($submodule = null) : void {
 			if(!$this->getModules()->hasModule('domains')) {
 				?>
 					<div class="alert alert-danger mt-4" role="alert">

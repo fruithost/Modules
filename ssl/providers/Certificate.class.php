@@ -2,6 +2,7 @@
 	namespace fruithost\Module\SSL\Providers;
 	
 	use fruithost\Localization\I18N;
+    use fruithost\UI\Icon;
 	
 	class Certificate implements Provider {
 		public $name		= null;
@@ -37,7 +38,10 @@
 		}
 		
 		public function getIcon() : string | null {
-			return '<i class="material-icons text-warning" style="font-size: 42px">card_membership</i>';
+			return Icon::render('certificate', [
+				'classes'		=> [ 'text-warning' ],
+				'attributes'	=> [ 'style' => 'font-size: 28px' ]
+			]);
 		}
 		
 		public function execute($domain, $directory) {

@@ -44,7 +44,7 @@
 				if(empty($data)) {
 					$data = [
 						'text'	=> I18N::get('Pending'),
-						'html'	=> '<span class="text-warning">%s...</span>'
+						'html'	=> '<span class="badge text-bg-warning" data-bs-toggle="hover" data-bs-title="%s">&nbsp;</span>'
 					];
 				}
 				

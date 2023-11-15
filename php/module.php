@@ -153,12 +153,11 @@
 						
 						if(!empty($this->domains) && count($this->domains) > 0) { 
 							?>
-								<li class="nav-item ml-auto">
+								<li class="nav-item m-auto"></li>
+								<li class="nav-item">
 									<div class="input-group input-group-sm">
-										<div class="input-group-prepend">
-											<span class="input-group-text" id="label"><?php I18N::__('For Domain'); ?>:</span>
-										</div>
-										<select name="domain" class="col form-control form-control-sm" aria-label="Domain" aria-describedby="label">
+										<span class="input-group-text" id="label"><?php I18N::__('For Domain'); ?>:</span>
+										<select name="domain" class="col form-select form-control-sm" aria-label="Domain" aria-describedby="label">
 											<option value="ALL"><?php I18N::__('Global'); ?></option>
 											<?php
 												foreach($this->domains AS $domain) {

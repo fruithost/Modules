@@ -23,7 +23,7 @@
 	</div>
 	<div class="form-group row d-none directories">
 		<div class="col-8 offset-4">
-			<select name="directory" class="form-control">
+			<select name="directory" class="form-select">
 				<option value="/">/ (root)</option>
 				<?php
 					if(is_readable(sprintf('%s%s', HOST_PATH, Auth::getUsername()))) {
@@ -39,24 +39,20 @@
 			</select>
 		</div>
 	</div>
-	<p class="blockquote-footer text-muted"><?php printf(I18N::get('The domain must refer to the IP Address <strong>%s</strong> or be managed by our <a href="%s" target="_blank">nameserver</a> (DNS). Adding domains does not replace the domain registration!'), $_SERVER['SERVER_ADDR'], $template->url('/module/dns')); ?></p>
+	<p class="mt-2 blockquote-footer text-muted"><?php printf(I18N::get('The domain must refer to the IP Address <strong>%s</strong> or be managed by our <a href="%s" target="_blank">nameserver</a> (DNS). Adding domains does not replace the domain registration!'), $_SERVER['SERVER_ADDR'], $template->url('/module/dns')); ?></p>
 </div>
 <script type="text/javascript">
-	_watcher = setInterval(function() {
-		if(typeof(jQuery) !== 'undefined') {
-			clearInterval(_watcher);
-			
-			(function($) {
-				$('input[type="radio"][name="type"]').on('change', function(event) {
-					let select = $('.directories');
-					
-					if($(this).val() === 'new') {
-						select.addClass('d-none');
-					} else {
-						select.removeClass('d-none');
-					}
-				});
-			}(jQuery));
-		}
-	}, 500);
+	(() => {
+		[].map.call(document.querySelectorAll('input[type="radio"][name="type"]'), function(checkbox) {
+			checkbox.addEventListener('change', function(event) {
+				let select = document.querySelector('.directories');
+				
+				if(event.target.value === 'new') {
+					select.classList.add('d-none');
+				} else {
+					select.classList.remove('d-none');
+				}
+			});
+		});
+	})();
 </script>

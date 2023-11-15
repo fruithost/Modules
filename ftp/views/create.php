@@ -7,9 +7,7 @@
 		<label for="username" class="col-4 col-form-label col-form-label-sm"><?php I18N::__('Username'); ?>:</label>
 		<div class="col-8">
 			<div class="input-group mb-3">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="prefix"><?php print Auth::getUsername(); ?>_</span>
-				</div>
+				<span class="input-group-text" id="prefix"><?php print Auth::getUsername(); ?>_</span>
 				<input type="text" class="form-control" name="username" id="username" aria-label="<?php I18N::__('Username'); ?>" aria-describedby="prefix" />
 			</div>
 		</div>
@@ -24,7 +22,7 @@
 	<div class="form-group row">
 		<label for="path" class="col-4 col-form-label col-form-label-sm"><?php I18N::__('Path'); ?>:</label>
 		<div class="col-8">
-			<select name="path" id="path" class="form-control">
+			<select name="path" id="path" class="form-select">
 				<option value=""> - <?php I18N::__('Please select'); ?> - </option>
 				<option value="/">/ (root)</option>
 				<?php

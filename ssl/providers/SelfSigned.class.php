@@ -2,6 +2,7 @@
 	namespace fruithost\Module\SSL\Providers;
 	
 	use fruithost\Localization\I18N;
+    use fruithost\UI\Icon;
 	
 	class SelfSigned implements Provider  {
 		public $name		= null;
@@ -37,7 +38,10 @@
 		}
 		
 		public function getIcon() : string | null {
-			return '<i class="material-icons text-danger" style="font-size: 42px">gesture</i>';
+			return Icon::render('self-signed', [
+				'classes'		=> [ 'text-danger' ],
+				'attributes'	=> [ 'style' => 'font-size: 28px' ]
+			]);
 		}
 		
 		public function execute($domain, $directory) {

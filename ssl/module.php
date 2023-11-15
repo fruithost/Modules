@@ -9,6 +9,7 @@
 	use fruithost\System\HookParameters;
 	use fruithost\Accounting\Session;
 	use fruithost\Network\Response;
+	use fruithost\UI\Icon;
 	
 	require_once(sprintf('%s/providers/Provider.interface.php', dirname(__FILE__)));
 	
@@ -47,33 +48,40 @@
 				$crt			= $this->getCertByDomain($domain);
 				$color			= 'danger';
 				$title			= I18N::get('Your website is not secure');
-				$icon			= 'lock_open';
+				$icon			= 'insecure';
 				$description 	= I18N::get('Data transferred between your visitors and website is unencrypted and may be intercepted.');
 				
 				/* Is already HTTPS set */
 				if(isset($crt)) {
 					if($crt->time_created !== NULL) {
 						$color			= 'success';
-						$icon			= 'lock';
+						$icon			= 'secure';
 						$title			= I18N::get('Connection is secure');
 						$description 	= I18N::get('Data transferred between your visitors and website is encrypted.');
 					} else {
 						$color			= 'warning';
-						$icon			= 'lock';
+						$icon			= 'secure';
 						$title			= I18N::get('Website will be set up');
 						$description 	= I18N::get('Your website is still being set up for encryption.');
 					}
 					
 					if($domain !== null && !file_exists(sprintf('/etc/fruithost/config/apache2/vhosts/20_%s.ssl.conf', $domain->name))) {
 						$color			= 'warning';
-						$icon			= 'lock';
+						$icon			= 'secure';
 						$title			= I18N::get('Website will be set up');
 						$description 	= I18N::get('Your website is still being set up for encryption.');
 					}
 				}
 				
-				$popover	= sprintf(' data-content="%2$s" title="<small class=\'text-%3$s\'>%1$s</small>"', $title, $description, $color);
-				$html[]		= sprintf('<td width="1px"><a href="%2$s" data-toggle="hover" class="text-%3$s small" %1$s><i class="material-icons">%4$s</span></a></td>', $popover, $this->url('/module/ssl/view/' . ($domain == null ? '' : $domain->id)), $color, $icon);
+				$popover	= sprintf(' data-bs-content="%2$s" data-bs-title="<small class=\'text-%3$s\'>%1$s</small>"', $title, $description, $color);
+				$html[]		= sprintf('<td width="1px">
+											<a href="%2$s" data-bs-toggle="hover" class="text-%3$s small" %1$s>
+												%4$s
+											</a>
+									</td>', $popover, $this->url('/module/ssl/view/' . ($domain == null ? '' : $domain->id)), $color, Icon::render($icon, [
+										'classes' => [ 'align-middle' ],
+										'attributes' => [ 'style' => 'font-size: 20px' ]
+									]));
 
 				return $html;
 			});
@@ -86,7 +94,7 @@
 				if(isset($crt)) {
 					if($crt->time_created !== NULL && $domain !== null && file_exists(sprintf('/etc/fruithost/config/apache2/vhosts/20_%s.ssl.conf', $domain->name))) {
 						if($crt->enable_hsts == 'YES') {
-							$data['link'] = '<a href="https://%1$s/" target="_blank">%1$s</a> <i class="badge badge-success align-text-bottom text-light">HSTS</i>';
+							$data['link'] = '<a href="https://%1$s/" target="_blank">%1$s</a> <span class="badge text-bg-warning align-bottom">HSTS</span>';
 						} else {
 							$data['link'] = '<a href="https://%1$s/" target="_blank">%1$s</a>';
 						}
@@ -105,7 +113,7 @@
 					if($crt->time_created === NULL) {
 						$data = [
 							'text'	=> I18N::get('Pending'),
-							'html'	=> '<span class="text-warning">%s...</span>'
+							'html'	=> '<span class="badge text-bg-warning" data-bs-toggle="hover" data-bs-title="%s">&nbsp;</span>'
 						];
 					}
 				}
@@ -114,7 +122,7 @@
 			});
 		}
 		
-		public function getCertByDomain($domain) : object {
+		public function getCertByDomain($domain) : ?object {
 			if(empty($domain)) {
 				return null;
 			}

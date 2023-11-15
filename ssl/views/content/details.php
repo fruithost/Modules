@@ -1,6 +1,7 @@
 <?php
 	use fruithost\Accounting\Auth;
 	use fruithost\Localization\I18N;
+    use fruithost\UI\Icon;
 	
 	$provider		= null;
 	$certificate	= [
@@ -71,9 +72,14 @@
 						if($provider->isFree()) {
 							I18N::__('Free');
 						} else {
-							?>
-								<span class="d-inline-block material-icons text-info" data-toggle="hover" title="<?php I18N::__('Higher costs may be incurred'); ?>" data-content="<?php I18N::__('You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br /><br />Using the certificate is of course completely free of charge, you only have to procure it yourself.'); ?>">info</span>
-							<?php
+							Icon::show('info', [
+								'classes'		=> [ 'd-inline-block', 'text-info' ],
+								'attributes'	=> [
+									'data-bs-toggle'	=> 'hover',
+									'data-bs-title'		=> I18N::get('Higher costs may be incurred'),
+									'data-bs-content'	=> I18N::get('You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br /><br />Using the certificate is of course completely free of charge, you only have to procure it yourself.'),
+								]
+							]);
 						}
 					?>
 				</small>
@@ -85,11 +91,11 @@
 					<?php
 						if(empty($certificate['data'])) {
 							?>
-								<h6 class="text-danger"><i class="material-icons align-top">beenhere</i> <?php I18N::__('Certificate is invalid'); ?></h6>
+								<h6 class="text-danger"><?php Icon::show('ssl-invalid', [ 'classes' => ['align-top'] ]); ?> <?php I18N::__('Certificate is invalid'); ?></h6>
 							<?php
 						} else {
 							?>
-								<h6 class="text-success"><i class="material-icons align-top">beenhere</i> <?php printf(I18N::get('Valid thru <strong>%s</strong>'), date(Auth::getSettings('TIME_FORMAT', NULL, $this->getSettings('TIME_FORMAT', 'd.m.Y - H:i:s')), strtotime(date_create_from_format('ymdHise', $certificate['data']['validTo'])->format('c')))); ?></h6>
+								<h6 class="text-success"><?php Icon::show('ssl-valid', [ 'classes' => ['align-top'] ]); ?> <?php printf(I18N::get('Valid thru <strong>%s</strong>'), date(Auth::getSettings('TIME_FORMAT', NULL, $this->getSettings('TIME_FORMAT', 'd.m.Y - H:i:s')), strtotime(date_create_from_format('ymdHise', $certificate['data']['validTo'])->format('c')))); ?></h6>
 							<?php
 						}
 						
@@ -109,11 +115,11 @@
 					?>
 				</div>
 				<div class="col">
-					<h6><i class="material-icons align-top text-warning">error_outline</i> <?php I18N::__('No unique IP'); ?></h6>
+					<h6><?php Icon::show('network', [ 'classes' => ['align-top', 'text-warning'] ]); ?> <?php I18N::__('No unique IP'); ?></h6>
 					<p><?php I18N::__('This domain is currently <strong>not using a Unique IP</strong>.'); ?></p>
 				</div>
 				<div class="col">
-					<h6><i class="material-icons align-top text-danger">delete</i> <?php I18N::__('Remove Certificate'); ?></h6>
+					<h6><?php Icon::show('delete', [ 'classes' => ['align-top', 'text-danger'] ]); ?> <?php I18N::__('Remove Certificate'); ?></h6>
 					<p><?php I18N::__('Stop using this certificate with your domain. Note the certificate will still remain valid until its expiration and will be available for use anytime under <strong>Other Certificates</strong>.'); ?></p>
 					<form method="post" action="<?php print $this->url(sprintf('/module/ssl/view/%d', $this->domain->id)); ?>">
 						<button name="action" value="delete" class="btn btn-outline-danger" data-confirm="<?php I18N::__('Do you really wan\'t to delete the Certificate?'); ?>"><?php I18N::__('Remove Certificate'); ?></button>
@@ -122,21 +128,21 @@
 			</div>
 			<div class="row mt-5">
 				<div class="col-4">
-					<h6><i class="material-icons align-bottom text-success">https</i> <?php I18N::__('Automatic HTTPS'); ?></h6>
-					<div class="custom-control custom-switch">
-						<input type="checkbox" data-toggle="collapse" data-target="#collapse_force_https" aria-expanded="false" aria-controls="collapse_force_https" class="custom-control-input" name="force_https" id="force_https"<?php print ($this->certificate->force_https == 'YES' ? ' CHECKED' : ''); ?> />
-						<label class="custom-control-label" for="force_https"><?php I18N::__('Redirect all site content over a secure HTTPS connection.'); ?></label>
+					<h6><span class="badge text-bg-success align-bottom">HTTPS</span> <?php I18N::__('Automatic HTTPS'); ?></h6>
+					<div class="form-check form-switch">
+						<input type="checkbox" data-bs-toggle="collapse" data-bs-target="#collapse_force_https" aria-expanded="false" aria-controls="collapse_force_https" class="form-check-input" name="force_https" id="force_https"<?php print ($this->certificate->force_https == 'YES' ? ' CHECKED' : ''); ?> />
+						<label class="form-check-label" for="force_https"><?php I18N::__('Redirect all site content over a secure HTTPS connection.'); ?></label>
 					</div>
 					<div class="mt-3 collapse alert alert-warning<?php print ($this->certificate->force_https != 'YES' ? ' show' : ''); ?>" role="alert" id="collapse_force_https">
-						<h4 class="alert-heading"><i class="material-icons align-text-bottom text-danger">error</i> <?php I18N::__('Warning'); ?></h4>
+						<h4 class="alert-heading"><?php Icon::show('warning', [ 'classes' => ['align-text-bottom', 'text-danger'] ]); ?> <?php I18N::__('Warning'); ?></h4>
 						<p><?php I18N::__('Disabling this setting will slow the loading of your site and will default to insecure connections. You should only disable this setting if your site requires special redirect settings in your <strong>.htaccess</strong> file or you want to allow mixed content on your site.'); ?></p>
 					</div>
 				</div>
 				<div class="col-4">
-					<h6><i class="badge badge-success align-bottom text-light">HSTS</i> <?php I18N::__('Strict Transport Security (HSTS)'); ?></h6>
-					<div class="custom-control custom-switch">
-						<input type="checkbox" data-toggle="collapse" aria-expanded="false" class="custom-control-input" name="enable_hsts" id="enable_hsts"<?php print ($this->certificate->enable_hsts == 'YES' ? ' CHECKED' : ''); ?> />
-						<label class="custom-control-label" for="enable_hsts"><?php I18N::__('Enables HSTS'); ?></label>
+					<h6><span class="badge text-bg-warning align-bottom">HSTS</span> <?php I18N::__('Strict Transport Security (HSTS)'); ?></h6>
+					<div class="form-check form-switch">
+						<input type="checkbox" data-bs-toggle="collapse" aria-expanded="false" class="form-check-input" name="enable_hsts" id="enable_hsts"<?php print ($this->certificate->enable_hsts == 'YES' ? ' CHECKED' : ''); ?> />
+						<label class="form-check-label" for="enable_hsts"><?php I18N::__('Enables HSTS'); ?></label>
 					</div>
 					<p class="mt-3"><?php I18N::__('This web security policy guarantees that clients only access the HTTPS version of a website and not the HTTP version. It serves as protection against man-in-the-middle attacks such as SSL stripping, downgrade attacks and more.'); ?></p>
 				</div>
@@ -160,30 +166,30 @@
 						<?php
 					} else {		
 						?>
-							<div class="col-3 border-right">
+							<div class="col-3 border-end">
 								<ul class="nav flex-column nav-tabs" role="tablist" aria-orientation="vertical">
 									<?php
 										if(!empty($certificate['cert'])) {
 											?>
-												<li class="nav-item"><button class="nav-link" id="cert-tab" data-toggle="tab" data-target="#cert" type="button" role="tab"><?php I18N::__('Certificate'); ?></button></li>
+												<li class="nav-item"><button class="nav-link" id="cert-tab" data-bs-toggle="tab" data-bs-target="#cert" type="button" role="tab"><?php I18N::__('Certificate'); ?></button></li>
 											<?php
 										}
 										
 										if(!empty($certificate['key'])) {
 											?>
-												<li class="nav-item"><button class="nav-link" id="key-tab" data-toggle="tab" data-target="#key" type="button" role="tab"><?php I18N::__('Private Key'); ?></button></li>
+												<li class="nav-item"><button class="nav-link" id="key-tab" data-bs-toggle="tab" data-bs-target="#key" type="button" role="tab"><?php I18N::__('Private Key'); ?></button></li>
 											<?php
 										}
 										
 										if(!empty($certificate['root'])) {
 											?>
-												<li class="nav-item"><button class="nav-link" id="root-tab" data-toggle="tab" data-target="#root" type="button" role="tab"><?php I18N::__('Intermediate Certificate'); ?></button></li>
+												<li class="nav-item"><button class="nav-link" id="root-tab" data-bs-toggle="tab" data-bs-target="#root" type="button" role="tab"><?php I18N::__('Intermediate Certificate'); ?></button></li>
 											<?php
 										}
 										
 										if(!empty($certificate['data'])) {
 											?>
-												<li class="nav-item"><button class="nav-link" id="details-tab" data-toggle="tab" data-target="#details" type="button" role="tab"><?php I18N::__('Details'); ?></button></li>
+												<li class="nav-item"><button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab"><?php I18N::__('Details'); ?></button></li>
 											<?php
 										}
 									?>
@@ -195,7 +201,7 @@
 										if(!empty($certificate['cert'])) {
 											?>
 												<div class="tab-pane" id="cert" role="tabpanel" aria-labelledby="cert-tab">
-													<textarea class="form-control bg-dark text-white border-0 rounded-0" rows="15"><?php print $certificate['cert']; ?></textarea>
+													<textarea class="form-control bg-dark-subtle text-white border-0 rounded-0" rows="15"><?php print $certificate['cert']; ?></textarea>
 												</div>
 											<?php
 										}
@@ -203,7 +209,7 @@
 										if(!empty($certificate['key'])) {
 											?>
 												<div class="tab-pane" id="key" role="tabpanel" aria-labelledby="key-tab">
-													<textarea class="form-control bg-dark text-white border-0 rounded-0" rows="15"><?php print $certificate['key']; ?></textarea>
+													<textarea class="form-control bg-dark-subtle text-white border-0 rounded-0" rows="15"><?php print $certificate['key']; ?></textarea>
 												</div>
 											<?php
 										}
@@ -211,7 +217,7 @@
 										if(!empty($certificate['root'])) {
 											?>
 												<div class="tab-pane" id="root" role="tabpanel" aria-labelledby="root-tab">
-													<textarea class="form-control bg-dark text-white border-0 rounded-0" rows="15"><?php print $certificate['root']; ?></textarea>
+													<textarea class="form-control bg-dark-subtle text-white border-0 rounded-0" rows="15"><?php print $certificate['root']; ?></textarea>
 												</div>
 											<?php
 										}
@@ -221,61 +227,103 @@
 												<div class="tab-pane container" id="details" role="tabpanel" aria-labelledby="details-tab">
 													<div class="row">
 														<div class="col-6">
-															<?php
-																foreach($certificate['data']['subject'] AS $name => $value) {
-																	switch($name) {
-																		case 'commonName':
-																			$name = I18N::get('Common Name');
-																		break;
-																		case 'organizationName':
-																			$name = I18N::get('Organization Name');
-																		break;
-																		case 'emailAddress':
-																			$name = I18N::get('E-Mail Address');
-																		break;
-																	}
-																	?>
-																		<div class="form-group row">
-																			<label class="col-sm-4 col-form-label font-weight-bold"><?php print $name; ?></label>
-																			<div class="col-sm-8">
-																				<input type="text" readonly class="form-control-plaintext" value="<?php print $value; ?>" />
-																			</div>
-																		</div>
+															<div class="border rounded overflow-hidden">
+																<table class="table m-0 table-borderless table-striped">
 																	<?php
-																}
-															?>
-															
-															<div class="form-group row">
-																<label class="col-sm-4 col-form-label font-weight-bold"><?php I18N::__('Valid from'); ?></label>
-																<div class="col-sm-8">
-																	<input type="text" readonly class="form-control-plaintext" value="<?php print date(Auth::getSettings('TIME_FORMAT', NULL, $this->getSettings('TIME_FORMAT', 'd.m.Y - H:i:s')), strtotime(date_create_from_format('ymdHise', $certificate['data']['validFrom'])->format('c'))); ?>" />
-																</div>
-															</div>
-															<div class="form-group row">
-																<label class="col-sm-4 col-form-label font-weight-bold"><?php I18N::__('Valid to'); ?></label>
-																<div class="col-sm-8">
-																	<input type="text" readonly class="form-control-plaintext" value="<?php print date(Auth::getSettings('TIME_FORMAT', NULL, $this->getSettings('TIME_FORMAT', 'd.m.Y - H:i:s')), strtotime(date_create_from_format('ymdHise', $certificate['data']['validTo'])->format('c'))); ?>" />
-																</div>
+																		foreach($certificate['data']['subject'] AS $name => $value) {
+																			switch($name) {
+																				case 'commonName':
+																					$name = I18N::get('Common Name');
+																				break;
+																				case 'organizationName':
+																					$name = I18N::get('Organization Name');
+																				break;
+																				case 'emailAddress':
+																					$name = I18N::get('E-Mail Address');
+																				break;
+																			}
+																			?>
+																				<tr>
+																					<td>
+																						<strong><?php print $name; ?></strong>
+																					</td>
+																					<td>
+																						<input type="text" readonly class="form-control-plaintext" value="<?php print $value; ?>" />
+																					</td>
+																				</tr>
+																			<?php
+																		}
+																	?>
+																	<tr>
+																		<td>
+																			<strong><?php I18N::__('Valid from'); ?></strong>
+																		</td>
+																		<td>
+																			<input type="text" readonly class="form-control-plaintext" value="<?php print date(Auth::getSettings('TIME_FORMAT', NULL, $this->getSettings('TIME_FORMAT', 'd.m.Y - H:i:s')), strtotime(date_create_from_format('ymdHise', $certificate['data']['validFrom'])->format('c'))); ?>" />
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<strong><?php I18N::__('Valid to'); ?></strong>
+																		</td>
+																		<td>
+																			<input type="text" readonly class="form-control-plaintext" value="<?php print date(Auth::getSettings('TIME_FORMAT', NULL, $this->getSettings('TIME_FORMAT', 'd.m.Y - H:i:s')), strtotime(date_create_from_format('ymdHise', $certificate['data']['validTo'])->format('c'))); ?>" />
+																		</td>
+																	</tr>
+																</table>
 															</div>
 														</div>
 														<div class="col-6">
-															<div class="form-group row">
-																<label class="col-sm-4 col-form-label font-weight-bold"><?php I18N::__('Version'); ?></label>
-																<div class="col-sm-8">
-																	<input type="text" readonly class="form-control-plaintext" value="<?php print $certificate['data']['version']; ?>" />
-																</div>
-															</div>
-															<div class="form-group row">
-																<label class="col-sm-4 col-form-label font-weight-bold"><?php I18N::__('Hash'); ?> (<?php print $certificate['data']['signatureTypeSN']; ?>)</label>
-																<div class="col-sm-8">
-																	<input type="text" readonly class="form-control-plaintext" value="<?php print $certificate['data']['hash']; ?>" />
-																</div>
-															</div>
-															<div class="form-group row">
-																<label class="col-sm-4 col-form-label font-weight-bold"><?php I18N::__('Serial Number'); ?></label>
-																<div class="col-sm-8">
-																	<input type="text" readonly class="form-control-plaintext" value="<?php print $certificate['data']['serialNumberHex']; ?>" />
-																</div>
+															<div class="border rounded overflow-hidden">
+																<table class="table m-0 table-borderless table-striped">
+																	<tr>
+																		<td>
+																			<strong><?php I18N::__('Version'); ?></strong>
+																		</td>
+																		<td>
+																			<input type="text" readonly class="form-control-plaintext" value="<?php
+																				switch($certificate['data']['version']) {
+																					case 0:
+																						print 'v1';
+																					break;
+																					case 1:
+																						print 'v2';
+																					break;
+																					case 2:
+																						print 'v3';
+																					break;
+																					default:
+																						I18N::__('Unknown');
+																					break;
+																				}
+																			?>" />
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<strong><?php I18N::__('Hash'); ?></strong>
+																		</td>
+																		<td>
+																			<input type="text" readonly class="form-control-plaintext" value="<?php print $certificate['data']['hash']; ?>" />
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<strong><?php I18N::__('Algorithm'); ?></strong>
+																		</td>
+																		<td>
+																			<input type="text" readonly class="form-control-plaintext" value="<?php print $certificate['data']['signatureTypeSN']; ?>" />
+																		</td>
+																	</tr>
+																	<tr>
+																		<td>
+																			<strong><?php I18N::__('Serial Number'); ?></strong>
+																		</td>
+																		<td>
+																			<input type="text" readonly class="form-control-plaintext" value="<?php print $certificate['data']['serialNumberHex']; ?>" />
+																		</td>
+																	</tr>
+																</table>
 															</div>
 														</div>
 													</div>
@@ -293,31 +341,35 @@
 	</div>
 </div>
 <script type="text/javascript">
-	_watcher_ssl_details = setInterval(function() {
-		if(typeof(jQuery) !== 'undefined') {
-			clearInterval(_watcher_ssl_details);
+	(() => {
+		[].map.call(document.querySelectorAll('div#details_tab li.nav-item button'), function(element, index) {
+			if(index > 0) {
+				return;
+			}
 			
-			(function($) {
-				$('div#details_tab li.nav-item:eq(0) button, div#details_tab div.tab-pane:eq(0)').addClass('active');
+			element.classList.add('active');
+		});
+		
+		[].map.call(document.querySelectorAll('div#details_tab div.tab-pane'), function(element, index) {
+			if(index > 0) {
+				return;
+			}
+			
+			element.classList.add('active');
+		});
+		
+		[].map.call(document.querySelectorAll('input[name="force_https"], input[name="enable_hsts"]'), function(element) {
+			element.addEventListener('change', function(event) {
+				event.target.disabled = true;
 				
-				$('input[name="force_https"], input[name="enable_hsts"]').on('change', function(event) {
-					let element = $(this);
-					element.attr('disabled', true);
-					
-					$.ajax({
-						type:	'POST',
-						url:	'<?php print $this->url(sprintf('/module/ssl/view/%d', $this->domain->id)); ?>',
-						data:	{
-							action:	element.attr('name'),
-							value:	element.prop('checked')
-						},
-						success: function onSuccess(response) {
-							element.removeAttr('disabled');
-							element.prop('checked', /^true$/i.test(response));
-						}
-					});
+				new Ajax('<?php print $this->url(sprintf('/module/ssl/view/%d', $this->domain->id)); ?>').onSuccess(function(response) {
+					event.target.disabled	= false;
+					event.target.checked	= (/^true$/i.test(response));
+				}).post({
+					action:	event.target.name,
+					value:	event.target.checked
 				});
-			}(jQuery));
-		}
-	}, 500);
+			});
+		});
+	})();
 </script>

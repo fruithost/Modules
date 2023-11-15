@@ -5,6 +5,69 @@ msgstr ""
 "Language: $name\n"
 
 
+msgid "Create Cronjob"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Create"
+msgstr ""
+
+msgid "Change Cronjob"
+msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "Create New"
+msgstr ""
+
+msgid "Delete selected"
+msgstr ""
+
+msgid "Unknown error occurs!"
+msgstr ""
+
+msgid "Please enter a valid minute!"
+msgstr ""
+
+msgid "Please enter a valid hour!"
+msgstr ""
+
+msgid "Please enter a valid day!"
+msgstr ""
+
+msgid "Please enter a valid month!"
+msgstr ""
+
+msgid "Please enter a valid weekday!"
+msgstr ""
+
+msgid "Please enter a valid PHP script!"
+msgstr ""
+
+msgid "Please enter a valid URL!"
+msgstr ""
+
+msgid "Please enter a valid action!"
+msgstr ""
+
+msgid "Please select an Cronjob you want to delete!"
+msgstr ""
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr ""
+
+msgid "You have no permissions to delete the Cronjob <strong>%s_%s<\/strong>!"
+msgstr ""
+
+msgid "Not named"
+msgstr ""
+
+msgid "Following Cronjobs was deleted: <strong><br \/>- %s<\/strong>"
+msgstr ""
+
 msgid "No Cronjobs available!"
 msgstr ""
 
@@ -29,7 +92,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-msgid "Not named"
+msgid "Actions"
 msgstr ""
 
 msgid "Never running"
@@ -195,64 +258,4 @@ msgid "Arguments"
 msgstr ""
 
 msgid "Call URL"
-msgstr ""
-
-msgid "Create Cronjob"
-msgstr ""
-
-msgid "Cancel"
-msgstr ""
-
-msgid "Create"
-msgstr ""
-
-msgid "Change Cronjob"
-msgstr ""
-
-msgid "Update"
-msgstr ""
-
-msgid "Create New"
-msgstr ""
-
-msgid "Delete selected"
-msgstr ""
-
-msgid "Unknown error occurs!"
-msgstr ""
-
-msgid "Please enter a valid minute!"
-msgstr ""
-
-msgid "Please enter a valid hour!"
-msgstr ""
-
-msgid "Please enter a valid day!"
-msgstr ""
-
-msgid "Please enter a valid month!"
-msgstr ""
-
-msgid "Please enter a valid weekday!"
-msgstr ""
-
-msgid "Please enter a valid PHP script!"
-msgstr ""
-
-msgid "Please enter a valid URL!"
-msgstr ""
-
-msgid "Please enter a valid action!"
-msgstr ""
-
-msgid "Please select an Cronjob you want to delete!"
-msgstr ""
-
-msgid "An unknown error has occurred. Please retry your action!"
-msgstr ""
-
-msgid "You have no permissions to delete the Cronjob <strong>%s_%s<\/strong>!"
-msgstr ""
-
-msgid "Following Cronjobs was deleted: <strong><br \/>- %s<\/strong>"
 msgstr ""

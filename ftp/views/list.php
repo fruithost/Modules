@@ -10,7 +10,7 @@
 				<th class="bg-secondary-subtle" scope="col" colspan="2"><?php I18N::__('Username'); ?></th>
 				<th class="bg-secondary-subtle" scope="col"><?php I18N::__('Password'); ?></th>
 				<th class="bg-secondary-subtle" scope="col"><?php I18N::__('Directory'); ?></th>
-				<th class="bg-secondary-subtle" scope="col"></th>
+				<th class="bg-secondary-subtle" scope="col"><?php I18N::__('Actions'); ?></th>
 			</tr>
 		</thead>
 		<tbody>

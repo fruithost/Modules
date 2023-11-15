@@ -115,7 +115,7 @@
 			<div class="form-group row">
 				<label for="theme" class="col-sm-2 col-form-label"><?php I18N::__('Theme'); ?>:</label>
 				<div class="col-sm-10">
-					<select name="theme" id="theme" class="form-control">
+					<select name="theme" id="theme" class="form-select">
 						<option value="-"><?php I18N::__('Default'); ?></option>
 						<?php
 							if(count($themes) > 0) {

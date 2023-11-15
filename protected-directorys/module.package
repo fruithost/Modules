@@ -1,6 +1,6 @@
 {
 	"name":			"Protected Directorys",
-	"version":		"1.5.1",
+	"version":		"1.5.2",
 	"category":		"HOSTING_MANAGEMENT",
 	"icon":			"lock",
 	"order":		5,
@@ -12,6 +12,6 @@
 	},
 	"repository":	"https://github.com/fruithost/Modules",
 	"depencies": {
-		"domains": "1.1.0"
+		"domains": "1.1.2"
 	}
 }

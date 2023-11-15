@@ -32,7 +32,7 @@
 				$this->addButton([
 					(new Button())->setName('create')->setLabel(I18N::get('Create New'))->addClass('btn-outline-success')->setModal('create_cron'),
 					(new Button())->setName('delete')->setLabel(I18N::get('Delete selected'))->addClass('btn-outline-danger')
-				]);				
+				]);
 			}
 		}
 		

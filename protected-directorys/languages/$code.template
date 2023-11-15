@@ -5,76 +5,22 @@ msgstr ""
 "Language: $name\n"
 
 
-msgid "Username"
-msgstr ""
-
-msgid "Password"
-msgstr ""
-
-msgid "Pending"
-msgstr ""
-
-msgid "Show"
-msgstr ""
-
-msgid "Edit"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
-msgid "No protected Directorys available!"
-msgstr ""
-
-msgid "Please create a new protected Directory to administer it."
-msgstr ""
-
-msgid "Create"
-msgstr ""
-
-msgid "Directory"
-msgstr ""
-
-msgid "Path"
-msgstr ""
-
-msgid "Status"
-msgstr ""
-
-msgid "Error"
-msgstr ""
-
-msgid "Live"
-msgstr ""
-
-msgid "Users"
-msgstr ""
-
-msgid "No Users available!"
-msgstr ""
-
-msgid "Please add an new User to the protected Directory to administer it."
-msgstr ""
-
-msgid "Create User"
-msgstr ""
-
-msgid "Please select"
-msgstr ""
-
-msgid "Message"
-msgstr ""
-
 msgid "Create protected Directory"
 msgstr ""
 
 msgid "Cancel"
 msgstr ""
 
+msgid "Create"
+msgstr ""
+
 msgid "Change protected Directory"
 msgstr ""
 
 msgid "Update"
+msgstr ""
+
+msgid "Create User"
 msgstr ""
 
 msgid "Change User"
@@ -126,4 +72,58 @@ msgid "Please enter a username!"
 msgstr ""
 
 msgid "Please enter a password!"
+msgstr ""
+
+msgid "Directory"
+msgstr ""
+
+msgid "Username"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Path"
+msgstr ""
+
+msgid "Please select"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "No Users available!"
+msgstr ""
+
+msgid "Please add an new User to the protected Directory to administer it."
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "No protected Directorys available!"
+msgstr ""
+
+msgid "Please create a new protected Directory to administer it."
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Live"
+msgstr ""
+
+msgid "Users"
 msgstr ""

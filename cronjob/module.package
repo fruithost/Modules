@@ -1,6 +1,6 @@
 {
 	"name":			"Cronjob",
-	"version":		"1.5.1",
+	"version":		"1.5.2",
 	"category":		"HOSTING_MANAGEMENT",
 	"icon":			"stopwatch",
 	"order":		4,

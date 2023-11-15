@@ -5,48 +5,6 @@ msgstr ""
 "Language: $name\n"
 
 
-msgid "No FTP accounts available!"
-msgstr ""
-
-msgid "Please create a new account to administer it."
-msgstr ""
-
-msgid "Create new Account"
-msgstr ""
-
-msgid "Username"
-msgstr ""
-
-msgid "Password"
-msgstr ""
-
-msgid "Directory"
-msgstr ""
-
-msgid "Pending"
-msgstr ""
-
-msgid "Show"
-msgstr ""
-
-msgid "Edit"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
-msgid "New Password"
-msgstr ""
-
-msgid "Path"
-msgstr ""
-
-msgid "Please select"
-msgstr ""
-
-msgid "User-ID"
-msgstr ""
-
 msgid "Create FTP Account"
 msgstr ""
 
@@ -102,4 +60,46 @@ msgid "Please enter a username for your ftp account!"
 msgstr ""
 
 msgid "Please enter a password for your ftp account!"
+msgstr ""
+
+msgid "Username"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Path"
+msgstr ""
+
+msgid "Please select"
+msgstr ""
+
+msgid "No FTP accounts available!"
+msgstr ""
+
+msgid "Please create a new account to administer it."
+msgstr ""
+
+msgid "Create new Account"
+msgstr ""
+
+msgid "Directory"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "New Password"
+msgstr ""
+
+msgid "User-ID"
 msgstr ""

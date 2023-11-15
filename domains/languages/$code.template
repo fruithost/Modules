@@ -5,51 +5,6 @@ msgstr ""
 "Language: $name\n"
 
 
-msgid "No Domains available!"
-msgstr ""
-
-msgid "Please create a new domain to administer it."
-msgstr ""
-
-msgid "Create new Domain"
-msgstr ""
-
-msgid "Domain name"
-msgstr ""
-
-msgid "Home directory"
-msgstr ""
-
-msgid "Status"
-msgstr ""
-
-msgid "Unknown Error"
-msgstr ""
-
-msgid "Deleting"
-msgstr ""
-
-msgid "Pending"
-msgstr ""
-
-msgid "Error"
-msgstr ""
-
-msgid "Live"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
-msgid "Create a new home directory"
-msgstr ""
-
-msgid "Use existing home directory"
-msgstr ""
-
-msgid "The domain must refer to the IP Address <strong>%s<\/strong> or be managed by our <a href=\"%s\" target=\"_blank\">nameserver<\/a> (DNS). Adding domains does not replace the domain registration!"
-msgstr ""
-
 msgid "Create Domain"
 msgstr ""
 
@@ -57,6 +12,9 @@ msgid "Cancel"
 msgstr ""
 
 msgid "Create"
+msgstr ""
+
+msgid "Pending"
 msgstr ""
 
 msgid "Create New"
@@ -87,4 +45,46 @@ msgid "Please select an valid home directory!"
 msgstr ""
 
 msgid "Please select an existing home directory!"
+msgstr ""
+
+msgid "Domain name"
+msgstr ""
+
+msgid "Home directory"
+msgstr ""
+
+msgid "Create a new home directory"
+msgstr ""
+
+msgid "Use existing home directory"
+msgstr ""
+
+msgid "The domain must refer to the IP Address <strong>%s<\/strong> or be managed by our <a href=\"%s\" target=\"_blank\">nameserver<\/a> (DNS). Adding domains does not replace the domain registration!"
+msgstr ""
+
+msgid "No Domains available!"
+msgstr ""
+
+msgid "Please create a new domain to administer it."
+msgstr ""
+
+msgid "Create new Domain"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Unknown Error"
+msgstr ""
+
+msgid "Deleting"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Live"
+msgstr ""
+
+msgid "Delete"
 msgstr ""

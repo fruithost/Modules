@@ -5,10 +5,31 @@ msgstr ""
 "Language: $name\n"
 
 
+msgid "Update"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
 msgid "Access denied!"
 msgstr ""
 
 msgid "You have no permissions for this page."
+msgstr ""
+
+msgid "For Domain"
+msgstr ""
+
+msgid "Global"
+msgstr ""
+
+msgid "PHP.ini was successfully saved."
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Value"
 msgstr ""
 
 msgid "This property is deprecated!"
@@ -42,19 +63,4 @@ msgid "Domain \"<strong>%s<\/strong>\" currently not accessible."
 msgstr ""
 
 msgid "Configuration"
-msgstr ""
-
-msgid "Update"
-msgstr ""
-
-msgid "Save"
-msgstr ""
-
-msgid "For Domain"
-msgstr ""
-
-msgid "Global"
-msgstr ""
-
-msgid "PHP.ini was successfully saved."
 msgstr ""

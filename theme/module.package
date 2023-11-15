@@ -1,8 +1,8 @@
 {
 	"name":			"Theme",
-	"version":		"1.0.5",
+	"version":		"1.0.6",
 	"category":		"NULL",
-	"icon":			"color_lens",
+	"icon":			"NULL",
 	"order":		4,
 	"description":	"With this module the user can change the theme.",
 	"author":		{

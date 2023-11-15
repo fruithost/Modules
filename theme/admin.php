@@ -24,22 +24,14 @@
 					}
 					?>
 						<div class="<?php print implode(' ', $classes); ?>">
-							<div class="custom-control custom-checkbox">
-								<input class="custom-control-input" type="checkbox" id="themes_<?php print $theme['name']; ?>" name="themes[]" value="<?php print $theme['name']; ?>"<?php print ($theme['selected'] ? ' CHECKED' : ''); ?> />
-								<label class="custom-control-label" for="themes_<?php print $theme['name']; ?>"><?php print $theme['name']; ?></label>
+							<div class="form-check">
+								<input class="form-check-input" type="checkbox" id="themes_<?php print $theme['name']; ?>" name="themes[]" value="<?php print $theme['name']; ?>"<?php print ($theme['selected'] ? ' CHECKED' : ''); ?> />
+								<label class="form-check-label" for="themes_<?php print $theme['name']; ?>"><?php print $theme['name']; ?></label>
 							</div>
 						</div>
 					<?php
 				}
 			}
 		?>
-	</div>
-</div>
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-top">
-	<div class="container">
-		<div class="row text-center">
-			<a href="<?php print $this->url('/admin/modules' . (!empty($tab) ? '/' . $tab : '')); ?>" class="btn d-inline-block btn-outline-danger mr-2"><?php I18N::__('Cancel'); ?></a>
-			<button type="submit" name="action" value="settings" class="btn d-inline-block btn-outline-success"><?php I18N::__('Save'); ?></button>				
-		</div>
 	</div>
 </div>

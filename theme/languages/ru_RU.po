@@ -1,0 +1,17 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Russian\n"
+
+msgid "User selectable Themes"
+msgstr "Темы, выбираемые пользователем"
+
+msgid "Settings was successfully saved!"
+msgstr "Настройки были успешно сохранены!"
+
+msgid "Theme"
+msgstr "Тема"
+
+msgid "Default"
+msgstr "По умолчанию"

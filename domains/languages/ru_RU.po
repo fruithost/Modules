@@ -1,0 +1,90 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Russian\n"
+
+
+msgid "Create Domain"
+msgstr "Создать домен"
+
+msgid "Cancel"
+msgstr "Отменить"
+
+msgid "Create"
+msgstr "Создать"
+
+msgid "Pending"
+msgstr "Ожидание"
+
+msgid "Create New"
+msgstr "Создать новый"
+
+msgid "Delete selected"
+msgstr "Удалить выбранное"
+
+msgid "Please select the Domains you want to delete!"
+msgstr "Пожалуйста, выберите домены, которые вы хотите удалить!"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "Произошла неизвестная ошибка. Пожалуйста, повторите свое действие!"
+
+msgid "You have no permissions to delete the Domain <strong>%s<\/strong>!"
+msgstr "У вас нет прав на удаление домена <strong>%s<\/strong>!"
+
+msgid "Following Domains will be deleted: <strong>%s<\/strong>!"
+msgstr "Следующие домены будут удалены: <strong>%s<\/strong>!"
+
+msgid "Please enter a domain name!"
+msgstr "Пожалуйста, введите доменное имя!"
+
+msgid "Domain already exists."
+msgstr "Домен уже существует."
+
+msgid "Please select an valid home directory!"
+msgstr "Пожалуйста, выберите допустимый домашний каталог!"
+
+msgid "Please select an existing home directory!"
+msgstr "Пожалуйста, выберите существующий домашний каталог!"
+
+msgid "Domain name"
+msgstr "Доменное имя"
+
+msgid "Home directory"
+msgstr "Домашний каталог"
+
+msgid "Создать новый домашний каталог"
+msgstr ""
+
+msgid "Использовать существующий домашний каталог"
+msgstr ""
+
+msgid "The domain must refer to the IP Address <strong>%s<\/strong> or be managed by our <a href=\"%s\" target=\"_blank\">nameserver<\/a> (DNS). Adding domains does not replace the domain registration!"
+msgstr "Домен должен ссылаться на IP-адрес <strong>%s<\/strong> или управляться нашим <a href=\"%s\" target=\"_blank\">nameserver<\/a> (DNS). Добавление доменов не заменяет регистрацию домена!"
+
+msgid "No Domains available!"
+msgstr "Домены недоступны!"
+
+msgid "Please create a new domain to administer it."
+msgstr "Пожалуйста, создайте новый домен для его администрирования."
+
+msgid "Create new Domain"
+msgstr "Создать новый домен"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Unknown Error"
+msgstr "Неизвестная ошибка"
+
+msgid "Deleting"
+msgstr "Удаление"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid "Live"
+msgstr "Жив"
+
+msgid "Delete"
+msgstr "Удалить"

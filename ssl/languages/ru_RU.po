@@ -26,7 +26,7 @@ msgid "Self-signed"
 msgstr "Самоподписанный"
 
 msgid "Pending"
-msgstr "Ожидаемый"
+msgstr "Ожидание"
 
 msgid "Error"
 msgstr "Ошибка"

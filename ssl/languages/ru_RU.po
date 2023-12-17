@@ -1,0 +1,279 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Russian\n"
+
+msgid "Problem!"
+msgstr "Проблема!"
+
+msgid "You have no permissions to edit the given Domain."
+msgstr "У вас нет прав на редактирование данного домена."
+
+msgid "Add a certificate to your domain to protect information passed between your website and its visitors, providing more trust for your customers and potentially boosting your search engine rankings."
+msgstr "Добавьте сертификат к своему домену, чтобы защитить информацию, передаваемую между вашим сайтом и его посетителями, повысить доверие ваших клиентов и потенциально повысить ваш рейтинг в поисковых системах."
+
+msgid "Domain"
+msgstr "Домен"
+
+msgid "Certificate"
+msgstr "Сертификат"
+
+msgid "Expires"
+msgstr "Истекает"
+
+msgid "Self-signed"
+msgstr "Самоподписанный"
+
+msgid "Pending"
+msgstr "Ожидаемый"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid "Live"
+msgstr "Жив"
+
+msgid "Manage"
+msgstr "Управлять"
+
+msgid "Защищенные сертификаты"
+msgstr "Sichere Zertifikate"
+
+msgid "Free"
+msgstr ""
+
+msgid "Higher costs may be incurred"
+msgstr "Могут возникнуть более высокие затраты"
+
+msgid "You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br /><br />Using the certificate is of course completely free of charge, you only have to procure it yourself."
+msgstr "Вы можете выбрать этот вариант только в том случае, если вы уже приобрели действительный SSL-сертификат у утвержденного центра сертификации.<br /><br />Использование сертификата, конечно, совершенно бесплатно, вам нужно только приобрести его самостоятельно."
+
+msgid "Выберите этот параметр"
+msgstr "Diese Option wählen"
+
+msgid "An unknown error has occurred."
+msgstr "Произошла неизвестная ошибка."
+
+msgid "This certificate is valid and currently in-use with %s."
+msgstr "Этот сертификат действителен и в настоящее время используется с %s."
+
+msgid "Valid thru <strong>%s</strong>"
+msgstr "Годен до <strong>%s</strong>"
+
+msgid "Certificate will <strong>automatically renew %d days before expiration</strong>. We will notify you via email when this happens."
+msgstr "Сертификат будет <strong>автоматически продлен за 10 дней до истечения срока действия</strong>. Когда это произойдет, мы уведомим вас по электронной почте."
+
+msgid "No unique IP"
+msgstr "Нет уникального IP-адреса"
+
+msgid "This domain is currently <strong>not using a Unique IP</strong>."
+msgstr "В настоящее время этот домен <strong> не использует уникальный IP-адрес</strong>."
+
+msgid "Automatic HTTPS"
+msgstr "Автоматический HTTPS"
+
+msgid "Redirect all site content over a secure HTTPS connection."
+msgstr "Перенаправляйте все содержимое сайта по защищенному HTTPS-соединению."
+
+msgid "Warning"
+msgstr "Предупреждение"
+
+msgid "Disabling this setting will slow the loading of your site and will default to insecure connections. You should only disable this setting if your site requires special redirect settings in your <strong>.htaccess</strong> file or you want to allow mixed content on your site."
+msgstr "Отключение этого параметра замедлит загрузку вашего сайта и приведет к небезопасным подключениям по умолчанию. Вы должны отключить этот параметр только в том случае, если вашему сайту требуются специальные настройки перенаправления в вашем файле <strong>.htaccess</strong> или вы хотите разрешить смешанный контент на вашем сайте."
+
+msgid "Remove Certificate"
+msgstr "Удалить сертификат"
+
+msgid "Stop using this certificate with your domain. Note the certificate will still remain valid until its expiration and will be available for use anytime under <strong>Other Certificates</strong>."
+msgstr "Прекратите использовать этот сертификат для вашего домена. Обратите внимание, что сертификат по-прежнему будет действителен до истечения срока его действия и будет доступен для использования в любое время под <strong>Другими сертификатами</strong>."
+
+msgid "Certificate Configuration"
+msgstr "Конфигурация сертификата"
+
+msgid "Private Key"
+msgstr "Закрытый ключ"
+
+msgid "Intermediate Certificate"
+msgstr "Промежуточный сертификат"
+
+msgid "Your website is not secure"
+msgstr "Ваш веб-сайт небезопасен"
+
+msgid "Data transferred between your visitors and website is unencrypted and may be intercepted."
+msgstr "Данные, передаваемые между вашими посетителями и веб-сайтом, не зашифрованы и могут быть перехвачены."
+
+msgid "Connection is secure"
+msgstr "Соединение защищено"
+
+msgid "Data transferred between your visitors and website is encrypted."
+msgstr "Данные, передаваемые между вашими посетителями и веб-сайтом, зашифрованы."
+
+msgid "Website will be set up"
+msgstr "Веб-сайт будет создан"
+
+msgid "Your website is still being set up for encryption."
+msgstr "Ваш веб-сайт все еще настраивается на шифрование."
+
+msgid "Create for %s"
+msgstr "Создать для %s"
+
+msgid "View Domain: %s"
+msgstr "Просмотреть домен: %s"
+
+msgid "Access denied!"
+msgstr "Доступ запрещен!"
+
+msgid "You have no permissions for this page."
+msgstr "У вас нет прав доступа к этой странице."
+
+msgid "Self-Signed Certificate"
+msgstr "Самозаверяющий сертификат"
+
+msgid "Secure your site with a self-signed certificate: <ul><li>No trust from browsers</li><li>Own SSL informations</li><li>Connection is encrypted</li></ul>"
+msgstr "Защитите свой сайт с помощью самозаверяющего сертификата: <ul><li>Нет доверия со стороны браузеров</li><li>Собственная информация о SSL</li><li>Соединение зашифровано</li></ul>"
+
+msgid "Secure your site with an certificate from an authority: <ul><li>Displays the 'lock' icon in browser address bars</li><li>Mostly 99.9% web and mobile browser compatibility</li><li>Often a guarantee for fraudulent transactions with insurance companies</li></ul>"
+msgstr "Защитите свой сайт сертификатом от уполномоченного органа: <ul><li>Отображает значок "блокировка" в адресной строке браузера</li><li>В основном 99,9% совместимости с веб-браузерами и мобильными устройствами</li><li>Часто является гарантией мошеннических транзакций со страховыми компаниями</li></ul>"
+
+msgid "Secure your site and improve SEO with a free certificate from Let's Encrypt: <ul><li>Displays the 'lock' icon in browser address bars</li><li>Free automatic renewals</li><li>New non-profit certificate authority</li></ul>"
+msgstr "Защитите свой сайт и улучшите SEO с помощью бесплатного сертификата от Let's Encrypt: <ul><li>Отображает значок "блокировка" в адресной строке браузера</li><li>Бесплатное автоматическое продление</li><li>Новый некоммерческий центр сертификации</li></ul>"msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Russian\n"
+
+msgid "Problem!"
+msgstr "Проблема!"
+
+msgid "You have no permissions to edit the given Domain."
+msgstr "У вас нет прав на редактирование данного домена."
+
+msgid "Add a certificate to your domain to protect information passed between your website and its visitors, providing more trust for your customers and potentially boosting your search engine rankings."
+msgstr "Добавьте сертификат к своему домену, чтобы защитить информацию, передаваемую между вашим сайтом и его посетителями, повысить доверие ваших клиентов и потенциально повысить ваш рейтинг в поисковых системах."
+
+msgid "Domain"
+msgstr "Домен"
+
+msgid "Certificate"
+msgstr "Сертификат"
+
+msgid "Expires"
+msgstr "Истекает"
+
+msgid "Self-signed"
+msgstr "Самоподписанный"
+
+msgid "Pending"
+msgstr "Ожидаемый"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid "Live"
+msgstr "Жив"
+
+msgid "Manage"
+msgstr "Управлять"
+
+msgid "Защищенные сертификаты"
+msgstr "Sichere Zertifikate"
+
+msgid "Free"
+msgstr ""
+
+msgid "Higher costs may be incurred"
+msgstr "Могут возникнуть более высокие затраты"
+
+msgid "You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br /><br />Using the certificate is of course completely free of charge, you only have to procure it yourself."
+msgstr "Вы можете выбрать этот вариант только в том случае, если вы уже приобрели действительный SSL-сертификат у утвержденного центра сертификации.<br /><br />Использование сертификата, конечно, совершенно бесплатно, вам нужно только приобрести его самостоятельно."
+
+msgid "Выберите этот параметр"
+msgstr "Diese Option wählen"
+
+msgid "An unknown error has occurred."
+msgstr "Произошла неизвестная ошибка."
+
+msgid "This certificate is valid and currently in-use with %s."
+msgstr "Этот сертификат действителен и в настоящее время используется с %s."
+
+msgid "Valid thru <strong>%s</strong>"
+msgstr "Годен до <strong>%s</strong>"
+
+msgid "Certificate will <strong>automatically renew %d days before expiration</strong>. We will notify you via email when this happens."
+msgstr "Сертификат будет <strong>автоматически продлен за 10 дней до истечения срока действия</strong>. Когда это произойдет, мы уведомим вас по электронной почте."
+
+msgid "No unique IP"
+msgstr "Нет уникального IP-адреса"
+
+msgid "This domain is currently <strong>not using a Unique IP</strong>."
+msgstr "В настоящее время этот домен <strong> не использует уникальный IP-адрес</strong>."
+
+msgid "Automatic HTTPS"
+msgstr "Автоматический HTTPS"
+
+msgid "Redirect all site content over a secure HTTPS connection."
+msgstr "Перенаправляйте все содержимое сайта по защищенному HTTPS-соединению."
+
+msgid "Warning"
+msgstr "Предупреждение"
+
+msgid "Disabling this setting will slow the loading of your site and will default to insecure connections. You should only disable this setting if your site requires special redirect settings in your <strong>.htaccess</strong> file or you want to allow mixed content on your site."
+msgstr "Отключение этого параметра замедлит загрузку вашего сайта и приведет к небезопасным подключениям по умолчанию. Вы должны отключить этот параметр только в том случае, если вашему сайту требуются специальные настройки перенаправления в вашем файле <strong>.htaccess</strong> или вы хотите разрешить смешанный контент на вашем сайте."
+
+msgid "Remove Certificate"
+msgstr "Удалить сертификат"
+
+msgid "Stop using this certificate with your domain. Note the certificate will still remain valid until its expiration and will be available for use anytime under <strong>Other Certificates</strong>."
+msgstr "Прекратите использовать этот сертификат для вашего домена. Обратите внимание, что сертификат по-прежнему будет действителен до истечения срока его действия и будет доступен для использования в любое время под <strong>Другими сертификатами</strong>."
+
+msgid "Certificate Configuration"
+msgstr "Конфигурация сертификата"
+
+msgid "Private Key"
+msgstr "Закрытый ключ"
+
+msgid "Intermediate Certificate"
+msgstr "Промежуточный сертификат"
+
+msgid "Your website is not secure"
+msgstr "Ваш веб-сайт небезопасен"
+
+msgid "Data transferred between your visitors and website is unencrypted and may be intercepted."
+msgstr "Данные, передаваемые между вашими посетителями и веб-сайтом, не зашифрованы и могут быть перехвачены."
+
+msgid "Connection is secure"
+msgstr "Соединение защищено"
+
+msgid "Data transferred between your visitors and website is encrypted."
+msgstr "Данные, передаваемые между вашими посетителями и веб-сайтом, зашифрованы."
+
+msgid "Website will be set up"
+msgstr "Веб-сайт будет создан"
+
+msgid "Your website is still being set up for encryption."
+msgstr "Ваш веб-сайт все еще настраивается на шифрование."
+
+msgid "Create for %s"
+msgstr "Создать для %s"
+
+msgid "View Domain: %s"
+msgstr "Просмотреть домен: %s"
+
+msgid "Access denied!"
+msgstr "Доступ запрещен!"
+
+msgid "You have no permissions for this page."
+msgstr "У вас нет прав доступа к этой странице."
+
+msgid "Self-Signed Certificate"
+msgstr "Самозаверяющий сертификат"
+
+msgid "Secure your site with a self-signed certificate: <ul><li>No trust from browsers</li><li>Own SSL informations</li><li>Connection is encrypted</li></ul>"
+msgstr "Защитите свой сайт с помощью самозаверяющего сертификата: <ul><li>Нет доверия со стороны браузеров</li><li>Собственная информация о SSL</li><li>Соединение зашифровано</li></ul>"
+
+msgid "Secure your site with an certificate from an authority: <ul><li>Displays the 'lock' icon in browser address bars</li><li>Mostly 99.9% web and mobile browser compatibility</li><li>Often a guarantee for fraudulent transactions with insurance companies</li></ul>"
+msgstr "Защитите свой сайт сертификатом от уполномоченного органа: <ul><li>Отображает значок "блокировка" в адресной строке браузера</li><li>В основном 99,9% совместимости с веб-браузерами и мобильными устройствами</li><li>Часто является гарантией мошеннических транзакций со страховыми компаниями</li></ul>"
+
+msgid "Secure your site and improve SEO with a free certificate from Let's Encrypt: <ul><li>Displays the 'lock' icon in browser address bars</li><li>Free automatic renewals</li><li>New non-profit certificate authority</li></ul>"
+msgstr "Защитите свой сайт и улучшите SEO с помощью бесплатного сертификата от Let's Encrypt: <ul><li>Отображает значок "блокировка" в адресной строке браузера</li><li>Бесплатное автоматическое продление</li><li>Новый некоммерческий центр сертификации</li></ul>"

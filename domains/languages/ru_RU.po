@@ -53,11 +53,11 @@ msgstr "Доменное имя"
 msgid "Home directory"
 msgstr "Домашний каталог"
 
-msgid "Создать новый домашний каталог"
-msgstr ""
+msgid "Create a new home directory"
+msgstr "Создать новый домашний каталог"
 
-msgid "Использовать существующий домашний каталог"
-msgstr ""
+msgid "Use existing home directory"
+msgstr "Использовать существующий домашний каталог"
 
 msgid "The domain must refer to the IP Address <strong>%s<\/strong> or be managed by our <a href=\"%s\" target=\"_blank\">nameserver<\/a> (DNS). Adding domains does not replace the domain registration!"
 msgstr "Домен должен ссылаться на IP-адрес <strong>%s<\/strong> или управляться нашим <a href=\"%s\" target=\"_blank\">nameserver<\/a> (DNS). Добавление доменов не заменяет регистрацию домена!"

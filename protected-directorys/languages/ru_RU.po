@@ -1,0 +1,83 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Russian\n"
+
+msgid "Create protected Directory"
+msgstr "Создать защищенный каталог"
+
+msgid "Change protected Directory"
+msgstr "Изменить защищенный каталог"
+
+msgid "Create User"
+msgstr "Создать пользователя"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "Произошла неизвестная ошибка. Пожалуйста, повторите свое действие!"
+
+msgid "You have no permissions to delete the User <strong>%s</strong>!"
+msgstr "У вас нет прав на удаление пользователя <strong>%s</strong>!"
+
+msgid "Following Users was deleted: <strong><br />- %s</strong>"
+msgstr "Были удалены следующие пользователи: <strong><br />- %s</strong>"
+
+msgid "Please select an protected Directory you want to delete!"
+msgstr "Пожалуйста, выберите защищенный каталог, который вы хотите удалить!"
+
+msgid "You have no permissions to delete the directory <strong>%s_%s</strong>!"
+msgstr "У вас нет прав на удаление каталога <strong>%s_%s</strong>!"
+
+msgid "Following protected directorys was deleted: <strong><br />- %s</strong>"
+msgstr "Был удален следующий защищенный каталог: <strong><br />- %s</strong>"
+
+msgid "Please enter a message as login information!"
+msgstr "Пожалуйста, введите сообщение в качестве информации для входа!"
+
+msgid "Please select an valid path!"
+msgstr "Пожалуйста, выберите правильный путь!"
+
+msgid "The selected path doesn't exists!"
+msgstr "Выбранный путь не существует!"
+
+msgid "You have no permission to this entry!"
+msgstr "У вас нет разрешения на эту запись!"
+
+msgid "You have no access to this protected Directory!"
+msgstr "У вас нет доступа к этому защищенному каталогу!"
+
+msgid "Please enter a username!"
+msgstr "Пожалуйста, введите имя пользователя!"
+
+msgid "Please enter a password!"
+msgstr "Пожалуйста, введите пароль!"
+
+msgid "Please select"
+msgstr "Пожалуйста выберите"
+
+msgid "Message"
+msgstr "Сообщение"
+
+msgid "No protected Directorys available!"
+msgstr "Защищенные каталоги недоступны!"
+
+msgid "Please create a new protected Directory to administer it."
+msgstr "Пожалуйста, создайте новый защищенный каталог для его администрирования."
+
+msgid "No Users available!"
+msgstr "Пользователи недоступны!"
+
+msgid "Please add an new User to the protected Directory to administer it."
+msgstr "Пожалуйста, добавьте нового пользователя в защищенный каталог для его администрирования."
+
+msgid "Pending"
+msgstr "Ожидание"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid "Live"
+msgstr "Жив"
+
+msgid "Users"
+msgstr "Пользователи"

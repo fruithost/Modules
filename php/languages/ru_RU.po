@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Russian\n"
+
+msgid "Extended"
+msgstr "Расширенный"
+
+msgid "Security"
+msgstr "Безопасность"
+
+msgid "Error Handling"
+msgstr "Обработка ошибок"
+
+msgid "Display Configuration"
+msgstr "Конфигурация дисплея"
+
+msgid "DEPRECATED"
+msgstr "ОСУЖДАЕМЫЙ"
+
+msgid "This property is deprecated!"
+msgstr "Это свойство устарело!"
+
+msgid "default"
+msgstr "По умолчанию"
+
+msgid "On"
+msgstr "Включить"
+
+msgid "Off"
+msgstr "Отключть"
+
+msgid "For Domain"
+msgstr "Для домена"
+
+msgid "Possible Modifiers"
+msgstr "Возможные модификаторы"
+
+msgid "Possible Operators"
+msgstr "Возможные операторы"
+
+msgid "Possible Flags"
+msgstr "Возможные флаги"
+
+msgid "Problem!"
+msgstr "Проблема!"
+
+msgid "Domain "<strong>%s</strong>" currently not accessible."
+msgstr "Домен "<strong>%s</strong>" в настоящее время недоступен."
+
+msgid "Configuration"
+msgstr "Конфигурация"
+
+msgid "PHP.ini was successfully saved."
+msgstr "PHP.файл ini был успешно сохранен."

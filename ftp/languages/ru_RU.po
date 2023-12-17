@@ -1,0 +1,63 @@
+msgid "Hello"
+msgstr ""msgid ""
+msgstr ""
+"Content-Transfer-Encoding: 8bit\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: Russian\n"
+
+msgid "No FTP accounts available!"
+msgstr "Учетные записи FTP недоступны!"
+
+msgid "Please create a new account to administer it."
+msgstr "Пожалуйста, создайте новую учетную запись для ее администрирования."
+
+msgid "Create new Account"
+msgstr "Создать новую учетную запись"
+
+msgid "Create FTP Account"
+msgstr "Создать учетную запись FTP"
+
+msgid "Изменить учетную запись FTP"
+msgstr "FTP-Konto ändern"
+
+msgid "Please select the FTP account you want to delete!"
+msgstr "Пожалуйста, выберите учетную запись FTP, которую вы хотите удалить!"
+
+msgid "An unknown error has occurred. Please retry your action!"
+msgstr "Произошла неизвестная ошибка. Пожалуйста, повторите свое действие!"
+
+msgid "You can't delete your main account!"
+msgstr "Вы не можете удалить свою основную учетную запись!"
+
+msgid "You have no permissions to delete the account <strong>%s_%s</strong>!"
+msgstr "У вас нет прав на удаление учетной записи <strong>%s_%s</strong>!"
+
+msgid "Following users was deleted: <strong>%s</strong>!"
+msgstr "Были удалены следующие пользователи: <strong>%s</strong>!"
+
+msgid "An error has occurred. Please reload the page and try again!"
+msgstr "Произошла ошибка. Пожалуйста, перезагрузите страницу и повторите попытку!"
+
+msgid "You have no permission to this FTP account!"
+msgstr "У вас нет прав на эту учетную запись FTP!"
+
+msgid "Please enter a password for the selected ftp account!"
+msgstr "Пожалуйста, введите пароль для выбранной учетной записи ftp!"
+
+msgid "Please select an valid path for the account!"
+msgstr "Пожалуйста, выберите допустимый путь для учетной записи!"
+
+msgid "The selected path doesn't exists!"
+msgstr "Выбранный путь не существует!"
+
+msgid "'Please enter a username for your ftp account!"
+msgstr "'Пожалуйста, введите имя пользователя для вашей учетной записи ftp!"
+
+msgid "Please enter a password for your ftp account!"
+msgstr "Пожалуйста, введите пароль для вашей учетной записи ftp!"
+
+msgid "Please select an valid path for the account!"
+msgstr "Пожалуйста, выберите допустимый путь для учетной записи!"
+
+msgid "Please select"
+msgstr "Пожалуйста, выберите"

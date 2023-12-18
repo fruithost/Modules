@@ -37,8 +37,8 @@ msgstr "Жив"
 msgid "Manage"
 msgstr "Управлять"
 
-msgid "Защищенные сертификаты"
-msgstr "Sichere Zertifikate"
+msgid "Secure Certificates"
+msgstr "Защищенные сертификаты"
 
 msgid "Free"
 msgstr ""
@@ -49,8 +49,8 @@ msgstr "Могут возникнуть более высокие затраты
 msgid "You can only choose this option if you have already purchased a valid SSL certificate from an approved certification authority.<br /><br />Using the certificate is of course completely free of charge, you only have to procure it yourself."
 msgstr "Вы можете выбрать этот вариант только в том случае, если вы уже приобрели действительный SSL-сертификат у утвержденного центра сертификации.<br /><br />Использование сертификата, конечно, совершенно бесплатно, вам нужно только приобрести его самостоятельно."
 
-msgid "Выберите этот параметр"
-msgstr "Diese Option wählen"
+msgid "Select this Option"
+msgstr "Выберите этот параметр"
 
 msgid "An unknown error has occurred."
 msgstr "Произошла неизвестная ошибка."

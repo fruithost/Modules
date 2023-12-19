@@ -1,3 +1,4 @@
+#!fruithost:permission:root
 <?php
 	use fruithost\Storage\Database;
 	use fruithost\Localization\I18N;

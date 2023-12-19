@@ -1,6 +1,6 @@
 {
 	"name":			"SSL",
-	"version":		"1.0.6",
+	"version":		"1.0.7",
 	"category":		"DOMAIN_MANAGEMENT",
 	"icon":			"file-lock2",
 	"order":		2,

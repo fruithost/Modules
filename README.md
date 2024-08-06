@@ -60,4 +60,5 @@ Feel free to help us with the developing!
 - ❌ tickets
 - ❌ Webmail
 - ❌ webserver
+- ✔️ [authenticator](https://github.com/fruithost/Modules/tree/master/authenticator)
 

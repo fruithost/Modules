@@ -1,6 +1,6 @@
 {
 	"name":			"FAQ",
-	"version":		"1.0.2",
+	"version":		"1.0.5",
 	"category":		"SUPPORT_MANAGEMENT",
 	"icon":			"question-diamond-fill",
 	"order":		3,

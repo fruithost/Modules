@@ -4,21 +4,33 @@
 	use fruithost\Localization\I18N;
 
 	$php = new PHP();
+	$path = sprintf('%s%s/', HOST_PATH, Auth::getUsername());
 	
-	if(empty($this->domain)) {
-		$php->setPath(sprintf('%s%s/', HOST_PATH, Auth::getUsername()));
-	} else {
-		$php->setPath(sprintf('%s%s/%s/', HOST_PATH, Auth::getUsername(), $this->domain));
+	if(!empty($this->domain)) {
+		$path = sprintf('%s%s/%s/', HOST_PATH, Auth::getUsername(), $this->domain);
 	}
 	
+	if(!is_readable($path)) {
+		mkdir($path);
+	}
+	
+	$php->setPath($path);
 	$info = $php->getInfo();
 	
-	if($php->hasErrors()) {
+	if(!$php->isAvailable() || $php->hasErrors()) {
 		?>
 			<div class="container">
 				<div class="alert alert-danger mt-4" role="alert">
 					<strong><?php I18N::__('Problem!'); ?></strong>
-					<p class="pb-0 mb-0"><?php printf(I18N::get('Domain "<strong>%s</strong>" currently not accessible.'), $this->domain); ?></p>
+					<p class="pb-0 mb-0">
+						<?php
+							if(empty($this->domain)) {
+								print(I18N::get('The <strong>global domain</strong> configuration cannot currently be accessed.'));
+							} else {
+								printf(I18N::get('Domain "<strong>%s</strong>" currently not accessible.'), $this->domain);
+							}
+						?>
+					</p>
 				</div>
 			</div>
 		<?php

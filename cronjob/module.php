@@ -36,28 +36,32 @@
 			}
 		}
 		
+		protected function validate($value, $min, $max) {
+			return !(!isset($value) || !($value == '*' || ($value >= $min && $value <= $max) || preg_match('/([0-9\/\*]+?)/Uis', $value)));
+		}
+		
 		public function onUpdate($data = []) : ?string {
 			if(!isset($data['cron_id']) || empty($data['cron_id'])) {
 				return I18N::get('Unknown error occurs!');
 			}
 			
-			if(!isset($data['minute']) || !($data['minute'] == '*' || ($data['minute'] >= 0 && $data['minute'] <= 59))) {
+			if(!$this->validate($data['minute'], 0, 59)) {
 				return I18N::get('Please enter a valid minute!');
 			}
 			
-			if(!isset($data['hour']) || !($data['hour'] == '*' || ($data['hour'] >= 0 && $data['hour'] <= 23))) {
+			if(!$this->validate($data['hour'], 0, 23)) {
 				return I18N::get('Please enter a valid hour!');
 			}
 			
-			if(!isset($data['day']) || !($data['day'] == '*' || ($data['day'] >= 1 && $data['day'] <= 31))) {
+			if(!$this->validate($data['day'], 1, 31)) {
 				return I18N::get('Please enter a valid day!');
 			}
 			
-			if(!isset($data['month']) || !($data['month'] == '*' || ($data['month'] >= 1 && $data['month'] <= 12))) {
+			if(!$this->validate($data['month'], 1, 12)) {
 				return I18N::get('Please enter a valid month!');
 			}
 			
-			if(!isset($data['weekday']) || !($data['weekday'] == '*' || ($data['weekday'] >= 0 && $data['weekday'] <= 6))) {
+			if(!$this->validate($data['weekday'], 0, 6)) {
 				return I18N::get('Please enter a valid weekday!');
 			}
 			
@@ -168,23 +172,23 @@
 		}
 		
 		public function onSave($data = []) : ?string {
-			if(!isset($data['minute']) || !($data['minute'] == '*' || ($data['minute'] >= 0 && $data['minute'] <= 59))) {
+			if(!$this->validate($data['minute'], 0, 59)) {
 				return I18N::get('Please enter a valid minute!');
 			}
 			
-			if(!isset($data['hour']) || !($data['hour'] == '*' || ($data['hour'] >= 0 && $data['hour'] <= 23))) {
+			if(!$this->validate($data['hour'], 0, 23)) {
 				return I18N::get('Please enter a valid hour!');
 			}
 			
-			if(!isset($data['day']) || !($data['day'] == '*' || ($data['day'] >= 1 && $data['day'] <= 31))) {
+			if(!$this->validate($data['day'], 1, 31)) {
 				return I18N::get('Please enter a valid day!');
 			}
 			
-			if(!isset($data['month']) || !($data['month'] == '*' || ($data['month'] >= 1 && $data['month'] <= 12))) {
+			if(!$this->validate($data['month'], 1, 12)) {
 				return I18N::get('Please enter a valid month!');
 			}
 			
-			if(!isset($data['weekday']) || !($data['weekday'] == '*' || ($data['weekday'] >= 0 && $data['weekday'] <= 6))) {
+			if(!$this->validate($data['weekday'], 0, 6)) {
 				return I18N::get('Please enter a valid weekday!');
 			}
 			

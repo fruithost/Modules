@@ -1,5 +1,7 @@
 <?php
-	use fruithost\Accounting\Auth;
+	namespace ThemeModule;
+
+    use fruithost\Accounting\Auth;
 	use fruithost\Modules\ModuleInterface;
 	use fruithost\Localization\I18N;
 	
@@ -62,39 +64,41 @@
 			$ignore = [
 				'.git'
 			];
-			
-			foreach(new \DirectoryIterator($this->getPath()) AS $info) {
-				if($info->isDot()) {
-					continue;
-				}
-				
-				if(!$info->isDir()) {
-					continue;
-				}
-				
-				if(in_array($info->getFilename(), $ignore)) {
-					continue;
-				}
-				
-				$path		= sprintf('%s%s%s', $this->getPath(), DS, $info->getFilename());
-				$selected	= false;
-				
-				if(!empty($selections)) {
-					if(is_array($selections)) {
-						$selected = in_array(basename($path), $selections);
-					} else {
-						$selected = ($selections === basename($path));
+
+            if(is_readable($this->getPath())) {
+				foreach(new \DirectoryIterator($this->getPath()) as $info) {
+					if($info->isDot()) {
+						continue;
 					}
-				}
-				
-				if($raw) {
-					$themes[] = basename($path);
-				} else {
-					$themes[] = [
-						'name'	 	=> basename($path),
-						'path'		=> $path,
-						'selected'	=> $selected
-					];
+
+					if(!$info->isDir()) {
+						continue;
+					}
+
+					if(in_array($info->getFilename(), $ignore)) {
+						continue;
+					}
+
+					$path = sprintf('%s%s%s', $this->getPath(), DS, $info->getFilename());
+					$selected = false;
+
+					if(!empty($selections)) {
+						if(is_array($selections)) {
+							$selected = in_array(basename($path), $selections);
+						} else {
+							$selected = ($selections === basename($path));
+						}
+					}
+
+					if($raw) {
+						$themes[] = basename($path);
+					} else {
+						$themes[] = [
+							'name' => basename($path),
+							'path' => $path,
+							'selected' => $selected
+						];
+					}
 				}
 			}
 

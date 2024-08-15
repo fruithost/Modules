@@ -1,7 +1,10 @@
 {
-	"name":			"MySQL",
+	"name":			"Properties",
 	"version":		"1.0.0",
-	"description":	"Simple database and user management for MySQL Server.",
+	"category":		"SERVER_MANAGEMENT",
+	"icon":			"list",
+	"order":		1,
+	"description":	"Displays all Properties and Config-Files of the system.",
 	"author":		{
 		"name":		"Adrian Preuß",
 		"email":	"info@fruithost.de",

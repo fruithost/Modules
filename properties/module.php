@@ -26,7 +26,7 @@
 						'config' => [
 							'DATABASE_HOSTNAME'		=> DATABASE_HOSTNAME,
 							'DATABASE_USERNAME'		=> DATABASE_USERNAME,
-							'DATABASE_PASSWORD'		=> (DEMO ? '[** PROTECTED **]' : DATABASE_PASSWORD),
+							'DATABASE_PASSWORD'		=> (defined('DEMO') && DEMO ? '[** PROTECTED **]' : DATABASE_PASSWORD),
 							'DATABASE_NAME'			=> DATABASE_NAME,
 							'DATABASE_PREFIX'		=> DATABASE_PREFIX,
 							'HOST_PATH'				=> HOST_PATH,
@@ -39,12 +39,12 @@
 							'MAIL_HOSTNAME'			=> MAIL_HOSTNAME,
 							'MAIL_PORT'				=> MAIL_PORT,
 							'MAIL_USERNAME'			=> MAIL_USERNAME,
-							'MAIL_PASSWORD'			=> (DEMO ? '[** PROTECTED **]' : MAIL_PASSWORD),
+							'MAIL_PASSWORD'			=> (defined('DEMO') && DEMO ? '[** PROTECTED **]' : MAIL_PASSWORD),
 						],
 						'salt' => [
-							'MYSQL_PASSWORTD_SALT'	=> (DEMO ? '[** PROTECTED **]' : MYSQL_PASSWORTD_SALT),						
-							'RESET_PASSWORD_SALT'	=> (DEMO ? '[** PROTECTED **]' : RESET_PASSWORD_SALT),						
-							'ENCRYPTION_SALT'		=> (DEMO ? '[** PROTECTED **]' : ENCRYPTION_SALT),						
+							'MYSQL_PASSWORTD_SALT'	=> (defined('DEMO') && DEMO ? '[** PROTECTED **]' : MYSQL_PASSWORTD_SALT),
+							'RESET_PASSWORD_SALT'	=> (defined('DEMO') && DEMO ? '[** PROTECTED **]' : RESET_PASSWORD_SALT),
+							'ENCRYPTION_SALT'		=> (defined('DEMO') && DEMO ? '[** PROTECTED **]' : ENCRYPTION_SALT),
 						],
 						'other' => [
 							'TAB'	=> TAB,

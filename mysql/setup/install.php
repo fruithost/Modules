@@ -1,3 +1,4 @@
+#!fruithost:permission:root
 <?php
 	use fruithost\Storage\Database;
 	

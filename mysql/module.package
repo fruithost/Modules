@@ -1,6 +1,9 @@
 {
 	"name":			"MySQL",
-	"version":		"1.0.0",
+	"version":		"1.0.1",
+	"category":		"NULL",
+	"icon":			"NULL",
+	"order":		4,
 	"description":	"Simple database and user management for MySQL Server.",
 	"author":		{
 		"name":		"Adrian Preuß",

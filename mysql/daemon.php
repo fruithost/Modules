@@ -1,6 +1,6 @@
 <?php
-	use fruithost\Database;
-	use fruithost\Encryption;
+	use fruithost\Storage\Database;
+	use fruithost\Security\Encryption;
 	
 	class DatabaseDaemon {
 		public function __construct() {
@@ -14,7 +14,8 @@
 				
 				print 'Create Database ' . $name . PHP_EOL;
 				
-				Database::query('CREATE DATABASE IF NOT EXISTS `' . $name . '` DEFAULT CHARACTER SET \'utf8\' COLLATE \'utf8_general_ci\';');
+				// Create Database with root access
+				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="CREATE DATABASE IF NOT EXISTS `' . $name . '` DEFAULT CHARACTER SET \'utf8\' COLLATE \'utf8_general_ci\';"');
 				
 				Database::update(DATABASE_PREFIX . 'mysql_databases', 'id', [
 					'id'			=> $database->id,
@@ -44,28 +45,12 @@
 					break;
 				}
 				
-				Database::query('CREATE USER IF NOT EXISTS :username@:connection', [
-					'username'		=> $name,
-					'connection'	=> $connection
-				]);
+				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="CREATE USER IF NOT EXISTS \'' . $name . '\'@' . $connection . '"');
+				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="GRANT USAGE ON *.* TO \'' . $name . '\'@' . $connection . '"');
+				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="GRANT ALL PRIVILEGES ON `' . $user->username . '_' . $user->database . '`.* TO \'' . $name . '\'@' . $connection . '"');
+				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="ALTER USER \'' . $name . '\'@' . $connection . ' IDENTIFIED BY \'' . $password . '\'');
 				
-				Database::query('GRANT USAGE ON *.* TO :username@:connection', [
-					'username'		=> $name,
-					'connection'	=> $connection
-				]);
-				
-				Database::query('GRANT ALL PRIVILEGES ON `' . $user->username . '_' . $user->database . '`.* TO :username@:connection', [
-					'username'		=> $name,
-					'connection'	=> $connection
-				]);
-				
-				Database::query('ALTER USER :username@:connection IDENTIFIED BY :password', [
-					'username'		=> $name,
-					'password'		=> $password,
-					'connection'	=> $connection
-				]);
-				
-				Database::query('FLUSH PRIVILEGES');
+				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="FLUSH PRIVILEGES;"');
 				
 				Database::update(DATABASE_PREFIX . 'mysql_users', 'id', [
 					'id'			=> $user->id,

@@ -1,11 +1,12 @@
 <?php
-	use fruithost\Auth;
+	use fruithost\Accounting\Auth;
+	use fruithost\Localization\I18N;
 ?>
 <table class="table table-borderless table-striped table-hover">
 	<thead>
 		<tr>
-			<th scope="col" colspan="2">Database name</th>
-			<th scope="col">Status</th>
+			<th scope="col" colspan="2"><?php I18N::__('Database name'); ?></th>
+			<th scope="col"><?php I18N::__('Status'); ?></th>
 			<th scope="col"></th>
 		</tr>
 	</thead>
@@ -19,20 +20,21 @@
 						<td>
 							<?php
 								if($database->time_created === null) {
-									print '<span class="text-warning">Pending...</span>';
+									printf('<span class="text-warning">%s...</span>', I18N::get('Pending'));
 								} else if($database->time_created !== null) {
-									if(fruithost\Database::count('SHOW DATABASES LIKE :name', [
+									// @ToDo Deamon with root access: Check status!
+									/*if(fruithost\Storage\Database::count('SHOW DATABASES LIKE :name', [
 										'name'	=> sprintf('%s_%s', Auth::getUsername($database->user_id), $database->name)
 									]) === 0) {
-										print '<span class="text-danger">Error</span>';
-									} else {
-										print '<span class="text-success">Live</span>';
-									}
+										printf('<span class="text-danger">%s</span>', I18N::get('Error'));
+									} else {*/
+									
+									printf('<span class="text-success">%s</span>', I18N::get('Live'));
 								}
 							?>
 						</td>
 						<td class="text-right">
-							<button class="delete btn btn-sm btn-danger" type="submit" id="button" name="delete" id="delete_<?php print $database->id; ?>" value="<?php print $database->id; ?>">Delete</button>
+							<button class="delete btn btn-sm btn-danger" type="submit" id="button" name="delete" id="delete_<?php print $database->id; ?>" value="<?php print $database->id; ?>"><?php I18N::__('Delete'); ?></button>
 						</td>
 					</tr>
 				<?php

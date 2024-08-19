@@ -1,15 +1,17 @@
 <?php
-	use fruithost\ModuleInterface;
-	use fruithost\Database;
-	use fruithost\Auth;
-	use fruithost\Response;
-	use fruithost\Session;
+	use fruithost\Modules\ModuleInterface;
+	use fruithost\Storage\Database;
+	use fruithost\Accounting\Auth;
+	use fruithost\Network\Response;
+	use fruithost\Accounting\Session;
+	use fruithost\UI\Icon;
+	use fruithost\Localization\I18N;
 	
 	class PHPMyAdmin extends ModuleInterface {
 		private $users = [];
 		
-		public function init() {
-			$this->users = fruithost\Database::fetch('SELECT
+		public function init() : void {
+			$this->users = Database::fetch('SELECT
 				`' . DATABASE_PREFIX . 'mysql_users`.*,
 				`' . DATABASE_PREFIX . 'mysql_databases`.`name` AS `database`
 			FROM
@@ -55,7 +57,7 @@
 			}
 		}
 		
-		public function load() {
+		public function load() : void {
 			if(isset($_GET['error'])) {
 				switch($_GET['error']) {
 					case 'auth':
@@ -65,7 +67,7 @@
 			}
 		}
 		
-		public function onSettings($data = []) {
+		public function onSettings($data = []) : void {
 			if(isset($data['VIEW'])) {
 				if(in_array($data['VIEW'], [
 					'IFRAME',
@@ -87,7 +89,7 @@
 			$this->getTemplate()->assign('success', 'Settings was successfully saved!');
 		}
 		
-		public function frame() {
+		public function frame() : ?bool {
 			try {
 				if(Database::count('SHOW GRANTS FOR :username@:connection;', [
 					'username'		=> $_SESSION['PMA_single_signon_user'],
@@ -106,7 +108,7 @@
 			return false;
 		}
 		
-		public function onPOST($data = []) {
+		public function onPOST($data = []) : void {
 			if($this->getSettings('LOGIN', 'USER') === 'SELECTION') {
 				$found = NULL;
 			
@@ -150,7 +152,7 @@
 			}
 		}
 		
-		public function content() {
+		public function content() : void {
 			$empty = true;
 			try {
 				$empty = (Database::count('SHOW GRANTS FOR :username@:connection;', [
@@ -215,11 +217,10 @@
 			} else if($empty) {
 				?>
 					<div class="jumbotron text-center bg-transparent text-muted">
-						<i class="material-icons">sentiment_very_dissatisfied</i>
-						<h2>No Databases available!</h2>
-						<div class="alert alert-danger d-inline-block mt-4" role="alert">
-							You need a database, if you wan't to use PHPMyAdmin!
-						</div>
+						<?php Icon::show('smiley-bad'); ?>
+						<h2><?php I18N::__('No Databases available!'); ?></h2>
+						<p class="lead"><?php I18N::__('You need a database, if you wan\'t to use PHPMyAdmin!'); ?></p>
+						<button type="button" name="create" data-bs-toggle="modal" data-bs-target="#create_databases" class="btn btn-lg btn-primary mt-4"><?php I18N::__('Create new Database'); ?></button>
 					</div>
 				<?php
 			}

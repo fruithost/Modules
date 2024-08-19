@@ -2,7 +2,7 @@
 	"name":			"PHPMyAdmin",
 	"version":		"1.5.0",
 	"category":		"DATABASE_MANAGEMENT",
-	"icon":			"view_compact",
+	"icon":			"/favicon.ico",
 	"order":		2,
 	"description":	"Integrates PHPMyAdmin in the user interface",
 	"author":		{

@@ -36,9 +36,7 @@
 	            <?php
             } else {
                 ?>
-                    <div id=surface>
-                        <div id="code-editor"></div>
-                    </div>
+                    <div id="code-editor"></div>
                     <script id="editor-content" type="text/plain"><?php print $content; ?></script>
                 <?php
             }

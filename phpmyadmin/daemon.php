@@ -1,6 +1,6 @@
 <?php
-	use fruithost\Database;
-	use fruithost\Auth;
+	use fruithost\Storage\Database;
+	use fruithost\Accounting\Auth;
 	
 	class PHPMyAdminDaemon {
 		public function __construct() {

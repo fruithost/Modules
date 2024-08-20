@@ -1,7 +1,7 @@
 {
 	"name":			"Config",
 	"version":		"1.0.0",
-	"category":		"EXTENDED_MANAGEMENT",
+	"category":		"SERVER_MANAGEMENT",
 	"icon":			"folder-symlink",
 	"order":		4,
 	"description":	"Managing static configuration files from fruithost.",

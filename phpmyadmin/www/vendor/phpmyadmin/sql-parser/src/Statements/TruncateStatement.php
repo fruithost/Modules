@@ -1,8 +1,6 @@
 <?php
 
-/**
- * `TRUNCATE` statement.
- */
+declare(strict_types=1);
 
 namespace PhpMyAdmin\SqlParser\Statements;
 
@@ -11,26 +9,31 @@ use PhpMyAdmin\SqlParser\Statement;
 
 /**
  * `TRUNCATE` statement.
- *
- * @category   Statements
- *
- * @license    https://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
  */
 class TruncateStatement extends Statement
 {
     /**
      * Options for `TRUNCATE` statements.
      *
-     * @var array
+     * @var array<string, int|array<int, int|string>>
+     * @psalm-var array<string, (positive-int|array{positive-int, ('var'|'var='|'expr'|'expr=')})>
      */
-    public static $OPTIONS = array(
-        'TABLE' => 1,
-    );
+    public static $OPTIONS = ['TABLE' => 1];
 
     /**
      * The name of the truncated table.
      *
-     * @var Expression
+     * @var Expression|null
      */
     public $table;
+
+    /**
+     * Special build method for truncate statement as Statement::build would return empty string.
+     *
+     * @return string
+     */
+    public function build()
+    {
+        return 'TRUNCATE TABLE ' . $this->table . ';';
+    }
 }

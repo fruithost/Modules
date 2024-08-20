@@ -1,6 +1,7 @@
 <?php
 	use fruithost\Modules\ModuleInterface;
 	use fruithost\Storage\Database;
+	use fruithost\Storage\DatabaseFactory;
 	use fruithost\Accounting\Auth;
 	use fruithost\Network\Response;
 	use fruithost\Accounting\Session;
@@ -8,10 +9,11 @@
 	use fruithost\Localization\I18N;
 	
 	class PHPMyAdmin extends ModuleInterface {
-		private $users = [];
+		private $connection	= null;
+		private $users		= [];
 		
 		public function init() : void {
-			$this->users = Database::fetch('SELECT
+			$this->users		= Database::fetch('SELECT
 				`' . DATABASE_PREFIX . 'mysql_users`.*,
 				`' . DATABASE_PREFIX . 'mysql_databases`.`name` AS `database`
 			FROM
@@ -48,7 +50,7 @@
 			
 			if($this->getSettings('VIEW', 'IFRAME') !== 'IFRAME' && $this->getSettings('LOGIN', 'USER') === 'USER') {
 				$this->addFilter('URL_' . $this->getInstance()->getInfo()->getName(), function($url) {
-					return $this->url('/app/phpmyadmin/www');
+					return $this->url('/app/phpmyadmin/www/');
 				});
 				
 				$this->addFilter('TARGET_' . $this->getInstance()->getInfo()->getName(), function($url) {
@@ -89,7 +91,7 @@
 			$this->getTemplate()->assign('success', 'Settings was successfully saved!');
 		}
 		
-		public function frame() : ?bool {
+		public function frame() : mixed {
 			try {
 				if(Database::count('SHOW GRANTS FOR :username@:connection;', [
 					'username'		=> $_SESSION['PMA_single_signon_user'],
@@ -99,7 +101,7 @@
 				}
 				
 				if($this->getSettings('VIEW', 'IFRAME') === 'IFRAME') {
-					return $this->url('/app/phpmyadmin/www');
+					return $this->url('/app/phpmyadmin/www/');
 				}
 			} catch(\PDOException $e) {
 				return null;

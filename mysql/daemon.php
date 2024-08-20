@@ -14,8 +14,7 @@
 				
 				print 'Create Database ' . $name . PHP_EOL;
 				
-				// Create Database with root access
-				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="CREATE DATABASE IF NOT EXISTS `' . $name . '` DEFAULT CHARACTER SET \'utf8\' COLLATE \'utf8_general_ci\';"');
+				Database::query('CREATE DATABASE IF NOT EXISTS `' . $name . '` DEFAULT CHARACTER SET \'utf8\' COLLATE \'utf8_general_ci\';');
 				
 				Database::update(DATABASE_PREFIX . 'mysql_databases', 'id', [
 					'id'			=> $database->id,
@@ -23,6 +22,8 @@
 					'time_deleted'	=> NULL
 				]);
 			}
+			
+			// @ToDo Check if fruithost user exists in MySQL
 			
 			$users = $this->getUsers('AND
 										`' . DATABASE_PREFIX . 'mysql_users`.`time_created` IS NULL
@@ -45,16 +46,18 @@
 					break;
 				}
 				
-				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="CREATE USER IF NOT EXISTS \'' . $name . '\'@' . $connection . '"');
-				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="GRANT USAGE ON *.* TO \'' . $name . '\'@' . $connection . '"');
-				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="GRANT ALL PRIVILEGES ON `' . $user->username . '_' . $user->database . '`.* TO \'' . $name . '\'@' . $connection . '"');
-				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="ALTER USER \'' . $name . '\'@' . $connection . ' IDENTIFIED BY \'' . $password . '\'');
+				// fruithost need:
+				# GRANT CREATE, DROP, SHOW DATABASES, CREATE USER ON *.* TO 'fruithost'@'localhost' REQUIRE NONE WITH GRANT OPTION;
 				
-				shell_exec('mariadb --socket=/run/mysqld/mysqld.sock --execute="FLUSH PRIVILEGES;"');
+				Database::query('CREATE USER IF NOT EXISTS \'' . $name . '\'@\'' . $connection . '\'');
+				Database::query('GRANT USAGE ON *.* TO \'' . $name . '\'@\'' . $connection . '\'');
+				Database::query('GRANT ALL PRIVILEGES ON `' . $user->username . '_' . $user->database . '`.* TO \'' . $name . '\'@\'' . $connection . '\'');
+				Database::query('ALTER USER \'' . $name . '\'@\'' . $connection . '\' IDENTIFIED BY \'' . $password . '\'');
+				Database::query('FLUSH PRIVILEGES');
 				
 				Database::update(DATABASE_PREFIX . 'mysql_users', 'id', [
 					'id'			=> $user->id,
-					//'password'		=> $password,
+					'password'		=> $password,
 					'time_created'	=> date('Y-m-d H:i:s', time()),
 					'time_deleted'	=> NULL
 				]);

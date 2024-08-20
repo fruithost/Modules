@@ -25,6 +25,8 @@
 		protected function createPermissions($user, $permissions) {
 			$connection = 'localhost';
 			
+			print 'Create global User ' . $user->username . PHP_EOL;
+			
 			Database::query('CREATE USER IF NOT EXISTS :username@:connection', [
 				'username'		=> $user->username,
 				'connection'	=> $connection

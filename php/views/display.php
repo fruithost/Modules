@@ -17,7 +17,7 @@
 	$php->setPath($path);
 	$info = $php->getInfo();
 	
-	if(!$php->isAvailable() || $php->hasErrors()) {
+	if($php->hasErrors()) {
 		?>
 			<div class="container">
 				<div class="alert alert-danger mt-4" role="alert">

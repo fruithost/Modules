@@ -122,7 +122,7 @@
 			$config .= TAB . '</Directory>' . PHP_EOL;
 			
 			$config .= PHP_EOL;
-			$config .= TAB .  '<Files ~ "(^\.|php\.ini$)">' . PHP_EOL;
+			$config .= TAB .  '<Files ~ "(^(?!\.fruithost)\.|php\.ini)">' . PHP_EOL;
 			$config .= TAB . TAB . 'Require all denied' . PHP_EOL;
 			$config .= TAB . '</Files>' . PHP_EOL;
 			

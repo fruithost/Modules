@@ -30,8 +30,10 @@
 							'DATABASE_NAME'			=> DATABASE_NAME,
 							'DATABASE_PREFIX'		=> DATABASE_PREFIX,
 							'HOST_PATH'				=> HOST_PATH,
+							'CONFIG_PATH'			=> CONFIG_PATH,
 							'LOG_PATH'				=> LOG_PATH,
 							'DEBUG'					=> DEBUG,
+							'DEMO'					=> DEMO,
 							'UPDATE_ENDPOINT'		=> UPDATE_ENDPOINT
 						],
 						'mail' => [

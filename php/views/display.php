@@ -34,6 +34,23 @@
 				</div>
 			</div>
 		<?php
+	} else if(empty($info)) {
+		?>
+			<div class="container">
+				<div class="alert alert-danger mt-4" role="alert">
+					<strong><?php I18N::__('Problem!'); ?></strong>
+					<p class="pb-0 mb-0">
+						<?php
+							if(empty($this->domain)) {
+								print(I18N::get('The <strong>global domain</strong> configuration cannot currently be accessed.'));
+							} else {
+								printf(I18N::get('Domain "<strong>%s</strong>" currently not accessible.'), $this->domain);
+							}
+						?>
+					</p>
+				</div>
+			</div>
+		<?php
 	} else {
 		?>
 			<div class="container">

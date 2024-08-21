@@ -15,6 +15,8 @@ declare(strict_types=1);
  */
 $cfg['blowfish_secret'] = ''; /* YOU MUST FILL IN THIS FOR COOKIE AUTH! */
 $cfg['AllowThirdPartyFraming'] = true;
+$cfg['TempDir'] = dirname(__FILE__, 4) . '/temp';
+
 /**
  * Servers configuration
  */

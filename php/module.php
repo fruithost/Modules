@@ -190,25 +190,17 @@
 					?>
 				</form>
 				<script type="text/javascript">
-					_watcher = setInterval(function() {
-						if(typeof(jQuery) !== 'undefined') {
-							clearInterval(_watcher);
-							
-							(function($) {
-								let url = '<?php print $this->url(sprintf('/module/php/%s', $submodule)); ?>';
-								
-								$('select[name="domain"]').on('change', function(event) {
-									let value = $(this).val();
-									
-									if(value === 'ALL') {
-										window.location.href = url;
-									} else {
-										window.location.href = url + '?domain=' + value;
-									}
-								});
-							}(jQuery));
+					let url = '<?php print $this->url(sprintf('/module/php/%s', $submodule)); ?>';
+					
+					document.querySelector('select[name="domain"]').addEventListener('change', (event) => {
+						let value				= event.target.value;
+						
+						if(value === 'ALL') {
+							window.location.href = url;
+						} else {
+							window.location.href = url + '?domain=' + value;
 						}
-					}, 500);
+					}, true);
 				</script>
 			<?php
 		}

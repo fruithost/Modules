@@ -27,7 +27,7 @@
             } else {
                 ?>
                     <div id="code-editor" data-language="<?php print $type; ?>"></div>
-                    <textarea name="content" style="d-none" id="code-area"><?php print $content; ?></textarea>
+                    <textarea name="content" class="d-none" id="code-area"><?php print $content; ?></textarea>
                     <script id="editor-content" type="text/plain"><?php print $content; ?></script>
                 <?php
             }

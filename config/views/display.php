@@ -1,16 +1,6 @@
 <?php
 	use fruithost\Localization\I18N;
 	use fruithost\UI\Icon;
-	
-	if(isset($error)) {
-		?>
-			<div class="alert alert-danger mt-4" role="alert"><?php print $error; ?></div>
-		<?php
-	} else if(isset($success)) {
-		?>
-			<div class="alert alert-success mt-4" role="alert"><?php print $success; ?></div>
-		<?php
-	}
 ?>
 <style>
     .cm-editor {
@@ -36,7 +26,8 @@
 	            <?php
             } else {
                 ?>
-                    <div id="code-editor"></div>
+                    <div id="code-editor" data-language="<?php print $type; ?>"></div>
+                    <textarea name="content" style="d-none" id="code-area"><?php print $content; ?></textarea>
                     <script id="editor-content" type="text/plain"><?php print $content; ?></script>
                 <?php
             }

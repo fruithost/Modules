@@ -4,7 +4,7 @@
 	use fruithost\UI\Icon;
 	use fruithost\Localization\I18N;
 	use fruithost\Accounting\Auth;
-	
+    
 	class Config extends ModuleInterface {
 		private $tabs		= [
 			'apache2'		=> 'Apache2',
@@ -15,7 +15,11 @@
 		];
 		
 		private $file	= null;
+		private $type	= null;
+		private $content	= null;
+		private $current	= null;
 		private $path	= CONFIG_PATH;
+		private $list	= [];
 		private $files	= [
 			'apache2'		=> [
 				'global.conf',
@@ -47,45 +51,87 @@
 				return $text;
 			});
 			
-			$this->addButton((new Button())->setName('reload')->setLabel(I18N::get('Update'))->addClass('btn-outline-primary'));
-		}
-
-
-		public function content($submodule = null) : void {
+			$this->addButton([
+                (new Button())->setName('save')->setLabel(I18N::get('Save'))->addClass('btn-outline-success'),
+                (new Button())->setName('reload')->setLabel(I18N::get('Reload'))->addClass('btn-outline-primary')
+            ]);
+			
 			if(empty($submodule)) {
 				$submodule = array_keys($this->tabs)[0];
 			}
 			
-			$content    = null;
-			$files      = null;
+			$this->list      = null;
 			
 			if(!empty($this->files[$submodule])) {
-				$files = $this->files[$submodule];
+				$this->list = $this->files[$submodule];
 			}
 			
-            if(isset($_GET['file'])) {
-	            $this->file = $_GET['file'];
-            } else {
-	            $this->file = $files[0];
-            }
+			if(isset($_GET['file'])) {
+				$this->file = $_GET['file'];
+			} else {
+				$this->file = $this->list[0];
+			}
 			
-            if(in_array($this->file, $files)) {
-                $path    = sprintf('%s%s/%s', CONFIG_PATH, $submodule, $this->file);
-	            
-	            if(!file_exists($path)) {
-		            $path    = sprintf('%s%s', CONFIG_PATH, $this->file);
+			if(in_array($this->file, $this->list)) {
+				$this->current    = sprintf('%s%s/%s', CONFIG_PATH, $submodule, $this->file);
+				
+				if(!file_exists($this->current)) {
+					$this->current    = sprintf('%s%s', CONFIG_PATH, $this->file);
+				}
+				
+				if(file_exists($this->current)) {
+					$this->content = file_get_contents($this->current);
+				} else {
+					$this->content = false;
+				}
+			} else {
+				$this->content = false;
+			}
+			
+			switch(pathinfo($this->current, PATHINFO_EXTENSION)) {
+				case "json":
+					$this->type = "json";
+				break;
+				case "conf":
+					$this->type = "config";
+				break;
+				case "ini":
+				case "cnf":
+				    $this->type = "properties";
+					break;
+				default:
+					$this->type = "javascript";
+				break;
+			}
+		}
+		
+		public function onPost($data = []) : void {
+            if(isset($data['action']) && $data['action'] == 'save') {
+                $this->content = $data['content'];
+                
+	            if(!file_exists($this->current)) {
+                    $this->assign('error', sprintf(I18N::get('The file %s not exists!'), $this->current));
+                    return;
+	            }
+             
+	            if(!is_writable($this->current)) {
+                    $this->assign('error', sprintf(I18N::get('The file %s can\'t be written!'), $this->current));
+                    return;
 	            }
                 
-                if(file_exists($path)) {
-                    $content = file_get_contents($path);
-                } else {
-                    $content = false;
-                }
-            } else {
-                $content = false;
+                // @ToDo Check Filelist, otherwitse File-Injection can be used!
+	            if(file_put_contents($this->current, $this->content)) {
+		            $this->assign('success', sprintf(I18N::get('The file %s was saved.'), $this->current));
+                    return;
+	            }
+             
+	            $this->assign('error', sprintf(I18N::get('The file %s can\'t be saved!'), $this->current));
             }
-            
-            $this->assign('content', $content);
+		}
+
+		public function content($submodule = null) : void {
+            $this->assign('content', $this->content);
+            $this->assign('type', $this->type);
 			
 			foreach($this->getTemplate()->getAssigns() AS $name => $value) {
 				${$name} = $value;
@@ -101,7 +147,7 @@
 							<?php
 						}
 						
-						if(!empty($files)) {
+						if(!empty($this->list)) {
 							?>
 								<li class="nav-item m-auto"></li>
 								<li class="nav-item">
@@ -109,7 +155,7 @@
 										<span class="input-group-text" id="label"><?php I18N::__('File'); ?>:</span>
 										<select name="file" class="col form-select form-control-sm" aria-label="File" aria-describedby="label">
 											<?php
-												foreach($files AS $file) {
+												foreach($this->list AS $file) {
 													printf('<option value="%1$s"%2$s>%1$s</option>', $file, ($file === $this->file ? ' SELECTED' : ''));
 												}
 											?>

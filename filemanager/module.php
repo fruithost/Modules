@@ -51,35 +51,49 @@
 
 			require_once('views/display.php');
 		}
-
-		protected function getFiles(string $dir_path) : array {
-			$rdi = new \RecursiveDirectoryIterator($dir_path, RecursiveDirectoryIterator::SKIP_DOTS);
-			$rii = new \RecursiveIteratorIterator($rdi, RecursiveIteratorIterator::SELF_FIRST);
-			$tree = [];
-
-			foreach($rii AS $splFileInfo) {
-				$file_name = $splFileInfo->getFilename();
-
-				if($splFileInfo->isDir()) {
-					$path =  [
-						$file_name => []
+		
+		function getFiles(string $dir) : array {
+			$result	= [];
+			$ffs	= scandir($dir);
+			
+			foreach($ffs AS $ff){
+				if($ff != '.' && $ff != '..') {
+					$path		= $dir . DS . $ff;
+					
+					$defaults	= [
+						'name'			=> $ff,
+						'path'			=> $dir,
+						'permissions'	=> substr(sprintf('%o', fileperms($path)), -4),
+						'user'			=> posix_getpwuid(fileowner($path)),
+						'group'			=> posix_getpwuid(filegroup($path)),
+						'time'			=> [
+							'modified'	=> filemtime($path),
+							'changed'	=> filectime($path),
+							'accessed'	=> fileatime($path)
+						]
 					];
-				} else {
-					$path = [ pathinfo($file_name) ];
-				}
-
-				$path['DEP']= $rii->getDepth();
-
-				for($depth = $rii->getDepth() - 1; $depth >= 0; --$depth) {
-					$path = [
-						$rii->getSubIterator($depth)->current()->getFilename() => $path
-					];
-				}
-
-				$tree = [...$tree, ...$path];
+						
+					/* is a Folder */
+					if(is_dir($path)) {
+						$result[]	= [
+							'type'		=> 'directory',
+							...$defaults,
+							'children'	=> $this->getFiles($path)
+						];
+						
+					/* is a File */
+					} else {
+						$result[] = [
+							'type'	=> 'file',
+							'size'	=> filesize($path),
+							...$defaults,
+							...pathinfo($ff)
+						];
+					}
+				}    
 			}
-
-			return $tree;
+			
+			return $result;
 		}
 	}
 ?>

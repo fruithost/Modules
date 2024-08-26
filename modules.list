@@ -8,7 +8,6 @@ ssl
 theme
 authenticator
 mysql
-filemanager
 properties
 phpmyadmin
 config

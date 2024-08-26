@@ -25,6 +25,7 @@
 
 			$this->files = $this->getFiles(sprintf('%s%s/', HOST_PATH, Auth::getUsername()));
 
+			$this->assign('root', sprintf('%s%s/', HOST_PATH, Auth::getUsername()));
 			$this->assign('type', $this->type);
 			$this->assign('files', $this->files);
 		}

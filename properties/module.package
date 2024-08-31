@@ -2,6 +2,7 @@
 	"name":			"Properties",
 	"version":		"1.0.0",
 	"category":		"SERVER_MANAGEMENT",
+	"permissions":	[ "SERVER::SETTINGS" ],
 	"icon":			"list",
 	"order":		1,
 	"description":	"Displays all Properties and Config-Files of the system.",

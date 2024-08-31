@@ -105,7 +105,7 @@
 			}
 		}
 		
-		public function onPost($data = []) : void {
+		public function onPost($data = []) : void {			
             if(isset($data['action']) && $data['action'] == 'save') {
                 $this->content = $data['content'];
                 

@@ -2,6 +2,7 @@
 	"name":			"Config",
 	"version":		"1.0.0",
 	"category":		"SERVER_MANAGEMENT",
+	"permissions":	[ "SERVER::SETTINGS" ],
 	"icon":			"folder-symlink",
 	"order":		4,
 	"description":	"Managing static configuration files from fruithost.",

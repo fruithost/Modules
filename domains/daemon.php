@@ -16,7 +16,6 @@
 				print "\033[31;31m\tDelete VHost:\033[39m " . $domain->name . PHP_EOL;
 				
 				// @ToDo check if other domains using the same path!
-				
 				$path	= sprintf('%s%s%s', HOST_PATH, $domain->username, $domain->directory);
 				
 				if(is_dir($path)) {
@@ -48,6 +47,11 @@
 			foreach($domains AS $domain) {
 				print "\033[0;32m\tCreate VHost:\033[39m " . $domain->name . PHP_EOL;
 				$path		= $this->createPath($domain->username, $domain->directory);
+				
+				// create System user
+				if(empty(shell_exec(sprintf('getent passwd %1$s', $domain->username)))) {
+					shell_exec(sprintf('adduser --disabled-login --disabled-password --ingroup www-data --no-create-home --home %2$s %1$s', $domain->username, sprintf('%s%s', HOST_PATH, $domain->username)));
+				}
 				
 				$this->createDocumentRoot($domain, $path);
 				$this->createVirtualHost($domain, $path);
@@ -99,9 +103,16 @@
 			$logs = sprintf('%s%s/%s/', HOST_PATH, $domain->username, 'logs');
 			$config .= TAB . sprintf('ErrorLog %s%s_error.log', $logs, $domain->name) . PHP_EOL;
 			$config .= TAB . sprintf('CustomLog %s%s_access.log combined', $logs, $domain->name) . PHP_EOL;
-				
+			
 			$config .= PHP_EOL;
 			
+			// Security @ToDo
+			$config .= PHP_EOL;
+			$config .= '#' . TAB . '<IfModule mpm_itk_module>' . PHP_EOL;
+			$config .= '#' . TAB . TAB . sprintf('AssignUserId %s www-data', $domain->username) . PHP_EOL;
+			$config .= '#' . TAB . '</IfModule>' . PHP_EOL;
+
+			// Error Pages
 			foreach([
 				100, 101,
 				400, 401, 403, 404, 405, 408, 410, 411, 412, 413, 414, 415,
@@ -110,6 +121,40 @@
 				$config .= TAB . sprintf('Alias /errors/%1$s.html /etc/fruithost/placeholder/errors/%1$s.html', $code) . PHP_EOL;
 			}
 			
+			// PHP-FPM
+			$config .= PHP_EOL;
+			$config .= TAB . '<IfModule setenvif_module>' . PHP_EOL;
+			$config .= TAB . TAB . 'SetEnvIfNoCase ^Authorization$ "(.+)" HTTP_AUTHORIZATION=$1' . PHP_EOL;
+			$config .= TAB . '</IfModule>' . PHP_EOL;
+			
+			// @ToDo
+			$fpm = '[' . $domain->username. ']
+;prefix = /var/fruithost/users/$pool
+
+user = $pool
+group = www-data
+
+listen = /run/php/$pool.sock
+
+listen.owner = $pool
+listen.group = www-data
+listen.mode = 0770
+
+pm = dynamic
+pm.max_children = 5
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+
+;access.log = log/$pool.access.log';
+			file_put_contents(sprintf('/etc/fruithost/config/php/users/%s.conf', $domain->username), $fpm);
+			
+			$config .= PHP_EOL;
+			$config .= TAB . '<FilesMatch ".+\.ph(?:ar|p|tml)$">' . PHP_EOL;
+			$config .= TAB . TAB . sprintf('SetHandler "proxy:unix:/run/php/%s.sock|fcgi://localhost"', $domain->username) . PHP_EOL;
+			$config .= TAB . '</FilesMatch>' . PHP_EOL;
+			
+			// Directory
 			$config .= PHP_EOL;
 			$config .= TAB . sprintf('<Directory %s>', $path) . PHP_EOL;
 			$config .= TAB . TAB . 'Options +FollowSymLinks -Indexes' . PHP_EOL;
@@ -152,6 +197,7 @@
 		}
 		
 		protected function reloadApache() {
+			print shell_exec(sprintf('service php%d.%d-fpm restart', PHP_MAJOR_VERSION, PHP_MINOR_VERSION));
 			print shell_exec('service apache2 reload');
 		}
 	}

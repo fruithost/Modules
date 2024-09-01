@@ -1,5 +1,5 @@
 <?php
-	use fruithost\Database;
+	use fruithost\Storage\Database;
 	
 	Database::query('DROP USER IF EXISTS pma@localhost;');
 	Database::query('DROP DATABASE IF EXISTS `phpmyadmin`;');

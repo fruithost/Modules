@@ -35,7 +35,9 @@
 				'global.cnf'
 			],
 			'php'			=>  [
-				'php.ini'
+				'php.ini',
+				'global.conf'   => 'properties',
+                'panel.conf'    => 'properties'
 			],
 			'timezones'		=>  [
 				'timezones.json'
@@ -59,7 +61,7 @@
 			if(empty($submodule)) {
 				$submodule = array_keys($this->tabs)[0];
 			}
-			
+   
 			$this->list      = null;
 			
 			if(!empty($this->files[$submodule])) {
@@ -72,7 +74,8 @@
 				$this->file = $this->list[0];
 			}
 			
-			if(in_array($this->file, $this->list)) {
+			
+			if(array_key_exists($this->file, $this->list) || in_array($this->file, $this->list)) {
 				$this->current    = sprintf('%s%s/%s', CONFIG_PATH, $submodule, $this->file);
 				
 				if(!file_exists($this->current)) {
@@ -88,20 +91,24 @@
 				$this->content = false;
 			}
 			
-			switch(pathinfo($this->current, PATHINFO_EXTENSION)) {
-				case "json":
-					$this->type = "json";
-				break;
-				case "conf":
-					$this->type = "config";
-				break;
-				case "ini":
-				case "cnf":
-				    $this->type = "properties";
-					break;
-				default:
-					$this->type = "javascript";
-				break;
+			if(array_key_exists($this->file, $this->list)) {
+				$this->type = $this->list[$this->file];
+			} else {
+                switch(pathinfo($this->current, PATHINFO_EXTENSION)) {
+                    case "json":
+                        $this->type = "json";
+                    break;
+                    case "conf":
+                        $this->type = "config";
+                    break;
+                    case "ini":
+                    case "cnf":
+                        $this->type = "properties";
+                        break;
+                    default:
+                        $this->type = "javascript";
+                    break;
+                }
 			}
 		}
 		
@@ -130,10 +137,17 @@
 		}
 
 		public function content($submodule = null) : void {
+			if(empty($submodule)) {
+				$submodule = array_keys($this->tabs)[0];
+			}
+            
             $this->assign('content', $this->content);
             $this->assign('type', $this->type);
 			
 			foreach($this->getTemplate()->getAssigns() AS $name => $value) {
+                if($name === 'submodule') {
+                    continue;
+                }
 				${$name} = $value;
 			}
 			?>
@@ -155,7 +169,11 @@
 										<span class="input-group-text" id="label"><?php I18N::__('File'); ?>:</span>
 										<select name="file" class="col form-select form-control-sm" aria-label="File" aria-describedby="label">
 											<?php
-												foreach($this->list AS $file) {
+												foreach($this->list AS $index => $file) {
+                                                    if(!is_numeric($index)) {
+	                                                    $file = $index;
+                                                    }
+                                                    
 													printf('<option value="%1$s"%2$s>%1$s</option>', $file, ($file === $this->file ? ' SELECTED' : ''));
 												}
 											?>

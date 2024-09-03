@@ -1,0 +1,10 @@
+name: Create installable ZIP-Packages of Modules
+on: [workflow_dispatch]
+jobs:
+  zip-n-push:
+    name: Zip and Push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Zip Folder
+        run: |
+          ls -la

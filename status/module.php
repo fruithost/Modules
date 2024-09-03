@@ -5,6 +5,7 @@
 	use fruithost\Localization\I18N;
 	use fruithost\UI\Button;
 	use fruithost\UI\Modal;
+	use fruithost\UI\Icon;
 	
 	class Status extends ModuleInterface {
 		private $services = NULL;
@@ -15,6 +16,23 @@
 		
 		public function getServices() : array {
 			return $this->services;
+		}
+		public function getAvailableServices() : string {
+            $online = 0;
+            $offline = 0;
+            
+            foreach($this->services AS $service) {
+                switch($service->status) {
+	                case 'ONLINE':
+                        ++$online;
+                        break;
+                    case 'OFFLINE':
+                        ++$offline;
+                        break;
+                }
+            }
+            
+			return sprintf('<span class="text-success">%d</span> / <span class="text-danger">%d</span> / %d', $online, $offline, count($this->services));
 		}
 		
 		public function onSettings($data = []) : void {
@@ -60,38 +78,90 @@
 		}
 		
 		public function content($submodule = null) : void {
-			?>
-			<div class="border rounded overflow-hidden mb-5">
-                <table class="table table-borderless table-striped table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th class="bg-secondary-subtle" scope="col"><?php I18N::__('Service'); ?></th>
-                            <th class="bg-secondary-subtle" scope="col"><?php I18N::__('Status'); ?></th>
-                            <th class="bg-secondary-subtle" scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            ?>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xl-4 col-md-6 col-sm-6">
+                            <div class="card text-break">
+                                <div class="card-header d-flex flex-row p-0">
+				                    <?php
+					                    Icon::show('bookmark-star', [
+						                    'classes'    => [
+							                    'align-self-start',
+							                    'flex-shrink-1',
+							                    'bg-dark',
+							                    'rounded',
+							                    'text-light',
+							                    'p-2',
+							                    'm-2'
+						                    ],
+						                    'attributes' => [ 'style' => 'font-size: 30px' ]
+					                    ]);
+				                    ?>
+                                    <span class="align-self-start flex-fill p-0 ml-2 mt-1">
+                                        <small><?php I18N::__('Services'); ?></small>
+                                        <h4 class="p-0 m-o"><?php print $this->getAvailableServices(); ?></h4>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                         <?php
-                            foreach($this->services AS $service) {
+                            if($this->getSettings('UPTIME', 'true') === 'true') {
                                 ?>
-                                    <tr>
-                                        <td><?php print $service->name; ?></td>
-                                        <td><?php print $this->getStatus($service->status, true)?></td>
-                                        <td><small>Port <?php print $service->port; ?> is <?php print $this->getStatus($service->status)?>.</small></td>
-                                    </tr>
+                                    <div class="col-xl-4 col-md-6 col-sm-6">
+                                        <div class="card text-break">
+                                            <div class="card-header d-flex flex-row p-0">
+                                                <?php
+                                                    Icon::show('uptime', [
+                                                        'classes'    => [
+                                                            'align-self-start',
+                                                            'flex-shrink-1',
+                                                            'bg-dark',
+                                                            'rounded',
+                                                            'text-light',
+                                                            'p-2',
+                                                            'm-2'
+                                                        ],
+                                                        'attributes' => [ 'style' => 'font-size: 30px' ]
+                                                    ]);
+                                                ?>
+                                                <span class="align-self-start flex-fill p-0 ml-2 mt-1">
+                                                    <small><?php I18N::__('Uptime'); ?></small>
+                                                    <h4 class="p-0 m-o"><?php print $this->getUptime(); ?></h4>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 <?php
                             }
                         ?>
-                    </tbody>
-                </table>
-            </div>
+                    </div>
+                    <div class="row border rounded overflow-hidden mb-5 mt-5">
+                        <table class="table table-borderless table-striped table-hover m-0 p-0">
+                            <thead>
+                                <tr>
+                                    <th class="bg-secondary-subtle" scope="col"><?php I18N::__('Service'); ?></th>
+                                    <th class="bg-secondary-subtle" scope="col"><?php I18N::__('Status'); ?></th>
+                                    <th class="bg-secondary-subtle" scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                    foreach($this->services AS $service) {
+                                        ?>
+                                            <tr>
+                                                <td><?php print $service->name; ?></td>
+                                                <td><?php print $this->getStatus($service->status, true)?></td>
+                                                <td><small>Port <?php print $service->port; ?> is <?php print $this->getStatus($service->status)?>.</small></td>
+                                            </tr>
+                                        <?php
+                                    }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 			<?php
-				if($this->getSettings('UPTIME', 'true') === 'true') {
-					?>
-						<h4><?php I18N::__('Server Uptime'); ?></h4>
-						<p><?php I18N::__('Since'); ?> <?php print $this->getUptime(); ?></p>
-					<?php
-				}
 		}
 		
 		public function getUptime() {

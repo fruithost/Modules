@@ -2,10 +2,7 @@ name: Create installable ZIP-Packages of Modules
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest

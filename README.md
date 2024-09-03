@@ -40,7 +40,7 @@ Feel free to help us with the developing!
 ## Completely finished Modules
 - ❌ backup
 - ✔️ [cronjob](https://github.com/fruithost/Modules/tree/master/cronjob)
-- ❌ database
+- ✔️ [database](https://github.com/fruithost/Modules/tree/master/database)
 - ❌ dns
 - ✔️ [domains](https://github.com/fruithost/Modules/tree/master/domains)
 - ✔️ [faq](https://github.com/fruithost/Modules/tree/master/faq)
@@ -50,15 +50,15 @@ Feel free to help us with the developing!
 - ❌ mailserver
 - ❌ parked-domains
 - ✔️ [php](https://github.com/fruithost/Modules/tree/master/php)
-- ❌ phpmyadmin
+- ✔️ [phpmyadmin](https://github.com/fruithost/Modules/tree/master/phpmyadmin)
 - ✔️ [protected-directorys](https://github.com/fruithost/Modules/tree/master/protected-directorys)
-- ❌ ssl
+- ✔️ [ssl](https://github.com/fruithost/Modules/tree/master/ssl)
 - ❌ statistics
-- ❌ status
+- ✔️ [status](https://github.com/fruithost/Modules/tree/master/status)
 - ❌ subdomains
 - ✔️ [theme](https://github.com/fruithost/Modules/tree/master/theme)
 - ❌ tickets
-- ❌ Webmail
+- ❌ webmail
 - ❌ webserver
 - ✔️ [authenticator](https://github.com/fruithost/Modules/tree/master/authenticator)
 

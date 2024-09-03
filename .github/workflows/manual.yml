@@ -1,10 +1,25 @@
 name: Create installable ZIP-Packages of Modules
 on: [workflow_dispatch]
 jobs:
-  zip-n-push:
-    name: Zip and Push
-    runs-on: ubuntu-latest
+  test:
+    name: Create installable ZIP-Packages of Modules [Node.js: ${{ matrix.node_version }}, OS: ${{ matrix.os }}]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node_version: [22]
+        os: [ubuntu-latest]
+
     steps:
-      - name: Zip Folder
-        run: |
-          ls -la
+    - uses: actions/checkout@v1
+
+    - name: Use Node.js ${{ matrix.node_version }}
+      uses: actions/setup-node@v1
+      with:
+        version: ${{ matrix.node_version }}
+    
+    - name: npm install, build and test
+      run: |
+        cd ./.builder/
+        npm install
+        npm run build --if-present
+        npm test

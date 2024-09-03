@@ -22,7 +22,7 @@ FS.readdirSync('../').forEach(file => {
             zlib: {
                 level: 9
             },
-            comment: 'Automatic packed by ModulePacker | fruithost.'
+            comment: 'Automatic packed by ModulePacker | fruithost'
         });
 
         const stream          = FS.createWriteStream('../modules.packages/' + file + '.zip');

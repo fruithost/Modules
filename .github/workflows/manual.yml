@@ -1,24 +1,36 @@
 name: Create installable ZIP-Packages of Modules
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 jobs:
-  test:
-    name: Start
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        node_version: [22]
-        os: [ubuntu-latest]
-
+  build:
+    runs-on: ubuntu-latest
+    env: 
+      CI_COMMIT_MESSAGE: Build Module-Packages
+      CI_COMMIT_AUTHOR: fruithost | Modules Builder
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
-    - name: Use Node.js ${{ matrix.node_version }}
-      uses: actions/setup-node@v1
+    # Build steps
+    - uses: actions/setup-node@v3
       with:
-        version: ${{ matrix.node_version }}
-    
-    - name: npm install, build and test
+        node-version: '22' 
+    - name: Change Directory
+      run: cd ./.builder/
+    - name: Node Install
+      run: npm ci
+    - name: Node Build
+      run: node ./build.js
+
+    # Commit and push all changed files.
+    - name: Commit changes
+      if: github.event_name == 'push'
       run: |
-        cd ./.builder/
-        npm install
-        node ./build.js
+        git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+        git config --global user.email "fruithost@users.noreply.github.com"
+        git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}"
+        git push

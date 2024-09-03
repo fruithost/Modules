@@ -19,7 +19,7 @@ jobs:
     - name: Node Install
       run: cd ./.builder/ && npm install
     - name: Node Build
-      run: node ./.builder/build.js
+      run: cd ./.builder/ && node ./build.js
 
     # Commit and push all changed files.
     - name: Commit changes

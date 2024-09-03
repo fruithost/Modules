@@ -1,0 +1,15 @@
+{
+  "name": "builder",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Build modulbased packages as installation package",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adrian Preuß",
+  "license": "MIT",
+  "dependencies": {
+    "archiver": "^7.0.1"
+  }
+}

@@ -19,7 +19,7 @@ jobs:
     - name: Change Directory
       run: cd ./.builder/
     - name: Node Install
-      run: npm ci
+      run: npm install
     - name: Node Build
       run: node ./build.js
 

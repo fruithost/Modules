@@ -2,7 +2,7 @@ name: Create installable ZIP-Packages of Modules
 on: [workflow_dispatch]
 jobs:
   test:
-    name: Create installable ZIP-Packages of Modules [Node.js: ${{ matrix.node_version }}, OS: ${{ matrix.os }}]
+    name: Start
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

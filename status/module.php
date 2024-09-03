@@ -1,22 +1,23 @@
 <?php
-	use fruithost\ModuleInterface;
-	use fruithost\Database;
-	use fruithost\Auth;
-	use fruithost\Button;
-	use fruithost\Modal;
+	use fruithost\Modules\ModuleInterface;
+	use fruithost\Storage\Database;
+	use fruithost\Accounting\Auth;
+	use fruithost\Localization\I18N;
+	use fruithost\UI\Button;
+	use fruithost\UI\Modal;
 	
 	class Status extends ModuleInterface {
 		private $services = NULL;
 		
-		public function init() {
+		public function init() : void {
 			$this->services = Database::fetch('SELECT * FROM `' . DATABASE_PREFIX . 'status`', []);
 		}
 		
-		public function getServices() {
+		public function getServices() : array {
 			return $this->services;
 		}
 		
-		public function onSettings($data = []) {
+		public function onSettings($data = []) : void {
 			if(isset($data['UPTIME'])) {
 				if(in_array($data['UPTIME'], [
 					'true',
@@ -58,36 +59,37 @@
 			$this->getTemplate()->assign('success', 'Settings was successfully saved!');
 		}
 		
-		public function content() {
+		public function content($submodule = null) : void {
 			?>
-			<h4>Checking status of server</h4>
-			<table class="table table-borderless table-striped table-hover mt-4 mb-4">
-				<thead>
-					<tr>
-						<th scope="col">Service</th>
-						<th scope="col">Status</th>
-						<th scope="col"></th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php
-						foreach($this->services AS $service) {
-							?>
-								<tr>
-									<td><?php print $service->name; ?></td>
-									<td><?php print $this->getStatus($service->status, true)?></td>
-									<td><small>Port <?php print $service->port; ?> is <?php print $this->getStatus($service->status)?>.</small></td>
-								</tr>
-							<?php
-						}
-					?>
-				</tbody>
-			</table>
+			<div class="border rounded overflow-hidden mb-5">
+                <table class="table table-borderless table-striped table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="bg-secondary-subtle" scope="col"><?php I18N::__('Service'); ?></th>
+                            <th class="bg-secondary-subtle" scope="col"><?php I18N::__('Status'); ?></th>
+                            <th class="bg-secondary-subtle" scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            foreach($this->services AS $service) {
+                                ?>
+                                    <tr>
+                                        <td><?php print $service->name; ?></td>
+                                        <td><?php print $this->getStatus($service->status, true)?></td>
+                                        <td><small>Port <?php print $service->port; ?> is <?php print $this->getStatus($service->status)?>.</small></td>
+                                    </tr>
+                                <?php
+                            }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
 			<?php
 				if($this->getSettings('UPTIME', 'true') === 'true') {
 					?>
-						<h4>Servcer Uptime</h4>
-						<p>Since <?php print $this->getUptime(); ?></p>
+						<h4><?php I18N::__('Server Uptime'); ?></h4>
+						<p><?php I18N::__('Since'); ?> <?php print $this->getUptime(); ?></p>
 					<?php
 				}
 		}
@@ -135,14 +137,14 @@
 			switch($status) {
 				case 'ONLINE':
 					if($beautify) {
-						return '<span class="text-success">Online</span>';
+						return sprintf('<span class="text-success">%s</span>', I18N::get('Online'));
 					}
 					
 					return 'opened';
 				break;
 				case 'OFFLINE':
 					if($beautify) {
-						return '<span class="text-danger">Offline</span>';
+						return sprintf('<span class="text-danger">%s</span>', I18N::get('Offline'));
 					}
 					
 					return 'closed';

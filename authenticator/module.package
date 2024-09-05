@@ -1,8 +1,8 @@
 {
 	"name":			"Authenticator",
-	"version":		"1.0.1",
+	"version":		"1.0.2",
 	"category":		"NULL",
-	"icon":			"NULL",
+	"icon":			"qr-code-scan",
 	"order":		4,
 	"description":	"Adding external Authenticator (for sample Google Authenticator) for 2FA.",
 	"author":		{
@@ -10,5 +10,19 @@
 		"email":	"info@fruithost.de",
 		"url":		"https://fruithost.de"
 	},
-	"repository":	"https://github.com/fruithost/Modules"
+	"repository":	"https://github.com/fruithost/Modules",
+	"screenhsots": [
+		{
+			"file": "screenshots/login.png",
+			"description": "Prompt for the 2FA code when the user logs in"
+		},
+		{
+			"file": "screenshots/settings.png",
+			"description": "Account settings"
+		},
+		{
+			"file": "screenshots/window.png",
+			"description": "Initial code request when 2FA is set via the authenticator"
+		}
+	]
 }

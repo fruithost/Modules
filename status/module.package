@@ -2,7 +2,7 @@
 	"name":			"Status",
 	"version":		"0.0.2",
 	"category":		"EXTENDED_MANAGEMENT",
-	"icon":			"network_check",
+	"icon":			"vignette",
 	"order":		1,
 	"description":	"Displays the current status of the services.",
 	"author":		{

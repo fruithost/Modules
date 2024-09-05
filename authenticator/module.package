@@ -11,7 +11,7 @@
 		"url":		"https://fruithost.de"
 	},
 	"repository":	"https://github.com/fruithost/Modules",
-	"screenhsots": [
+	"screenshots": [
 		{
 			"file": "screenshots/login.png",
 			"description": "Prompt for the 2FA code when the user logs in"

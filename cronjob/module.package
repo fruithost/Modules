@@ -1,6 +1,6 @@
 {
 	"name":			"Cronjob",
-	"version":		"1.5.3",
+	"version":		"1.5.4",
 	"category":		"HOSTING_MANAGEMENT",
 	"icon":			"stopwatch",
 	"order":		4,
@@ -10,5 +10,15 @@
 		"email":	"info@fruithost.de",
 		"url":		"https://fruithost.de"
 	},
-	"repository":	"https://github.com/fruithost/Modules"
+	"repository":	"https://github.com/fruithost/Modules",
+	"screenshots": [
+        {
+            "file": "screenshots/create.png",
+            "description": "Create a Cronjob"
+        },
+         {
+            "file": "screenshots/list.png",
+            "description": "List Cronjobs"
+        }
+    ]
 }

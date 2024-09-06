@@ -1,5 +1,7 @@
-# Config
-This module allows you to edit and view the configuration files.
+# Cronjob
+Cronjobs for everyone!
+
+This module provides cronjobs for hosting users.
 
 ## Support us! ![Sponsors](https://img.shields.io/github/sponsors/fruithost?style=social)
 Donations are an important contribution to the development of OpenSource projects. With your donation you can help us to advance our project. Your support enables us to support the programming.

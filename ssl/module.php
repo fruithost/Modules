@@ -335,7 +335,7 @@
 									$to		= new \DateTime(date_create_from_format('ymdHise', $cert_details['validFrom'])->format('c'));
 
 									if($cert_details == false) {
-										$this->assign('errors', I18N::get('The specified certificate is not valid:<br/>' . openssl_error_string()));
+										$this->assign('errors', I18N::get('The specified certificate is not valid:') . '<br/>' . openssl_error_string());
 									} else {
 										Session::set('import', [
 											'key'		=> $key,

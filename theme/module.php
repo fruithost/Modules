@@ -14,7 +14,7 @@
 				
 				return $name;
 			});
-			
+
 			$this->addAction('ACCOUNT_SETTINGS_GLOBAL',			[ $this, 'html' ]);
 			$this->addAction('SAVE_ACCOUNT_SETTINGS_GLOBAL',	[ $this, 'save' ]);
 		}
@@ -38,7 +38,7 @@
 		}
 		
 		public function getPath() {
-			return sprintf('%s%s%s', dirname(PATH), DS, 'themes');
+			return dirname(PATH);
 		}
 		
 		public function save($data) : void {
@@ -62,11 +62,15 @@
 		public function getThemes($selections = NULL, $raw = false) : array {
 			$themes = [];
 			$ignore = [
-				'.git'
+				'.git',
+				'.github',
+				'README.md'
 			];
 
-            if(is_readable($this->getPath())) {
-				foreach(new \DirectoryIterator($this->getPath()) as $info) {
+            $theme_path = sprintf('%1$s%2$sthemes%2$s', $this->getPath(), DS);
+
+            if(file_exists($theme_path)) {
+				foreach(new \DirectoryIterator($theme_path) as $info) {
 					if($info->isDot()) {
 						continue;
 					}
@@ -79,7 +83,7 @@
 						continue;
 					}
 
-					$path = sprintf('%s%s%s', $this->getPath(), DS, $info->getFilename());
+					$path = sprintf('%s%s%s', $theme_path, DS, $info->getFilename());
 					$selected = false;
 
 					if(!empty($selections)) {

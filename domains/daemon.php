@@ -175,12 +175,17 @@ pm.start_servers = 2
 pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 
+;chroot = /
+chdir = /
+
 ;access.log = log/$pool.access.log
 decorate_workers_output = yes
 catch_workers_output = yes
 php_flag[display_errors] = on
 php_admin_value[error_log] = logs/php_error.log
-php_admin_flag[log_errors] = on';
+php_admin_flag[log_errors] = on
+php_value[session.save_path] = temp/
+php_admin_value[open_basedir] = /var/fruithost/users/$pool';
 
 			file_put_contents(sprintf('/etc/fruithost/config/php/users/%s.conf', $domain->username), $fpm);
 			

@@ -61,17 +61,17 @@
 											'html'	=> '<span class="badge text-bg-warning" data-bs-toggle="hover" data-bs-title="%s">&nbsp;</span>'
 										], $domain);
 									} else if($domain->time_created !== null) {
-										if(!file_exists(sprintf('%s%s/%s', HOST_PATH, Auth::getUsername(), $domain->directory))) {
+										/*if(!file_exists(sprintf('%s%s%s', HOST_PATH, Auth::getUsername(), $domain->directory))) {
 											$parameters = new HookParameters([
 												'text'	=> I18N::get('Error'),
 												'html'	=> '<span class="badge text-bg-danger" data-bs-toggle="hover" data-bs-title="%s">&nbsp;</span>'
 											], $domain);
-										} else {
+										} else {*/
 											$parameters = new HookParameters([
 												'text'	=> I18N::get('Live'),
 												'html'	=> '<span class="badge text-bg-success" data-bs-toggle="hover" data-bs-title="%s">&nbsp;</span>'
 											], $domain);
-										}
+										//}
 									}
 									
 									

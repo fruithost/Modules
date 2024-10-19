@@ -189,7 +189,6 @@ php_admin_value[open_basedir] = /var/fruithost/users/$pool
 
 ; Opcache
 php_admin_flag[opcache.enable] = 1
-php_admin_flag[opcache.validate_root] = 1
 php_admin_flag[opcache.validate_permission] = 1
 php_admin_value[opcache.restrict_api] = /var/fruithost/users/$pool';
 
